@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getBalance } from "@/lib/billing/mock-billing";
+import { getBalance } from "@/lib/billing";
 import { normalizeGenerationInput } from "@/lib/generation/request";
 import { startGeneration, syncJob } from "@/lib/generation/pipeline";
 import { getVideo, listVideos, listApiKeys } from "@/lib/repo";

@@ -761,9 +761,25 @@ export function Playground({
                 {job.video && job.status === "ready" ? (
                   <div style={{ marginTop: 16 }}>
                     <div className="video-frame">
-                      {/* The animated SVG is the simulated render output. */}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={job.video.video_url ?? `/api/media/${job.video.id}/preview`} alt="" />
+                      {job.video.media_format === "mp4" ? (
+                        // eslint-disable-next-line jsx-a11y/media-has-caption
+                        <video
+                          src={job.video.video_url ?? `/api/media/${job.video.id}/preview`}
+                          poster={job.video.poster_url ?? `/api/media/${job.video.id}/poster`}
+                          controls
+                          playsInline
+                          preload="metadata"
+                        />
+                      ) : (
+                        <>
+                          {/* Storyboard fallback: an animated SVG preview. */}
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={job.video.video_url ?? `/api/media/${job.video.id}/preview`}
+                            alt=""
+                          />
+                        </>
+                      )}
                     </div>
                     <div style={{ marginTop: 12, fontWeight: 600 }}>{job.video.title}</div>
                     <div className="media-meta" style={{ marginTop: 6 }}>
@@ -783,6 +799,15 @@ export function Playground({
                       >
                         Download poster
                       </a>
+                      {job.video.media_format === "mp4" ? (
+                        <a
+                          className="btn btn-sm"
+                          href={`/api/media/${job.video.id}/preview`}
+                          download
+                        >
+                          Download video
+                        </a>
+                      ) : null}
                     </div>
                     {job.variants.length > 0 ? (
                       <div style={{ marginTop: 14 }}>

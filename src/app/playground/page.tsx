@@ -1,7 +1,7 @@
 import { AppShell } from "@/components/AppShell";
 import { Playground } from "@/components/Playground";
 import { createAccessToken, requireSessionUser } from "@/lib/auth";
-import { getBalance } from "@/lib/billing/mock-billing";
+import { getBalance } from "@/lib/billing";
 
 export const dynamic = "force-dynamic";
 

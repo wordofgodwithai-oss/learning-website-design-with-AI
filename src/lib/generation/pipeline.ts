@@ -6,9 +6,17 @@ import { num, clamp } from "@/lib/http";
 import type { Database, Job, User, Video } from "@/lib/types";
 import type { NormalizedGenerationRequest } from "@/lib/generation/request";
 import { normalizeGenerationInput, validateGenerationInput } from "@/lib/generation/request";
-import { buildScript } from "@/lib/generation/script";
-import { concurrentGeneration, validationError } from "@/lib/generation/errors";
+import { writeScript } from "@/lib/generation/script-provider";
+import {
+  concurrentGeneration,
+  insufficientCredits,
+  planFeatureRequired,
+  validationError,
+} from "@/lib/generation/errors";
 import { languageName } from "@/lib/generation/config";
+import { renderMode } from "@/lib/integrations";
+import { estimateCredits, getBalance } from "@/lib/billing";
+import { isFeatureUnlocked, type Feature } from "@/lib/features";
 
 /**
  * Simulated render pipeline.
@@ -30,6 +38,10 @@ const SIMULATED_RENDER_MS = Math.max(
 );
 
 const MAX_CONCURRENT_JOBS = Math.max(1, num(process.env.GOLPO_MAX_CONCURRENT_JOBS, 5));
+
+/** Renders currently owned by this process (survives dev hot reloads poorly). */
+const activeRenders = new Set<string>();
+const RENDER_STALE_MS = 10 * 60 * 1000;
 
 const STAGE_STEPS = [
   { at: 0, label: "queued" },
@@ -87,9 +99,32 @@ function variantTitle(title: string, language: string): string {
   return `${title} (${languageName(language)})`;
 }
 
+/** Which plan-gated features a request actually uses. */
+function requiredFeatures(input: NormalizedGenerationRequest): Feature[] {
+  const features: Feature[] = [];
+  if (input.kind === "podcast") features.push("podcast");
+  if (input.variantLanguages.length > 0) features.push("multilingual");
+  if (input.avatarRenderer) features.push("ai_presenter");
+  if (input.ownNarration) features.push("own_narration");
+  if (input.userImages.length || input.userVideos.length || input.mediaFiles.length) {
+    features.push("user_media");
+  }
+  if (input.voiceInstructions) features.push("voice_instructions");
+  if (input.logoUrl) features.push("logo_upload");
+  if (input.customMusicUrl) features.push("custom_music");
+  if (input.characters.length) features.push("character_consistency");
+  if (input.durationSeconds > 300) features.push("longer_videos");
+  if (input.justReturnScript) features.push("script_mode");
+  return features;
+}
+
 /**
  * Creates the job + placeholder video rows and returns immediately. The client
  * then polls /api/generate/poll exactly like the real dashboard.
+ *
+ * Billing: the ledger is debited in the same transaction that creates the job,
+ * so a failed request never leaves a dangling charge. `local-unlimited` (or
+ * GOLPO_UNLIMITED_DEV) skips both the entitlement check and the debit.
  */
 export async function startGeneration(
   user: User,
@@ -97,7 +132,27 @@ export async function startGeneration(
 ): Promise<JobSnapshot> {
   validateGenerationInput(input);
 
-  const scriptResult = buildScript({
+  const balance = await getBalance(user.id);
+  for (const feature of requiredFeatures(input)) {
+    if (!isFeatureUnlocked(feature, balance)) {
+      throw planFeatureRequired(feature, balance.plan);
+    }
+  }
+
+  const avatar = input.avatarRenderer
+    ? input.characters.length
+      ? "custom"
+      : "stock"
+    : "none";
+  const cost = balance.unlimited
+    ? 0
+    : estimateCredits({
+        durationSeconds: input.durationSeconds,
+        isAudioOnly: input.isAudioOnly,
+        avatar,
+      });
+
+  const scriptResult = await writeScript({
     prompt: input.prompt,
     durationSeconds: input.durationSeconds,
     kind: input.kind,
@@ -119,6 +174,12 @@ export async function startGeneration(
       throw concurrentGeneration();
     }
 
+    if (!balance.unlimited && cost > 0) {
+      const ledger = db.credits.find((row) => row.user_id === user.id);
+      if (!ledger || ledger.credits < cost) throw insufficientCredits();
+      ledger.credits -= cost;
+    }
+
     if (videoId) {
       const video: Video = {
         id: videoId,
@@ -136,8 +197,10 @@ export async function startGeneration(
         duration_seconds: input.durationSeconds,
         visibility: input.isPublic ? "public" : "private",
         script: scriptResult.script,
+        scenes: scriptResult.scenes,
         video_url: null,
         poster_url: null,
+        media_format: "svg",
         watermark: input.forceWatermark || input.includeWatermark,
         is_audio_only: input.isAudioOnly,
         variant_of: null,
@@ -175,6 +238,9 @@ export async function startGeneration(
         variant_languages: input.variantLanguages,
         variant_display_languages: input.variantDisplayLanguages,
         variant_new_scripts: input.variantNewScripts,
+        script_source: scriptResult.source,
+        script_model: scriptResult.model ?? null,
+        credits_charged: cost,
       },
       variant_video_ids: [],
       is_script_generation: input.justReturnScript,
@@ -182,6 +248,7 @@ export async function startGeneration(
       created_at: now,
       updated_at: now,
       completes_at: createdAt + SIMULATED_RENDER_MS,
+      render_started_at: null,
     };
     db.jobs.unshift(job);
 
@@ -211,9 +278,16 @@ function snapshot(job: Job, video: Video | null): JobSnapshot {
 /**
  * Advances the job to its current wall-clock state and persists it.
  * Safe to call concurrently: the whole read-modify-write runs inside withDb.
+ *
+ * When the real renderer is enabled, hitting 100% only *starts* the FFmpeg
+ * render. Polling stays at 97% with stage `encoding` until the render finishes
+ * and finalises the job in a separate transaction, so the database mutex is
+ * never held while FFmpeg runs.
  */
 export async function syncJob(jobId: string, userId: string): Promise<JobSnapshot | null> {
-  return withDb((db) => {
+  let startRender = false;
+
+  const result = await withDb((db) => {
     const job = db.jobs.find((row) => row.id === jobId && row.user_id === userId);
     if (!job) return null;
     const video = job.video_id
@@ -239,14 +313,77 @@ export async function syncJob(jobId: string, userId: string): Promise<JobSnapsho
     }
 
     if (ratio >= 1) {
-      finalize(job, video, db);
+      if (renderMode !== "ffmpeg") {
+        finalize(job, video, db, "svg");
+      } else if (job.render_started_at && Date.now() - job.render_started_at > RENDER_STALE_MS) {
+        // The process that started this render is gone (restart/crash). Do not
+        // leave the job stuck at 97%: serve the storyboard instead.
+        job.request.render_error = "render timed out; served storyboard";
+        finalize(job, video, db, "svg");
+      } else {
+        if (!job.render_started_at) job.render_started_at = Date.now();
+        job.stage = "encoding";
+        job.progress = 97;
+        startRender = !activeRenders.has(job.id);
+      }
     }
 
     return snapshot(job, video);
   });
+
+  if (startRender) void runRender(jobId);
+  return result;
 }
 
-function finalize(job: Job, video: Video | null, db: Database): void {
+/** Renders in the background; never throws into the caller. */
+async function runRender(jobId: string): Promise<void> {
+  if (activeRenders.has(jobId)) return;
+  activeRenders.add(jobId);
+
+  try {
+    const db = await readDb();
+    const job = db.jobs.find((row) => row.id === jobId);
+    const video = job?.video_id ? db.videos.find((row) => row.id === job.video_id) : null;
+    if (!job || !video) return;
+
+    // Lazy import keeps sharp/FFmpeg out of the bundle when storyboard mode is
+    // active, and isolates a missing/broken binary to this one job.
+    const { renderVideo } = await import("@/lib/media/render");
+    const rendered = await renderVideo(video);
+
+    await withDb((current) => {
+      const currentJob = current.jobs.find((row) => row.id === jobId);
+      const currentVideo = currentJob?.video_id
+        ? current.videos.find((row) => row.id === currentJob.video_id)
+        : null;
+      if (!currentJob || !currentVideo || currentJob.status === "ready") return;
+      currentJob.request.render_scenes = rendered.sceneCount;
+      currentJob.request.render_audio = rendered.hadAudio;
+      finalize(currentJob, currentVideo, current, "mp4");
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`[render] ${jobId} failed, serving storyboard: ${message}`);
+    await withDb((current) => {
+      const currentJob = current.jobs.find((row) => row.id === jobId);
+      const currentVideo = currentJob?.video_id
+        ? current.videos.find((row) => row.id === currentJob.video_id)
+        : null;
+      if (!currentJob || !currentVideo || currentJob.status === "ready") return;
+      currentJob.request.render_error = message;
+      finalize(currentJob, currentVideo, current, "svg");
+    });
+  } finally {
+    activeRenders.delete(jobId);
+  }
+}
+
+function finalize(
+  job: Job,
+  video: Video | null,
+  db: Database,
+  mediaFormat: "mp4" | "svg",
+): void {
   const timestamp = nowIso();
 
   // Variants: one sibling video per requested language (REPORT.md §6 step 5).
@@ -259,6 +396,7 @@ function finalize(job: Job, video: Video | null, db: Database): void {
     video.status = "ready";
     video.video_url = `/api/media/${video.id}/preview`;
     video.poster_url = `/api/media/${video.id}/poster`;
+    video.media_format = mediaFormat;
     video.error = null;
     video.updated_at = timestamp;
   }

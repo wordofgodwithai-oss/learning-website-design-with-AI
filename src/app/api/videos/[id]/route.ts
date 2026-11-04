@@ -1,6 +1,7 @@
 import { getUserFromRequest } from "@/lib/auth";
 import { fail, json, readJson, str } from "@/lib/http";
 import { deleteVideo, getVideo, updateVideo } from "@/lib/repo";
+import { removeMedia } from "@/lib/media/store";
 import type { Visibility } from "@/lib/types";
 
 type Context = { params: Promise<{ id: string }> };
@@ -53,5 +54,6 @@ export async function DELETE(request: Request, { params }: Context) {
   const { id } = await params;
   const removed = await deleteVideo(id, user.id);
   if (!removed) return fail(404, "Video not found.");
+  await removeMedia(id).catch(() => undefined);
   return json({ success: true });
 }

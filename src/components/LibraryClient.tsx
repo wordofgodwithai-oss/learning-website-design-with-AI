@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { CANVAS_STYLES, LANGUAGES, SKETCH_STYLES } from "@/lib/generation/config";
 import type { Playlist, Video } from "@/lib/types";
 
-const ALL_STYLES = [...CANVAS_STYLES, ...SKETCH_STYLES];
+const ALL_STYLES = Array.from(new Set<string>([...CANVAS_STYLES, ...SKETCH_STYLES]));
 
 export function LibraryClient({
   initialVideos,

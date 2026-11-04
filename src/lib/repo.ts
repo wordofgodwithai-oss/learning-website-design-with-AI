@@ -46,16 +46,22 @@ export async function upsertUser(input: {
   name?: string;
   provider: User["provider"];
   avatarUrl?: string | null;
+  externalId?: string | null;
 }): Promise<User> {
   const email = input.email.trim().toLowerCase();
   return withDb((db) => {
-    const existing = db.users.find((user) => user.email.toLowerCase() === email);
+    const existing = db.users.find(
+      (user) =>
+        (input.externalId && user.external_id === input.externalId) ||
+        user.email.toLowerCase() === email,
+    );
     const timestamp = nowIso();
     if (existing) {
       existing.last_login_at = timestamp;
       existing.provider = input.provider;
       if (input.name) existing.name = input.name;
       if (input.avatarUrl !== undefined) existing.avatar_url = input.avatarUrl;
+      if (input.externalId) existing.external_id = input.externalId;
       if (!db.credits.some((c) => c.user_id === existing.id)) {
         db.credits.push(creditsFor(existing));
       }
@@ -67,6 +73,7 @@ export async function upsertUser(input: {
       name: input.name?.trim() || slugName(email),
       display_name: input.name?.trim() || slugName(email),
       provider: input.provider,
+      external_id: input.externalId ?? null,
       avatar_url: input.avatarUrl ?? null,
       created_at: timestamp,
       last_login_at: timestamp,
@@ -94,6 +101,86 @@ export async function ensureDemoUser(): Promise<User> {
 export async function getCreditAccount(userId: string): Promise<CreditAccount | undefined> {
   const db = await readDb();
   return db.credits.find((row) => row.user_id === userId);
+}
+
+/** Applies a partial update to the ledger row, creating it if necessary. */
+export async function updateCreditAccount(
+  userId: string,
+  patch: Partial<CreditAccount>,
+): Promise<CreditAccount | undefined> {
+  const { user_id: _ignored, ...safePatch } = patch;
+  void _ignored;
+  return withDb((db) => {
+    let row = db.credits.find((credit) => credit.user_id === userId);
+    if (!row) {
+      const user = db.users.find((entry) => entry.id === userId);
+      if (!user) return undefined;
+      row = creditsFor(user);
+      db.credits.push(row);
+    }
+    Object.assign(row, safePatch);
+    return row;
+  });
+}
+
+/** Atomically debits the ledger. Never goes below zero. */
+export async function spendCredits(
+  userId: string,
+  amount: number,
+): Promise<{ ok: boolean; remaining: number; charged: number }> {
+  return withDb((db) => {
+    const row = db.credits.find((credit) => credit.user_id === userId);
+    if (!row) return { ok: false, remaining: 0, charged: 0 };
+    if (row.credits < amount) return { ok: false, remaining: row.credits, charged: 0 };
+    row.credits -= amount;
+    return { ok: true, remaining: row.credits, charged: amount };
+  });
+}
+
+/** Atomically adds credits (top-ups, refunds, monthly grants). */
+export async function addCredits(
+  userId: string,
+  amount: number,
+): Promise<{ ok: boolean; remaining: number }> {
+  return withDb((db) => {
+    const row = db.credits.find((credit) => credit.user_id === userId);
+    if (!row) return { ok: false, remaining: 0 };
+    row.credits = Math.max(0, row.credits + amount);
+    return { ok: true, remaining: row.credits };
+  });
+}
+
+/** Finds the local account that owns a Stripe customer (webhook lookups). */
+export async function getUserByStripeCustomer(customerId: string): Promise<User | undefined> {
+  const db = await readDb();
+  const credit = db.credits.find((row) => row.stripe_customer_id === customerId);
+  return credit ? db.users.find((user) => user.id === credit.user_id) : undefined;
+}
+
+export async function hasBillingEvent(eventId: string): Promise<boolean> {
+  const db = await readDb();
+  return (db.billing_events ?? []).some((event) => event.id === eventId);
+}
+
+/** Records a processed Stripe event; false means it was already handled. */
+export async function recordBillingEvent(input: {
+  id: string;
+  type: string;
+  user_id?: string | null;
+}): Promise<boolean> {
+  return withDb((db) => {
+    db.billing_events ??= [];
+    if (db.billing_events.some((event) => event.id === input.id)) return false;
+    db.billing_events.push({
+      id: input.id,
+      type: input.type,
+      user_id: input.user_id ?? null,
+      received_at: nowIso(),
+    });
+    // Keep the idempotency log bounded; Stripe retries only for days.
+    if (db.billing_events.length > 2_000) db.billing_events.splice(0, 1_000);
+    return true;
+  });
 }
 
 export async function setCustomLogo(userId: string, url: string): Promise<void> {

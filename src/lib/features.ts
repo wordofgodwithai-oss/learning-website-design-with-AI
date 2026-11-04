@@ -1,18 +1,17 @@
 import "server-only";
 
+import { planRank } from "@/lib/billing/shared";
+
 /**
- * ===========================================================================
- * FEATURE GATING — intentionally bypassed in local mode.
+ * Feature gating.
  *
- * The real product gates features by plan/subscription and by add-on flags on
- * the `user_credits` row (REPORT.md sections 8 and 11). All checks below
- * return true so every feature is usable locally.
+ * Local mode (`local-unlimited` plan or an unlimited ledger) keeps everything
+ * unlocked so the clone is fully explorable without a payment provider. When
+ * Stripe billing is active the plan on the ledger decides, using the minimum
+ * plan recorded in `FEATURE_REQUIREMENTS` (REPORT.md section 11).
  *
- * TODO(REAL-GATING): replace `isFeatureUnlocked` with a real entitlement check
- * that reads the plan + add-on flags and enforces limits server-side. The
- * minimum plan for each feature is recorded in `FEATURE_REQUIREMENTS` so the
- * upgrade prompts can be restored without re-deriving them from the report.
- * ===========================================================================
+ * Add-on flags can unlock individual features on top of the plan: e.g. the
+ * script add-on enables `script_mode` on an otherwise lower plan.
  */
 
 export const FEATURES = {
@@ -74,18 +73,45 @@ export const FEATURE_REQUIREMENTS: Record<Feature, string> = {
   teams: "business",
 };
 
-/**
- * The single gate used by the UI and the BFF.
- * TODO(REAL-GATING): return the real entitlement instead of `true`.
- */
-export function isFeatureUnlocked(_feature: Feature): boolean {
-  void _feature;
-  return true;
+/** Add-ons that unlock a feature regardless of the plan tier. */
+export const FEATURE_ADDONS: Partial<Record<Feature, string>> = {
+  script_mode: "script",
+  multilingual: "lang",
+  watermark_removal: "watermark",
+  video_instructions: "video_instruction",
+  logo_upload: "logo",
+  teams: "team",
+  api_access: "api",
+  longer_videos: "longer_videos",
+};
+
+export interface Entitlements {
+  plan?: string | null;
+  unlimited?: boolean;
+  addons?: Record<string, boolean> | null;
 }
 
-/** Everything unlocked — used by /api/auth/session and the playground UI. */
-export function featureMatrix(): Record<Feature, boolean> {
+/** The single gate used by the UI and the BFF. */
+export function isFeatureUnlocked(
+  feature: Feature,
+  entitlements: Entitlements = {},
+): boolean {
+  const { plan = "local-unlimited", unlimited = false, addons = null } = entitlements;
+  if (unlimited) return true;
+  if (planRank(plan) >= planRank("local-unlimited")) return true;
+
+  const addon = FEATURE_ADDONS[feature];
+  if (addon && addons?.[addon]) return true;
+
+  return planRank(plan) >= planRank(FEATURE_REQUIREMENTS[feature]);
+}
+
+/** Per-feature matrix — used by /api/auth/session and the playground UI. */
+export function featureMatrix(entitlements: Entitlements = {}): Record<Feature, boolean> {
   return Object.fromEntries(
-    (Object.keys(FEATURES) as Feature[]).map((feature) => [feature, isFeatureUnlocked(feature)]),
+    (Object.keys(FEATURES) as Feature[]).map((feature) => [
+      feature,
+      isFeatureUnlocked(feature, entitlements),
+    ]),
   ) as Record<Feature, boolean>;
 }

@@ -2,16 +2,19 @@ import Link from "next/link";
 
 import { SignInPanel } from "@/components/SignInPanel";
 import { getSessionUser } from "@/lib/auth";
-import { getBalance } from "@/lib/billing/mock-billing";
+import { getBalance } from "@/lib/billing";
+import { planName } from "@/lib/billing/shared";
+import { publicConfig } from "@/lib/integrations";
 
 export default async function LandingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ redirect?: string }>;
+  searchParams: Promise<{ redirect?: string; auth_error?: string }>;
 }) {
-  const { redirect } = await searchParams;
+  const { redirect, auth_error: authError } = await searchParams;
   const user = await getSessionUser();
   const balance = user ? await getBalance(user.id) : null;
+  const config = publicConfig();
   const redirectTo = redirect?.startsWith("/") ? redirect : "/playground";
 
   return (
@@ -58,14 +61,14 @@ export default async function LandingPage({
             </h1>
             <p className="hero-lead">
               The Golpo dashboard rebuilt to run on your machine: prompt-to-video playground,
-              library, BFF, public API v1/v2 and an MCP endpoint. Billing is mocked so every
-              style, voice and language is unlocked.
+              library, BFF, public API v1/v2 and an MCP endpoint. Real MP4 rendering, optional
+              OpenAI scripts, Supabase auth and Stripe billing.
             </p>
             <ul className="hero-points">
               <li>Canvas and Sketch engines with the full style catalogue</li>
               <li>Real job polling, language variants and a persistent library</li>
               <li>API keys, v1/v2 REST endpoints and six MCP tools</li>
-              <li>Infinite local credits — no Stripe, no feature gates</li>
+              <li>Mock billing out of the box; add Stripe keys to go live</li>
             </ul>
             <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
               <Link href={user ? "/playground" : "#signin"} className="btn btn-primary">
@@ -91,7 +94,7 @@ export default async function LandingPage({
                   <div className="stat">
                     <div className="stat-label">Plan</div>
                     <div className="stat-value" style={{ fontSize: 15 }}>
-                      Local unlimited
+                      {planName(balance?.plan)}
                     </div>
                   </div>
                 </div>
@@ -104,12 +107,18 @@ export default async function LandingPage({
                   </Link>
                 </div>
                 <div className="local-note">
-                  Every feature is unlocked and credits never decrease. Billing code is stubbed
-                  with a TODO for the real Stripe integration.
+                  {balance?.unlimited
+                    ? "Every feature is unlocked and credits never decrease."
+                    : `Billing is live through Stripe. ${balance?.credits.toLocaleString()} credits remaining.`}
                 </div>
               </div>
             ) : (
-              <SignInPanel redirectTo={redirectTo} />
+              <SignInPanel
+                redirectTo={redirectTo}
+                authMode={config.authMode}
+                supabase={config.supabase}
+                initialError={authError ?? null}
+              />
             )}
           </div>
         </section>
@@ -144,7 +153,7 @@ export default async function LandingPage({
           <div className="card">
             <div className="card-title">
               <h3>Generation pipeline</h3>
-              <span className="badge">Simulated renderer</span>
+              <span className="badge">FFmpeg renderer</span>
             </div>
             <div className="stats">
               <div className="stat">

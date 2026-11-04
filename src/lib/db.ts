@@ -6,6 +6,7 @@ import { createHash } from "node:crypto";
 
 import type { Database, CreditAccount, User } from "@/lib/types";
 import { MOCK_INFINITE_CREDITS } from "@/lib/billing/constants";
+import { billingMode, unlimitedDevOverride } from "@/lib/integrations";
 
 const DATA_DIR = process.env.GOLPO_DATA_DIR
   ? path.resolve(process.env.GOLPO_DATA_DIR)
@@ -34,29 +35,38 @@ function daysFromNow(days: number): string {
   return new Date(Date.now() + days * 86_400_000).toISOString();
 }
 
+/** When true the ledger behaves like real money: new accounts start free. */
+const stripeLedger = billingMode === "stripe" && !unlimitedDevOverride;
+
 function creditsFor(user: Pick<User, "id" | "email" | "name">): CreditAccount {
   return {
     user_id: user.id,
-    // TODO(REAL-BILLING): replace with the real ledger balance.
-    credits: MOCK_INFINITE_CREDITS,
-    plan: "local-unlimited",
+    credits: stripeLedger ? 0 : MOCK_INFINITE_CREDITS,
+    plan: stripeLedger ? "free" : "local-unlimited",
     email: user.email,
     name: user.name,
     stripe_email: null,
-    next_subscription_date: daysFromNow(3650),
+    stripe_customer_id: null,
+    stripe_subscription_id: null,
+    subscription_status: stripeLedger ? null : "active",
+    price_id: null,
+    current_period_end: null,
+    cancel_at_period_end: false,
+    subscription_paused: false,
+    next_subscription_date: stripeLedger ? null : daysFromNow(3650),
     custom_logo_url: null,
     subscription_canceled: false,
     created_at: nowIso(),
     generation_preferences: null,
-    experiment_assignment: "local_dev",
-    watermark_add_on: true,
-    lang_add_on: true,
-    script_add_on: true,
-    video_instruction_add_on: true,
-    logo_add_on: true,
-    team_add_on: true,
-    api_add_on: true,
-    longer_videos_add_on: true,
+    experiment_assignment: stripeLedger ? "stripe" : "local_dev",
+    watermark_add_on: !stripeLedger,
+    lang_add_on: !stripeLedger,
+    script_add_on: !stripeLedger,
+    video_instruction_add_on: !stripeLedger,
+    logo_add_on: !stripeLedger,
+    team_add_on: !stripeLedger,
+    api_add_on: !stripeLedger,
+    longer_videos_add_on: !stripeLedger,
   };
 }
 
@@ -98,8 +108,10 @@ function seed(): Database {
           "Golpo Local is a working reconstruction of the Golpo AI dashboard. " +
           "Sign in, describe a video, and watch a simulated render finish. " +
           "Billing is mocked, so every feature is unlocked.",
+        scenes: null,
         video_url: `/api/media/${welcomeId}/preview`,
         poster_url: `/api/media/${welcomeId}/poster`,
+        media_format: "svg",
         watermark: false,
         is_audio_only: false,
         variant_of: null,
@@ -184,6 +196,38 @@ async function load(): Promise<Database> {
     parsed.jobs ??= [];
     parsed.uploads ??= [];
     parsed.admin_roles ??= [];
+    parsed.billing_events ??= [];
+    for (const video of parsed.videos ?? []) {
+      video.scenes ??= null;
+      video.media_format ??= "svg";
+    }
+    for (const credit of parsed.credits ?? []) {
+      credit.stripe_customer_id ??= null;
+      credit.stripe_subscription_id ??= null;
+      credit.subscription_status ??= stripeLedger ? null : "active";
+      credit.price_id ??= null;
+      credit.current_period_end ??= null;
+      credit.cancel_at_period_end ??= false;
+      credit.subscription_paused ??= false;
+      if (stripeLedger && (!credit.plan || credit.plan === "local-unlimited")) {
+        // Flipping GOLPO_BILLING_MODE to stripe must not leave a store created
+        // in mock mode with infinite credits.
+        credit.plan = "free";
+        credit.credits = 0;
+        credit.next_subscription_date = null;
+        credit.watermark_add_on = false;
+        credit.lang_add_on = false;
+        credit.script_add_on = false;
+        credit.video_instruction_add_on = false;
+        credit.logo_add_on = false;
+        credit.team_add_on = false;
+        credit.api_add_on = false;
+        credit.longer_videos_add_on = false;
+      }
+    }
+    for (const user of parsed.users ?? []) {
+      user.external_id ??= null;
+    }
     return parsed;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;

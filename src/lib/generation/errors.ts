@@ -25,11 +25,19 @@ export function authenticationFailed(): GenerationError {
 }
 
 export function insufficientCredits(): GenerationError {
-  // Unreachable in local mode — mock billing never charges (REPORT.md §8).
   return new GenerationError(
     402,
     "You don't have enough credits to generate this video. Please upgrade your plan or buy more credits.",
     "insufficient_credits",
+  );
+}
+
+export function planFeatureRequired(feature: string, plan: string): GenerationError {
+  const label = feature.replace(/_/g, " ");
+  return new GenerationError(
+    403,
+    `The ${label} feature is not included in the ${plan} plan. Please upgrade to continue.`,
+    "plan_required",
   );
 }
 

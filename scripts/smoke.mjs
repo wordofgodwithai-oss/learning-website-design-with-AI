@@ -13,7 +13,7 @@
 const BASE = (process.env.GOLPO_BASE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
 const API_KEY = process.env.GOLPO_API_KEY ?? "glp_local_dev_key_change_me";
 const EMAIL = process.env.GOLPO_SMOKE_EMAIL ?? "demo@golpo.local";
-const POLL_TIMEOUT_MS = Number(process.env.GOLPO_SMOKE_POLL_MS ?? 90_000);
+const POLL_TIMEOUT_MS = Number(process.env.GOLPO_SMOKE_POLL_MS ?? 180_000);
 
 let failures = 0;
 let cookie = "";
@@ -168,14 +168,47 @@ async function main() {
     String((finished?.variant_video_ids ?? []).length),
   );
 
-  // 6. Simulated media
+  // 6. Rendered media (MP4 when FFmpeg is available, animated SVG otherwise)
   const preview = await call(`/api/media/${finished.video.id}/preview`);
-  const previewBody = await preview.text();
-  check(preview.ok && previewBody.startsWith("<svg"), "preview renders SVG");
+  const previewType = preview.headers.get("content-type") ?? "";
+  const previewBytes = Buffer.from(await preview.arrayBuffer());
+  check(preview.ok && previewBytes.length > 1000, "preview asset served", `${previewType} ${previewBytes.length}B`);
+  check(
+    previewType.startsWith("video/mp4") || previewType.startsWith("image/svg"),
+    "preview is mp4 or svg",
+    previewType,
+  );
+
+  if (previewType.startsWith("video/mp4")) {
+    const ranged = await fetch(`${BASE}/api/media/${finished.video.id}/preview`, {
+      headers: { range: "bytes=0-1023" },
+    });
+    const rangedBytes = Buffer.from(await ranged.arrayBuffer());
+    check(
+      ranged.status === 206 && rangedBytes.length === 1024,
+      "mp4 supports byte ranges",
+      `HTTP ${ranged.status} ${rangedBytes.length}B`,
+    );
+    check(
+      finished.video.media_format === "mp4",
+      "video row records mp4 format",
+      String(finished.video.media_format),
+    );
+  }
 
   const poster = await call(`/api/media/${finished.video.id}/poster`);
-  const posterBody = await poster.text();
-  check(poster.ok && posterBody.includes("<svg"), "poster renders SVG");
+  const posterType = poster.headers.get("content-type") ?? "";
+  const posterBytes = Buffer.from(await poster.arrayBuffer());
+  check(
+    poster.ok && posterBytes.length > 500,
+    "poster asset served",
+    `${posterType} ${posterBytes.length}B`,
+  );
+  check(
+    posterType.startsWith("image/jpeg") || posterType.startsWith("image/svg"),
+    "poster is jpeg or svg",
+    posterType,
+  );
 
   // 7. Library
   const videos = await call("/api/videos?limit=10", {

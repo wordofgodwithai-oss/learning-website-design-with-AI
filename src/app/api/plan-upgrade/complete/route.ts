@@ -1,16 +1,18 @@
 import { getUserFromRequest } from "@/lib/auth";
+import { billingActionResult } from "@/lib/billing";
 import { fail, json, readJson } from "@/lib/http";
-import { mockBillingActionResult } from "@/lib/billing/mock-billing";
 
 /**
- * MOCK BILLING — POST /api/complete
+ * POST /api/plan-upgrade/complete
  *
- * TODO(REAL-BILLING): implement this against Stripe. See REPORT.md section 8
- * and src/lib/billing/mock-billing.ts.
+ * Reconciles the local ledger with a completed checkout session, in case the
+ * webhook has not arrived yet (the dashboard calls this right after the
+ * redirect). Safe to call repeatedly.
  */
 export async function POST(request: Request) {
   const user = await getUserFromRequest(request);
   if (!user) return fail(401, "Authentication failed.");
   const body = await readJson<Record<string, unknown>>(request);
-  return json(await mockBillingActionResult("plan-upgrade-complete", body));
+  const result = await billingActionResult("plan-upgrade-complete", user, body);
+  return json(result, result.status ?? 200);
 }

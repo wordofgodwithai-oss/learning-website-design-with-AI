@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import type { NextResponse } from "next/server";
 
 import { getUserById } from "@/lib/repo";
+import { authMode } from "@/lib/integrations";
 import type { PublicUser, User } from "@/lib/types";
 
 /**
@@ -87,14 +88,68 @@ export function toPublicUser(user: User): PublicUser {
   };
 }
 
+/**
+ * Supabase fallbacks.
+ *
+ * With GOLPO_AUTH_MODE=supabase the OAuth callback still mints the HMAC
+ * `golpo_session` cookie, so the normal path above keeps working. These helpers
+ * additionally accept raw Supabase access tokens (in `Authorization: Bearer`)
+ * and Supabase's own SSR cookies, which matters for API clients and for the
+ * brief window before the bridge cookie exists.
+ */
+
+async function userFromSupabaseCookie(): Promise<User | null> {
+  if (authMode !== "supabase") return null;
+  try {
+    const [{ createSupabaseServerClient }, { identityFromSupabase }] = await Promise.all([
+      import("@/lib/supabase/server"),
+      import("@/lib/supabase/verify"),
+    ]);
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) return null;
+    const identity = identityFromSupabase({
+      id: data.user.id,
+      email: data.user.email,
+      user_metadata: data.user.user_metadata,
+      app_metadata: data.user.app_metadata,
+    });
+    if (!identity) return null;
+    const { upsertUser } = await import("@/lib/repo");
+    return upsertUser({
+      email: identity.email,
+      name: identity.name,
+      provider: identity.provider,
+      avatarUrl: identity.avatarUrl,
+      externalId: identity.externalId,
+    });
+  } catch {
+    return null;
+  }
+}
+
+async function userFromSupabaseBearer(token: string): Promise<User | null> {
+  if (authMode !== "supabase") return null;
+  try {
+    const { userFromSupabaseToken } = await import("@/lib/supabase/verify");
+    return await userFromSupabaseToken(token);
+  } catch {
+    return null;
+  }
+}
+
 /** Cookie-only lookup, for server components. */
 export async function getSessionUser(): Promise<User | null> {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
-  if (!token) return null;
-  const payload = verifyAccessToken(token);
-  if (!payload) return null;
-  return (await getUserById(payload.sub)) ?? null;
+  if (token) {
+    const payload = verifyAccessToken(token);
+    if (payload) {
+      const user = await getUserById(payload.sub);
+      if (user) return user;
+    }
+  }
+  return userFromSupabaseCookie();
 }
 
 /** Server-component guard: redirect anonymous visitors to the landing page. */
@@ -113,19 +168,23 @@ export async function requireSessionUser(): Promise<User> {
 export async function getUserFromRequest(request: Request): Promise<User | null> {
   const header = request.headers.get("authorization");
   if (header?.toLowerCase().startsWith("bearer ")) {
-    const payload = verifyAccessToken(header.slice(7).trim());
+    const bearer = header.slice(7).trim();
+    const payload = verifyAccessToken(bearer);
     if (payload) return (await getUserById(payload.sub)) ?? null;
+    const supabaseUser = await userFromSupabaseBearer(bearer);
+    if (supabaseUser) return supabaseUser;
   }
   const cookieHeader = request.headers.get("cookie") ?? "";
   const match = cookieHeader
     .split(";")
     .map((part) => part.trim())
     .find((part) => part.startsWith(`${SESSION_COOKIE}=`));
-  if (!match) return null;
-  const token = decodeURIComponent(match.slice(SESSION_COOKIE.length + 1));
-  const payload = verifyAccessToken(token);
-  if (!payload) return null;
-  return (await getUserById(payload.sub)) ?? null;
+  if (match) {
+    const token = decodeURIComponent(match.slice(SESSION_COOKIE.length + 1));
+    const payload = verifyAccessToken(token);
+    if (payload) return (await getUserById(payload.sub)) ?? null;
+  }
+  return userFromSupabaseCookie();
 }
 
 export function setSessionCookie(response: NextResponse, token: string): void {

@@ -1,12 +1,16 @@
 import Link from "next/link";
 
+import { PlanCheckoutButton } from "@/components/PlanCheckoutButton";
 import { ADDONS, ANNUAL_DISCOUNTS, PAYG_TIERS, PRICING_PLANS } from "@/lib/billing/constants";
 import { getSessionUser } from "@/lib/auth";
+import { publicConfig } from "@/lib/integrations";
 
 export const dynamic = "force-dynamic";
 
 export default async function PricingPage() {
   const user = await getSessionUser();
+  const config = publicConfig();
+  const billingLive = config.billingMode === "stripe";
 
   return (
     <>
@@ -35,17 +39,33 @@ export default async function PricingPage() {
             <div>
               <h1 style={{ fontSize: 32 }}>Plans</h1>
               <p>
-                Copied from the public pricing page in REPORT.md section 8, kept here so the
-                catalogue is visible. Nothing on this page can charge you.
+                Copied from the public pricing page in REPORT.md section 8.
+                {billingLive
+                  ? " Checkout is live through Stripe."
+                  : " Nothing on this page can charge you."}
               </p>
             </div>
-            <span className="badge badge-warn">Mock billing</span>
+            <span className={`badge ${billingLive ? "badge-ok" : "badge-warn"}`}>
+              {billingLive ? "Stripe live" : "Mock billing"}
+            </span>
           </div>
 
           <div className="local-note" style={{ marginBottom: 24 }}>
-            <strong>Local mode:</strong> every account has 999,999 credits, all add-ons are
-            enabled, and checkout buttons only redirect back to the playground. The real Stripe
-            flows are listed as TODOs in <span className="mono">src/lib/billing/mock-billing.ts</span>.
+            {billingLive ? (
+              <>
+                <strong>Stripe mode:</strong> checkout opens a real Stripe Checkout session in
+                test mode. Credits are granted by the webhook after payment; set{" "}
+                <span className="mono">GOLPO_UNLIMITED_DEV=1</span> to keep unlimited credits
+                while testing.
+              </>
+            ) : (
+              <>
+                <strong>Local mode:</strong> every account has 999,999 credits, all add-ons are
+                enabled, and checkout buttons only redirect back to the playground. Add{" "}
+                <span className="mono">STRIPE_SECRET_KEY</span> to{" "}
+                <span className="mono">.env.local</span> to enable real billing.
+              </>
+            )}
           </div>
 
           <div className="grid grid-3">
@@ -77,15 +97,31 @@ export default async function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <button
-                  type="button"
-                  className="btn btn-block"
-                  style={{ marginTop: "auto" }}
-                  disabled
-                  title="Billing is mocked in local mode"
-                >
-                  Included locally
-                </button>
+                {plan.priceMonthly === null ? (
+                  <button
+                    type="button"
+                    className="btn btn-block"
+                    style={{ marginTop: "auto" }}
+                    disabled
+                    title="Enterprise plans are arranged with sales"
+                  >
+                    Contact sales
+                  </button>
+                ) : plan.id === "free" ? (
+                  <button
+                    type="button"
+                    className="btn btn-block"
+                    style={{ marginTop: "auto" }}
+                    disabled
+                  >
+                    {billingLive ? "Included" : "Included locally"}
+                  </button>
+                ) : (
+                  <PlanCheckoutButton
+                    plan={plan.id}
+                    label={billingLive ? `Choose ${plan.name}` : `Try ${plan.name} (free)`}
+                  />
+                )}
               </div>
             ))}
           </div>
@@ -120,7 +156,9 @@ export default async function PricingPage() {
             <div className="card">
               <div className="card-title">
                 <h3>Add-ons</h3>
-                <span className="badge badge-ok">Unlocked</span>
+                <span className={`badge ${billingLive ? "" : "badge-ok"}`}>
+                  {billingLive ? "Per plan" : "Unlocked"}
+                </span>
               </div>
               <div className="list">
                 {Object.entries(ADDONS).map(([key, addon]) => (

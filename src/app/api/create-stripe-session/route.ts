@@ -1,16 +1,18 @@
 import { getUserFromRequest } from "@/lib/auth";
+import { billingActionResult } from "@/lib/billing";
 import { fail, json, readJson } from "@/lib/http";
-import { mockBillingActionResult } from "@/lib/billing/mock-billing";
 
 /**
- * MOCK BILLING — POST /api/session
+ * POST /api/create-stripe-session
  *
- * TODO(REAL-BILLING): implement this against Stripe. See REPORT.md section 8
- * and src/lib/billing/mock-billing.ts.
+ * Starts either a credit-pack checkout (when `credits`/`amount` is provided) or
+ * a subscription checkout. Returns a Stripe-hosted URL in live mode and a
+ * redirect back into the app in mock mode.
  */
 export async function POST(request: Request) {
   const user = await getUserFromRequest(request);
   if (!user) return fail(401, "Authentication failed.");
   const body = await readJson<Record<string, unknown>>(request);
-  return json(await mockBillingActionResult("create-stripe-session", body));
+  const result = await billingActionResult("create-stripe-session", user, body);
+  return json(result, result.status ?? 200);
 }

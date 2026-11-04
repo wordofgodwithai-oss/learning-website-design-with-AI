@@ -6,7 +6,8 @@ production services. Read `README.md` first for usage.
 ## 1. Stack and layout
 
 - **Next.js 15 (App Router) + React 19 + TypeScript**, no CSS framework (one hand-written
-  stylesheet), no database driver, no external SaaS.
+  stylesheet), no database driver. External SaaS is optional: OpenAI, Supabase and Stripe are only
+  used when their credentials are present (`src/lib/integrations.ts`).
 - All persistence is a single JSON document at `.data/db.json` with atomic writes and an
   in-process mutex. This keeps the clone dependency-free and makes state easy to inspect/reset.
 - Server-only modules begin with `import "server-only"` so secrets and fs access cannot leak
@@ -28,18 +29,21 @@ src/
     types.ts                     data model
     db.ts                        JSON store, mutex, seed
     repo.ts                      all data access
-    auth.ts                      HMAC sessions, cookie + bearer
+    auth.ts                      HMAC sessions, cookie + bearer, Supabase fallbacks
     api-auth.ts                  x-api-key auth for public API
-    features.ts                  feature-gate bypass (all true)
+    features.ts                  plan + add-on entitlement checks
+    integrations.ts              mode resolution (openai/ffmpeg/supabase/stripe)
     http.ts                      envelopes, parsing, SSRF-guarded fetch
     storage.ts                   local upload storage
-    generation/                  request normalization, script, pipeline
-    media/svg.ts                 simulated preview/poster renderer
-    billing/                     plan catalogue + mock billing
+    generation/                  request normalization, script provider, pipeline
+    media/render.ts              real MP4 renderer (FFmpeg) + JPEG poster
+    media/svg.ts                 storyboard fallback renderer
+    supabase/                    server/browser clients + token verification
+    billing/                     constants, shared helpers, mock + Stripe + facade
     mcp/server.ts                MCP tools and JSON-RPC handler
 scripts/
   smoke.mjs                      end-to-end API test
-  make-billing-routes.mjs        regenerates the 11 mock billing routes
+  make-billing-routes.mjs        legacy mock-route generator (not used by the app)
 ```
 
 ## 2. Requirement → file map (by report section)
@@ -47,10 +51,10 @@ scripts/
 | Report | Requirement | Implementation |
 | --- | --- | --- |
 | §3 | Hosted surfaces (`video.golpoai.com`, API docs, MCP, S3 media) | Local equivalents: `/`, `/api-docs`, `/mcp`, `/api/media/*`; uploads in `.data/uploads` |
-| §4 | Google + Microsoft sign-in, token in `localStorage`, provider list | `src/components/SignInPanel.tsx`, `src/app/api/auth/sign-in/route.ts`, `src/lib/auth.ts` |
+| §4 | Google + Microsoft sign-in, token in `localStorage`, provider list | `src/components/SignInPanel.tsx` (local + Supabase branches), `src/lib/auth.ts`, `src/app/auth/callback/route.ts` |
 | §4 | Session recovery / redirect after login | `requireSessionUser()` in `src/lib/auth.ts`, `?redirect=` support in `src/app/page.tsx` |
 | §5 | Playground startup BFF calls (11 routes) | Client calls in `src/components/Playground.tsx`; routes under `src/app/api/*`; live status panel |
-| §5 | Credits/plan read from `user_credits` | `getBalance()` in `src/lib/billing/mock-billing.ts` over `CreditAccount` |
+| §5 | Credits/plan read from `user_credits` | `getBalance()` in `src/lib/billing/index.ts` (mock or Stripe) over `CreditAccount` |
 | §5 | Changelog modal, broadcast banner | `/api/changelogs`, `/api/broadcast`, seeded `changelogs`/`system_status` |
 | §6 | Multipart `/api/generate`, field vocabulary, retry/timeout | `normalizeGenerationInput()` in `src/lib/generation/request.ts`; retry/abort in `Playground.tsx` |
 | §6 | Poll `/api/generate/poll`, stages, 10-minute ceiling, resume | `syncJob()` in `src/lib/generation/pipeline.ts`; `localStorage["golpo:lastGeneration"]` resume |
@@ -62,11 +66,11 @@ scripts/
 | §7 | MCP server, 6 tools | `src/lib/mcp/server.ts`, `src/app/api/mcp/route.ts` |
 | §7 | 15 MB upload cap | `MAX_UPLOAD_BYTES` in `src/lib/generation/config.ts` |
 | §8 | Plans, credits, add-ons, annual discount, PAYG tiers | `src/lib/billing/constants.ts`, `/pricing` |
-| §8 | 11 billing BFF routes | `src/app/api/{create-stripe-session, plan-upgrade/*, annual-upgrade/*, …}` (all mocked) |
+| §8 | 11 billing BFF routes + webhook | Intent handlers in `src/lib/billing/{index,stripe-billing}.ts`; routes under `src/app/api/*`; `/api/stripe/webhook` |
 | §9 | Tables: `user_credits`, `api_key`, `organizations`, `system_status`, … | `src/lib/types.ts` + `db.ts` seed |
-| §10 | Supabase, S3, OpenAI ads, analytics | Local stand-ins; outbound calls disabled (`track-openai-ads-event`) |
+| §10 | Supabase, S3, OpenAI ads, analytics | Supabase auth and OpenAI scripts/TTS are optional integrations; ads/analytics remain no-ops (`track-openai-ads-event`) |
 | §11 | Library filters, playlists, characters, styles, voices, music, avatars | `/api/videos`, `/api/playlists`, `/api/characters*`, `/api/saved-styles`, `/api/clone-voice`, `/api/upload-custom-music`, `/api/*avatars*` |
-| §11 | Feature gating per plan | Bypassed in `src/lib/features.ts` with the real requirement map kept |
+| §11 | Feature gating per plan | `src/lib/features.ts` checks the ledger plan/add-ons; local unlimited bypasses it |
 | §12 | Production defects (404 billing routes, etc.) | Deliberate deviations listed below |
 | §13 | Unknowns (models, rate limits, per-minute credit rate) | Marked as inference/TODO where relevant |
 
@@ -84,8 +88,16 @@ Production uses Supabase GoTrue and stores `sb-…-auth-token` in `localStorage`
   SHA-256 hashes; `last_used_at` is updated on use; revocation is a soft delete.
 - Sign-out clears the cookie; the client removes its storage entry on the next sign-in.
 
-**TODO(REAL-AUTH):** replace `src/lib/auth.ts` with `@supabase/ssr`, Google + Microsoft OAuth and
-the callback route. Downstream code only calls `getSessionUser()` / `getUserFromRequest()`.
+**Supabase mode** (`GOLPO_AUTH_MODE=supabase`, or `auto` with Supabase keys):
+
+- `SignInPanel` calls `supabase.auth.signInWithOAuth` (Google, or `azure` for Microsoft) and
+  redirects to `/auth/callback`.
+- The callback exchanges the code with `@supabase/ssr`, mirrors the Supabase identity into the
+  local store (`User.external_id`), and mints the same HMAC `golpo_session` token. This "bridge"
+  keeps every downstream BFF route unchanged.
+- `getSessionUser()` / `getUserFromRequest()` also accept raw Supabase access tokens and Supabase
+  SSR cookies as fallbacks.
+- The local mock sign-in endpoint returns `409` in this mode to avoid shadow accounts.
 
 ## 4. Data model
 
@@ -123,19 +135,29 @@ Reset by deleting `.data/` while the server is stopped.
 `video_url`/`poster_url`, flips the video to `ready` and creates one sibling video per requested
 language variant (`variant_of` + `variant_language`).
 
-Script generation is deterministic local composition (`src/lib/generation/script.ts`), with
-sentence splitting into scenes used by the SVG renderer. Audio-only (“podcast”) uses a different
-stage label set.
+Script generation goes through `writeScript()` in `src/lib/generation/script-provider.ts`:
+OpenAI chat completions when `OPENAI_API_KEY` is set (plain `fetch`, JSON-mode prompt, timeout),
+otherwise the deterministic local writer in `script.ts`. OpenAI failures fall back to the local
+writer so a job never fails because of the provider. Narration uses OpenAI TTS when enabled and is
+silent otherwise.
 
-**Seams for a real backend**
+Rendering (`src/lib/media/render.ts`) uses the binaries bundled by `ffmpeg-static` /
+`ffprobe-static` plus `sharp` for scene stills. Once the simulated progress reaches 100% the job
+moves to 97% / `encoding`, the FFmpeg render runs **outside** the database mutex, and a second
+transaction finalizes the job. A render error, or a render stale for more than 10 minutes after a
+restart, falls back to the animated SVG storyboard instead of hanging the job. Politeness: media
+is served with `Range`/`206` support and a JPEG poster.
 
-- `startGeneration` / `syncJob` — replace body with a render-vendor call and keep the response
-  shape (`JobSnapshot`).
-- `src/lib/generation/script.ts` — replace `buildScript` with an LLM call.
-- `src/lib/media/svg.ts` — return MP4 + real poster URLs instead of SVG.
+**Real backend seams**
+
+- `startGeneration` / `syncJob` — swap the simulated clock for a render-vendor call while keeping
+  the `JobSnapshot` response shape.
+- `src/lib/generation/script-provider.ts` — provider selection and fallback.
+- `src/lib/media/render.ts` — the media synthesis boundary.
 
 Environment knobs: `GOLPO_SIMULATED_RENDER_MS` (default 14 s) and
-`GOLPO_MAX_CONCURRENT_JOBS` (default 5, returns the verbatim 409 concurrency error).
+`GOLPO_MAX_CONCURRENT_JOBS` (default 5, returns the verbatim 409 concurrency error), plus the
+integration modes in `src/lib/integrations.ts`.
 
 ## 6. BFF route inventory
 
@@ -183,33 +205,59 @@ styles.
 `generate_video`, `upload_file` (base64, 15 MB cap), `list_videos`, `get_video`,
 `check_status`, `status`. Errors are JSON-RPC errors or tool results with `isError: true`.
 
-## 8. Billing mock and feature gates
+## 8. Billing and feature gates
 
-- `MOCK_INFINITE_CREDITS = 999999` is returned regardless of stored state;
-  `getBalance()` hard-codes it. `chargeCredits()` is a no-op that reports what it *would* charge.
-- `mockBillingActionResult()` handles all 11 intents, returns `{ success, mocked, message }` and
-  a redirect for checkout intents. No network calls, no Stripe SDK.
-- `estimateCredits()` documents the inferred rate (10 credits/min; audio-only ×0.1; stock avatar
-  +3/min; custom avatar +5/min). The real rate is not observable (`REPORT.md` §13).
-- `src/lib/features.ts` returns `true` for every feature and keeps `FEATURE_REQUIREMENTS`, the
-  per-feature minimum plan, so restoring gates is a one-function change.
+The facade `src/lib/billing/index.ts` picks an implementation from
+`GOLPO_BILLING_MODE`/`STRIPE_SECRET_KEY`; routes and pages never import a provider directly.
 
-TODO markers are written as `TODO(REAL-BILLING)`, `TODO(REAL-AUTH)`, `TODO(REAL-GATING)`,
-`TODO(REAL-GENERATION)`, `TODO(REAL-RENDER)`, `TODO(REAL-STORAGE)`, `TODO(REAL-EXTRACT)`.
+**Mock mode (default)** — `mock-billing.ts`
+
+- `MOCK_INFINITE_CREDITS = 999999` is returned regardless of stored state; `chargeCredits()` is a
+  no-op that reports what it *would* charge.
+- `mockBillingActionResult()` handles all 11 intents, returns `{ success, mocked, message }` and a
+  redirect for checkout intents. No network calls, no Stripe SDK.
+
+**Stripe mode** — `stripe-billing.ts`
+
+- Plans use inline `price_data` (no dashboard products). Monthly and annual intervals, credit
+  packs and the billing portal are all supported.
+- Subscription state lives on the local `user_credits` row (`stripe_customer_id`,
+  `stripe_subscription_id`, `status`, `current_period_end`, pause/cancel flags). The webhook at
+  `/api/stripe/webhook` is the source of truth and de-duplicates events through `billing_events`.
+- Credits are reset to the plan allowance on subscription creation and on `invoice.paid`, and
+  debited per generation in the same transaction that creates the job.
+- `GET/POST` helpers still answer `/api/get-subscription-details` and `/api/active-subscriptions`,
+  so the dashboard contract is unchanged.
+- `GOLPO_UNLIMITED_DEV=1` keeps unlimited credits while Stripe is configured (useful in tests).
+
+**Feature gates** — `src/lib/features.ts`
+
+- `isFeatureUnlocked(feature, { plan, unlimited, addons })` compares the plan rank against
+  `FEATURE_REQUIREMENTS` (REPORT.md §11) and lets matching add-ons unlock a feature early.
+- `local-unlimited` (mock mode) short-circuits to `true`, so the default clone is fully usable.
+- `startGeneration()` enforces gates server-side (podcast, multilingual, AI presenter, own
+  narration, user media, logo, music, characters, longer videos) and rejects with the 403
+  `plan_required` envelope before writing a script.
+
+`estimateCredits()` documents the inferred rate (10 credits/min; audio-only ×0.1; stock avatar
++3/min; custom avatar +5/min). The real rate is not observable (`REPORT.md` §13).
+
+The old `scripts/make-billing-routes.mjs` generator is kept for reference but the routes now call
+the facade and must not be regenerated.
 
 ## 9. Deliberate deviations from production
 
-1. `POST /api/get-subscription-details` and `GET /api/active-subscriptions` return 200 with mock
-   data. Production 404s on both (§12) and the UI falls back — keeping the 404 would just add
-   console noise locally.
-2. Generation media is SVG, not MP4. The URL shape is identical, so the UI and API consumers do
-   not care.
+1. `POST /api/get-subscription-details` and `GET /api/active-subscriptions` return 200 with
+   ledger data. Production 404s on both (§12) and the UI falls back — keeping the 404 would just
+   add console noise locally.
+2. Rendering uses bundled FFmpeg to produce MP4 + JPEG; the production vendor is unobservable.
+   SVG storyboards remain as the failure fallback.
 3. PDF/DOCX script extraction is rejected with a clear 415. The real extractor’s libraries are
    not observable.
 4. Voice names, stock avatars and some catalogue values are local stand-ins (marked in
    `src/lib/generation/config.ts`).
-5. Analytics, ads and affiliate calls are accepted and ignored; no outbound traffic leaves the
-   machine.
+5. Analytics, ads and affiliate calls are accepted and ignored; only OpenAI, Supabase and Stripe
+   make outbound calls, and only when configured.
 6. Email-sending routes (`organizations/invitation`, `tell-your-manager`) record the request and
    return `mocked_email: true`.
 7. Rate limiting is not implemented (production limits are unobservable).
@@ -222,7 +270,7 @@ verifies in one pass:
 - landing page, mock sign-in, session, playground rendering;
 - all 11 startup BFF routes returning 2xx;
 - multipart generation → job → `ready` with 100% progress, video URL, 2 language variants;
-- SVG preview/poster rendering;
+- MP4 preview playback (including byte ranges), JPEG poster;
 - library listing;
 - API v1 generate + status + list;
 - API v2 generate;

@@ -1,16 +1,12 @@
 import { getUserFromRequest } from "@/lib/auth";
+import { billingActionResult } from "@/lib/billing";
 import { fail, json, readJson } from "@/lib/http";
-import { mockBillingActionResult } from "@/lib/billing/mock-billing";
 
-/**
- * MOCK BILLING — POST /api/subscription
- *
- * TODO(REAL-BILLING): implement this against Stripe. See REPORT.md section 8
- * and src/lib/billing/mock-billing.ts.
- */
+/** POST /api/resume-subscription — clear a pause on the subscription. */
 export async function POST(request: Request) {
   const user = await getUserFromRequest(request);
   if (!user) return fail(401, "Authentication failed.");
   const body = await readJson<Record<string, unknown>>(request);
-  return json(await mockBillingActionResult("resume-subscription", body));
+  const result = await billingActionResult("resume-subscription", user, body);
+  return json(result, result.status ?? 200);
 }

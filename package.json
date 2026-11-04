@@ -2,18 +2,25 @@
   "name": "golpo-local",
   "version": "0.1.0",
   "private": true,
-  "description": "Local, self-contained reconstruction of the Golpo AI dashboard, BFF, public API and MCP surface (billing mocked).",
+  "description": "Local reconstruction of the Golpo AI dashboard, BFF, public API and MCP surface, with optional OpenAI, Supabase and Stripe integrations.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "mock:openai": "node scripts/mock-openai.mjs"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
+    "ffmpeg-static": "^5.3.0",
+    "ffprobe-static": "^3.1.0",
     "next": "^15.5.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "sharp": "^0.35.5",
+    "stripe": "^23.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",

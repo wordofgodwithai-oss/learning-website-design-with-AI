@@ -1,7 +1,7 @@
 import { AppShell } from "@/components/AppShell";
 import { LibraryClient } from "@/components/LibraryClient";
 import { createAccessToken, requireSessionUser } from "@/lib/auth";
-import { getBalance } from "@/lib/billing/mock-billing";
+import { getBalance } from "@/lib/billing";
 import { listPlaylists, listVideos } from "@/lib/repo";
 
 export const dynamic = "force-dynamic";

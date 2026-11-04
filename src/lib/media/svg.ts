@@ -194,3 +194,83 @@ export function renderPreview(video: Video): string {
   <text x="${width - 96}" y="${height - 46}" text-anchor="end" font-family="Inter, 'Segoe UI', sans-serif" font-size="16" fill="${ink}" opacity="0.45">Simulated render · ${escapeXml(video.display_language)}</text>
 </svg>`;
 }
+
+// ---------------------------------------------------------------------------
+// Raster-friendly variants used by the FFmpeg renderer.
+//
+// librsvg (via sharp) does not reliably support <foreignObject>, so these
+// frames use only <text>/<tspan>. Fonts fall back to plain sans-serif.
+// ---------------------------------------------------------------------------
+
+const RASTER_FONT = "Arial, Helvetica, sans-serif";
+
+function titleLines(video: Video, maxChars: number, maxLines: number): string[] {
+  return wrap(video.title, maxChars).slice(0, maxLines);
+}
+
+/** Poster as a plain-SVG string (rendered to JPEG by sharp). */
+export function renderRasterPoster(video: Video): string {
+  const { width, height, seed, bg, bg2, accent, ink } = frame(video);
+  const label = video.is_audio_only ? "PODCAST" : video.engine === "golpo_sketch" ? "SKETCH" : "CANVAS";
+  const lines = titleLines(video, 32, 3)
+    .map(
+      (line, index) =>
+        `<text x="72" y="${300 + index * 74}" font-family="${RASTER_FONT}" font-size="64" font-weight="700" fill="${ink}">${escapeXml(line)}</text>`,
+    )
+    .join("\n  ");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="${bg}"/>
+      <stop offset="100%" stop-color="${bg2}"/>
+    </linearGradient>
+  </defs>
+  <rect width="${width}" height="${height}" fill="url(#bg)"/>
+  <circle cx="${180 + (seed % 400)}" cy="${140 + (seed % 200)}" r="220" fill="${accent}" opacity="0.10"/>
+  <circle cx="${width - 160}" cy="${height - 120}" r="300" fill="${accent}" opacity="0.07"/>
+  <path d="M84 104 L110 62 L136 104 Z" fill="${accent}"/>
+  <text x="152" y="104" font-family="${RASTER_FONT}" font-size="24" letter-spacing="4" fill="${accent}" opacity="0.85">GOLPO LOCAL · ${label}</text>
+  ${lines}
+  <text x="72" y="${height - 96}" font-family="${RASTER_FONT}" font-size="24" fill="${ink}" opacity="0.78">${escapeXml(video.style.replace(/_/g, " "))} · ${video.duration_seconds}s · ${escapeXml(video.display_language)}</text>
+  <text x="72" y="${height - 58}" font-family="${RASTER_FONT}" font-size="18" fill="${ink}" opacity="0.55">Rendered locally with FFmpeg</text>
+</svg>`;
+}
+
+/** One flat frame per scene, encoded into the final MP4. */
+export function renderSceneFrame(
+  video: Video,
+  scene: { narration: string; visual: string },
+  index: number,
+  total: number,
+): string {
+  const { width, height, bg, bg2, accent, ink } = frame(video);
+  const label = video.is_audio_only ? "PODCAST" : video.engine === "golpo_sketch" ? "SKETCH" : "CANVAS";
+  const lines = wrap(scene.narration, 44).slice(0, 6);
+  const body = lines
+    .map(
+      (line, lineIndex) =>
+        `<text x="96" y="${286 + lineIndex * 62}" font-family="${RASTER_FONT}" font-size="44" font-weight="600" fill="${ink}">${escapeXml(line)}</text>`,
+    )
+    .join("\n  ");
+  const progressWidth = Math.round(((index + 1) / Math.max(1, total)) * (width - 192));
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="${bg}"/>
+      <stop offset="100%" stop-color="${bg2}"/>
+    </linearGradient>
+  </defs>
+  <rect width="${width}" height="${height}" fill="url(#bg)"/>
+  <circle cx="${width - 200}" cy="120" r="260" fill="${accent}" opacity="0.07"/>
+  <path d="M70 82 L94 44 L118 82 Z" fill="${accent}"/>
+  <text x="134" y="80" font-family="${RASTER_FONT}" font-size="21" letter-spacing="3" fill="${accent}" opacity="0.9">GOLPO LOCAL · ${label}</text>
+  <text x="${width - 72}" y="80" text-anchor="end" font-family="${RASTER_FONT}" font-size="19" fill="${ink}" opacity="0.55">SCENE ${index + 1} / ${total}</text>
+  ${body}
+  <text x="96" y="${height - 150}" font-family="${RASTER_FONT}" font-size="19" fill="${ink}" opacity="0.6">${escapeXml(scene.visual)}</text>
+  <rect x="96" y="${height - 110}" width="${width - 192}" height="5" rx="2.5" fill="${ink}" opacity="0.14"/>
+  <rect x="96" y="${height - 110}" width="${progressWidth}" height="5" rx="2.5" fill="${accent}"/>
+  <text x="96" y="${height - 62}" font-family="${RASTER_FONT}" font-size="17" fill="${ink}" opacity="0.5">${escapeXml(video.style.replace(/_/g, " "))} · ${escapeXml(video.display_language)}</text>
+</svg>`;
+}

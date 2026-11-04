@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { getSessionUser } from "@/lib/auth";
 import { getVideo, listVideos } from "@/lib/repo";
+import { resolveMediaFile } from "@/lib/media/store";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,8 @@ export default async function VideoPage({ params }: { params: Promise<{ id: stri
   const viewer = await getSessionUser();
   const isOwner = viewer?.id === video.user_id;
   if (video.visibility !== "public" && !isOwner) notFound();
+
+  const playable = Boolean(await resolveMediaFile("video", video.id, video.variant_of));
 
   const variants = isOwner
     ? (await listVideos(video.user_id, { limit: 100 })).filter(
@@ -41,8 +44,19 @@ export default async function VideoPage({ params }: { params: Promise<{ id: stri
       <main className="page">
         <div className="container-narrow">
           <div className="video-frame" style={{ marginBottom: 22 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/api/media/${video.id}/preview`} alt={`Preview of ${video.title}`} />
+            {playable ? (
+              // eslint-disable-next-line jsx-a11y/media-has-caption
+              <video
+                src={`/api/media/${video.id}/preview`}
+                poster={`/api/media/${video.id}/poster`}
+                controls
+                playsInline
+                preload="metadata"
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={`/api/media/${video.id}/preview`} alt={`Preview of ${video.title}`} />
+            )}
           </div>
 
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
@@ -66,9 +80,16 @@ export default async function VideoPage({ params }: { params: Promise<{ id: stri
           <div className="card" style={{ marginBottom: 18 }}>
             <div className="card-title">
               <h3>Script</h3>
-              <a className="btn btn-sm" href={`/api/media/${video.id}/poster`} download>
-                Download poster
-              </a>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {playable ? (
+                  <a className="btn btn-sm" href={`/api/media/${video.id}/preview`} download>
+                    Download video
+                  </a>
+                ) : null}
+                <a className="btn btn-sm" href={`/api/media/${video.id}/poster`} download>
+                  Download poster
+                </a>
+              </div>
             </div>
             <div className="script-box">{video.script ?? "No script recorded."}</div>
           </div>
@@ -96,9 +117,9 @@ export default async function VideoPage({ params }: { params: Promise<{ id: stri
           ) : null}
 
           <p className="hint">
-            The playback above is a simulated animated storyboard rendered from the stored script.
-            Replace <span className="mono">src/lib/media/svg.ts</span> with a real renderer to serve
-            MP4 files.
+            {playable
+              ? "This video was rendered on your machine: storyboard frames, narration and FFmpeg encoding. No media left your computer."
+              : "This is an animated storyboard preview rendered from the stored script. Set OPENAI_API_KEY and keep GOLPO_RENDER_MODE=auto to get a real MP4."}
           </p>
         </div>
       </main>

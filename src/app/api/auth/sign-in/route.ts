@@ -1,20 +1,28 @@
 import { NextResponse } from "next/server";
 
 import { createAccessToken, setSessionCookie, toPublicUser } from "@/lib/auth";
-import { getBalance } from "@/lib/billing/mock-billing";
+import { getBalance } from "@/lib/billing";
 import { featureMatrix } from "@/lib/features";
+import { authMode } from "@/lib/integrations";
 import { fail, readJson, str } from "@/lib/http";
 import { upsertUser } from "@/lib/repo";
 
 /**
- * Mock OAuth sign-in.
+ * Local sign-in.
  *
- * The real modal only offers "Continue with Google" and "Continue with
- * Microsoft" (REPORT.md section 4). Locally we accept the provider, mint a
- * local account for the supplied email and issue the same kind of bearer token
- * the dashboard would forward to the BFF.
+ * In `local` mode this is the mock OAuth endpoint: it accepts a provider and
+ * email, mints a local account and issues an HMAC bearer token. In `supabase`
+ * mode real sign-in happens through Supabase OAuth and `/auth/callback`, so
+ * this endpoint is disabled to avoid shadow accounts.
  */
 export async function POST(request: Request) {
+  if (authMode === "supabase") {
+    return fail(409, "Local sign-in is disabled while Supabase auth is enabled.", {
+      auth_mode: authMode,
+      use_oauth: true,
+    });
+  }
+
   const body = await readJson<Record<string, unknown>>(request);
   const provider = str(body.provider, "google");
   if (provider !== "google" && provider !== "microsoft" && provider !== "dev") {
@@ -44,8 +52,9 @@ export async function POST(request: Request) {
     redirect: str(body.redirect, "/playground"),
     credits: balance.credits,
     plan: balance.plan,
-    mocked_billing: true,
-    features: featureMatrix(),
+    unlimited: balance.unlimited,
+    mocked_billing: balance.mocked,
+    features: featureMatrix(balance),
   });
   setSessionCookie(response, token);
   return response;

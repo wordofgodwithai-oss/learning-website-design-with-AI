@@ -536,6 +536,7 @@ p {
 }
 
 .video-frame img,
+.video-frame video,
 .video-frame svg {
   width: 100%;
   height: 100%;

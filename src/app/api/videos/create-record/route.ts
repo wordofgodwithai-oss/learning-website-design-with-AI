@@ -1,7 +1,7 @@
 import { getUserFromRequest } from "@/lib/auth";
 import { fail, json, readJson, str } from "@/lib/http";
 import { createVideoRecord, newVideoId } from "@/lib/repo";
-import type { Engine, GenerationKind } from "@/lib/types";
+import type { Engine, GenerationKind, Video } from "@/lib/types";
 
 /**
  * POST /api/videos/create-record
@@ -33,8 +33,10 @@ export async function POST(request: Request) {
     duration_seconds: Math.max(1, Math.trunc(Number(body.duration_seconds) || 60)),
     visibility: str(body.visibility) === "public" ? "public" : "private",
     script: str(body.script) || null,
+    scenes: Array.isArray(body.scenes) ? (body.scenes as Video["scenes"]) : null,
     video_url: str(body.video_url) || `/api/media/${id}/preview`,
     poster_url: str(body.poster_url) || `/api/media/${id}/poster`,
+    media_format: str(body.video_url).endsWith(".mp4") ? "mp4" : "svg",
     watermark: Boolean(body.watermark),
     is_audio_only: kind === "podcast",
     variant_of: null,

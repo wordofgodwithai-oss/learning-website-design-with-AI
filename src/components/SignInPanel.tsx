@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import type { AuthMode } from "@/lib/integrations";
+
 function GoogleIcon() {
   return (
     <svg className="gicon" viewBox="0 0 48 48" aria-hidden="true">
@@ -37,14 +40,27 @@ function MicrosoftIcon() {
   );
 }
 
-export function SignInPanel({ redirectTo = "/playground" }: { redirectTo?: string }) {
+export interface SignInPanelProps {
+  redirectTo?: string;
+  authMode?: AuthMode;
+  supabase?: { url: string; anonKey: string } | null;
+  initialError?: string | null;
+}
+
+export function SignInPanel({
+  redirectTo = "/playground",
+  authMode = "local",
+  supabase = null,
+  initialError = null,
+}: SignInPanelProps) {
   const router = useRouter();
   const [email, setEmail] = useState("demo@golpo.local");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState<"google" | "microsoft" | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError);
+  const liveAuth = authMode === "supabase" && supabase !== null;
 
-  async function signIn(provider: "google" | "microsoft") {
+  async function localSignIn(provider: "google" | "microsoft") {
     setBusy(provider);
     setError(null);
     try {
@@ -77,45 +93,86 @@ export function SignInPanel({ redirectTo = "/playground" }: { redirectTo?: strin
     }
   }
 
+  async function oauthSignIn(provider: "google" | "microsoft") {
+    if (!supabase) {
+      setError("Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.");
+      return;
+    }
+    setBusy(provider);
+    setError(null);
+    try {
+      const client = createSupabaseBrowserClient(supabase.url, supabase.anonKey);
+      const callback = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
+        redirectTo,
+      )}`;
+      const { error: oauthError } = await client.auth.signInWithOAuth({
+        provider: provider === "microsoft" ? "azure" : "google",
+        options: {
+          redirectTo: callback,
+          queryParams:
+            provider === "microsoft" ? { prompt: "select_account" } : undefined,
+        },
+      });
+      if (oauthError) {
+        setError(oauthError.message);
+        setBusy(null);
+      }
+      // On success the browser navigates to the provider; no further work here.
+    } catch {
+      setError("Could not start the OAuth flow.");
+      setBusy(null);
+    }
+  }
+
+  function signIn(provider: "google" | "microsoft") {
+    return liveAuth ? oauthSignIn(provider) : localSignIn(provider);
+  }
+
   return (
     <div className="card login-card">
       <h2>Sign in to Golpo</h2>
       <p className="hint">
-        Use either provider. This is a local clone — no OAuth round-trip leaves your machine.
+        {liveAuth
+          ? "Continue with Google or Microsoft. Authentication is handled by Supabase."
+          : "Use either provider. This is a local clone — no OAuth round-trip leaves your machine."}
       </p>
 
-      <div className="field">
-        <label className="label" htmlFor="signin-email">
-          Email
-        </label>
-        <input
-          id="signin-email"
-          className="input"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="you@example.com"
-          autoComplete="email"
-        />
-        <span className="hint">
-          The default account is pre-seeded with a welcome video and a dev API key. Any address
-          creates a new local account.
-        </span>
-      </div>
+      {!liveAuth ? (
+        <>
+          <div className="field">
+            <label className="label" htmlFor="signin-email">
+              Email
+            </label>
+            <input
+              id="signin-email"
+              className="input"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="you@example.com"
+              autoComplete="email"
+            />
+            <span className="hint">
+              The default account is pre-seeded with a welcome video and a dev API key. Any address
+              creates a new local account.
+            </span>
+          </div>
 
-      <div className="field">
-        <label className="label" htmlFor="signin-name">
-          Display name <span style={{ fontWeight: 400 }}>(optional)</span>
-        </label>
-        <input
-          id="signin-name"
-          className="input"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Ada Lovelace"
-          autoComplete="name"
-        />
-      </div>
+          <div className="field">
+            <label className="label" htmlFor="signin-name">
+              Display name <span style={{ fontWeight: 400 }}>(optional)</span>
+            </label>
+            <input
+              id="signin-name"
+              className="input"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Ada Lovelace"
+              autoComplete="name"
+            />
+          </div>
+        </>
+      ) : null}
 
       <button
         type="button"
@@ -140,8 +197,17 @@ export function SignInPanel({ redirectTo = "/playground" }: { redirectTo?: strin
       {error ? <div className="toast">{error}</div> : null}
 
       <div className="local-note">
-        Local mode: credits are infinite, every plan feature is unlocked, and Stripe is not
-        called. See <span className="mono">src/lib/billing/mock-billing.ts</span>.
+        {liveAuth ? (
+          <>
+            Supabase auth is active. Accounts are mirrored into the local store so the BFF and API
+            keep the same contract.
+          </>
+        ) : (
+          <>
+            Local mode: credits are infinite, every plan feature is unlocked, and Stripe is not
+            called. See <span className="mono">src/lib/billing/mock-billing.ts</span>.
+          </>
+        )}
       </div>
     </div>
   );

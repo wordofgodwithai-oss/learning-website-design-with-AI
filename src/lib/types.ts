@@ -19,6 +19,8 @@ export interface User {
   name: string;
   display_name: string;
   provider: "google" | "microsoft" | "dev";
+  /** Supabase `auth.users.id` when auth runs in live mode. */
+  external_id?: string | null;
   avatar_url: string | null;
   created_at: string;
   last_login_at: string;
@@ -26,8 +28,9 @@ export interface User {
 
 /**
  * Mirrors the `user_credits` row the real dashboard reads from PostgREST.
- * In this local build credits are always MOCK_INFINITE_CREDITS and every
- * add-on flag is true. See src/lib/billing/mock-billing.ts.
+ * In the default mock mode credits are MOCK_INFINITE_CREDITS and every add-on
+ * flag is true; in Stripe mode the same row is the real ledger. See
+ * src/lib/billing/.
  */
 export interface CreditAccount {
   user_id: string;
@@ -39,6 +42,14 @@ export interface CreditAccount {
   next_subscription_date: string | null;
   custom_logo_url: string | null;
   subscription_canceled: boolean;
+  /** Stripe identifiers, populated by the webhook/checkout flow. */
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
+  subscription_status?: string | null;
+  price_id?: string | null;
+  current_period_end?: string | null;
+  cancel_at_period_end?: boolean;
+  subscription_paused?: boolean;
   created_at: string;
   generation_preferences: Record<string, unknown> | null;
   experiment_assignment: string | null;
@@ -68,8 +79,12 @@ export interface Video {
   duration_seconds: number;
   visibility: Visibility;
   script: string | null;
+  /** Scene breakdown used by the renderer (narration + suggested visual). */
+  scenes: Array<{ index: number; narration: string; visual: string; startSeconds: number }> | null;
   video_url: string | null;
   poster_url: string | null;
+  /** What the media URLs actually serve. */
+  media_format: "mp4" | "svg";
   watermark: boolean;
   is_audio_only: boolean;
   variant_of: string | null;
@@ -98,6 +113,8 @@ export interface Job {
   updated_at: string;
   /** Epoch ms when the simulated render completes. */
   completes_at: number;
+  /** Epoch ms when the real FFmpeg render was kicked off (null in storyboard mode). */
+  render_started_at?: number | null;
 }
 
 export interface Character {
@@ -203,6 +220,14 @@ export interface AdminRole {
   permissions: string[];
 }
 
+/** Webhook/idempotency record: one row per processed Stripe event. */
+export interface BillingEvent {
+  id: string;
+  type: string;
+  user_id: string | null;
+  received_at: string;
+}
+
 export interface Database {
   version: number;
   users: User[];
@@ -220,6 +245,7 @@ export interface Database {
   changelogs: Changelog[];
   system_status: SystemStatus;
   admin_roles: AdminRole[];
+  billing_events?: BillingEvent[];
   updated_at: string;
 }
 

@@ -23,6 +23,9 @@ export interface BuiltScript {
   script: string;
   scenes: Scene[];
   wordCount: number;
+  /** Where the text came from — surfaced in logs and the job snapshot. */
+  source: "local" | "openai" | "user";
+  model?: string;
 }
 
 const OPENERS = [
@@ -143,6 +146,7 @@ export function buildScript(options: {
       script,
       scenes: scriptToScenes(script, durationSeconds, seed),
       wordCount: countWords(script),
+      source: "user",
     };
   }
 
@@ -172,15 +176,16 @@ export function buildScript(options: {
     script,
     scenes: scriptToScenes(script, durationSeconds, seed),
     wordCount: countWords(script),
+    source: "local",
   };
 }
 
-function countWords(text: string): number {
+export function countWords(text: string): number {
   return text.split(/\s+/).filter(Boolean).length;
 }
 
 /** ~2.4 spoken words per second; trims the tail when a script runs long. */
-function trimToDuration(script: string, durationSeconds: number): string {
+export function trimToDuration(script: string, durationSeconds: number): string {
   const maxWords = Math.max(20, Math.round(durationSeconds * 2.4));
   const sentences = splitSentences(script);
   const kept: string[] = [];
