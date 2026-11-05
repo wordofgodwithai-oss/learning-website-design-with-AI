@@ -153,6 +153,9 @@ See `.env.example` for the annotated list. Restart the dev server after editing 
 
 ### Enabling real integrations
 
+0. Create `.env.local` (a commented template is already there, mirroring `.env.example`) and run
+   `npm run integrations:check`. It validates the values and lists exactly what is still missing
+   without calling any provider. Add `-- --strict` to make it exit non-zero when incomplete.
 1. **OpenAI**: set `OPENAI_API_KEY`. Scripts switch to chat completions and narration to TTS.
 2. **Supabase**: create a project, enable Google and Microsoft providers, add
    `http://localhost:3000/auth/callback` to the redirect allow-list, then set `SUPABASE_URL` and
@@ -161,6 +164,9 @@ See `.env.example` for the annotated list. Restart the dev server after editing 
 3. **Stripe**: set `STRIPE_SECRET_KEY` (test mode) and, for webhooks,
    `stripe listen --forward-to localhost:3000/api/stripe/webhook` → copy the `whsec_…` into
    `STRIPE_WEBHOOK_SECRET`. Plans use inline `price_data`, so no dashboard products are required.
+
+After restarting the dev server, `GET /api/health` reports which implementation each capability
+resolved to (`local`, `openai`, `supabase`, `stripe`, `ffmpeg`), without exposing any secret.
 
 ## Data and reset
 

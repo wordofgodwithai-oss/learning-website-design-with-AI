@@ -9,6 +9,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "smoke": "node scripts/smoke.mjs",
+    "integrations:check": "node scripts/check-integrations.mjs",
     "mock:openai": "node scripts/mock-openai.mjs"
   },
   "dependencies": {
