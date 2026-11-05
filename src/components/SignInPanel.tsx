@@ -54,10 +54,11 @@ export function SignInPanel({
   initialError = null,
 }: SignInPanelProps) {
   const router = useRouter();
-  const [email, setEmail] = useState("demo@golpo.local");
+  const [email, setEmail] = useState(authMode === "supabase" ? "" : "demo@golpo.local");
   const [name, setName] = useState("");
-  const [busy, setBusy] = useState<"google" | "microsoft" | null>(null);
+  const [busy, setBusy] = useState<"google" | "microsoft" | "email" | null>(null);
   const [error, setError] = useState<string | null>(initialError);
+  const [notice, setNotice] = useState<string | null>(null);
   const liveAuth = authMode === "supabase" && supabase !== null;
 
   async function localSignIn(provider: "google" | "microsoft") {
@@ -124,6 +125,43 @@ export function SignInPanel({
     }
   }
 
+  async function emailSignIn() {
+    if (!supabase) {
+      setError("Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.");
+      return;
+    }
+    const address = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    setBusy("email");
+    setError(null);
+    setNotice(null);
+    try {
+      const client = createSupabaseBrowserClient(supabase.url, supabase.anonKey);
+      const callback = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
+        redirectTo,
+      )}`;
+      const { error: otpError } = await client.auth.signInWithOtp({
+        email: address,
+        options: {
+          emailRedirectTo: callback,
+          shouldCreateUser: true,
+        },
+      });
+      if (otpError) {
+        setError(otpError.message);
+        return;
+      }
+      setNotice(`Check ${address} for a one-click sign-in link.`);
+    } catch {
+      setError("Could not send the sign-in link. Is the server running?");
+    } finally {
+      setBusy(null);
+    }
+  }
+
   function signIn(provider: "google" | "microsoft") {
     return liveAuth ? oauthSignIn(provider) : localSignIn(provider);
   }
@@ -133,67 +171,84 @@ export function SignInPanel({
       <h2>Sign in to Golpo</h2>
       <p className="hint">
         {liveAuth
-          ? "Continue with Google or Microsoft. Authentication is handled by Supabase."
+          ? "Enter your email and we'll send you a one-click sign-in link. Authentication is handled by Supabase."
           : "Use either provider. This is a local clone — no OAuth round-trip leaves your machine."}
       </p>
 
-      {!liveAuth ? (
-        <>
-          <div className="field">
-            <label className="label" htmlFor="signin-email">
-              Email
-            </label>
-            <input
-              id="signin-email"
-              className="input"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="you@example.com"
-              autoComplete="email"
-            />
-            <span className="hint">
-              The default account is pre-seeded with a welcome video and a dev API key. Any address
-              creates a new local account.
-            </span>
-          </div>
+      <div className="field">
+        <label className="label" htmlFor="signin-email">
+          Email
+        </label>
+        <input
+          id="signin-email"
+          className="input"
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="you@example.com"
+          autoComplete="email"
+        />
+        <span className="hint">
+          {liveAuth
+            ? "No password needed. The link is valid for one use and expires shortly."
+            : "The default account is pre-seeded with a welcome video and a dev API key. Any address creates a new local account."}
+        </span>
+      </div>
 
-          <div className="field">
-            <label className="label" htmlFor="signin-name">
-              Display name <span style={{ fontWeight: 400 }}>(optional)</span>
-            </label>
-            <input
-              id="signin-name"
-              className="input"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Ada Lovelace"
-              autoComplete="name"
-            />
-          </div>
-        </>
+      {!liveAuth ? (
+        <div className="field">
+          <label className="label" htmlFor="signin-name">
+            Display name <span style={{ fontWeight: 400 }}>(optional)</span>
+          </label>
+          <input
+            id="signin-name"
+            className="input"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="Ada Lovelace"
+            autoComplete="name"
+          />
+        </div>
       ) : null}
 
-      <button
-        type="button"
-        className="btn btn-oauth"
-        onClick={() => signIn("google")}
-        disabled={busy !== null}
-      >
-        <GoogleIcon />
-        {busy === "google" ? "Signing in…" : "Continue with Google"}
-      </button>
-      <div style={{ height: 10 }} />
-      <button
-        type="button"
-        className="btn btn-oauth microsoft"
-        onClick={() => signIn("microsoft")}
-        disabled={busy !== null}
-      >
-        <MicrosoftIcon />
-        {busy === "microsoft" ? "Signing in…" : "Continue with Microsoft"}
-      </button>
+      {liveAuth ? (
+        <button
+          type="button"
+          className="btn"
+          onClick={() => void emailSignIn()}
+          disabled={busy !== null || !email.trim()}
+        >
+          {busy === "email" ? "Sending link…" : "Email me a sign-in link"}
+        </button>
+      ) : (
+        <>
+          <button
+            type="button"
+            className="btn btn-oauth"
+            onClick={() => signIn("google")}
+            disabled={busy !== null}
+          >
+            <GoogleIcon />
+            {busy === "google" ? "Signing in…" : "Continue with Google"}
+          </button>
+          <div style={{ height: 10 }} />
+          <button
+            type="button"
+            className="btn btn-oauth microsoft"
+            onClick={() => signIn("microsoft")}
+            disabled={busy !== null}
+          >
+            <MicrosoftIcon />
+            {busy === "microsoft" ? "Signing in…" : "Continue with Microsoft"}
+          </button>
+        </>
+      )}
 
+      {notice ? (
+        <div className="local-note" style={{ marginTop: 10 }}>
+          {notice}
+        </div>
+      ) : null}
       {error ? <div className="toast">{error}</div> : null}
 
       <div className="local-note">

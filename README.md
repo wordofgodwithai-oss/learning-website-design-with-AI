@@ -157,10 +157,12 @@ See `.env.example` for the annotated list. Restart the dev server after editing 
    `npm run integrations:check`. It validates the values and lists exactly what is still missing
    without calling any provider. Add `-- --strict` to make it exit non-zero when incomplete.
 1. **OpenAI**: set `OPENAI_API_KEY`. Scripts switch to chat completions and narration to TTS.
-2. **Supabase**: create a project, enable Google and Microsoft providers, add
-   `http://localhost:3000/auth/callback` to the redirect allow-list, then set `SUPABASE_URL` and
-   `SUPABASE_ANON_KEY`. The callback mirrors the Supabase identity into the local store and mints
-   the same session the BFF already understands.
+2. **Supabase**: create a project, add `http://localhost:3000/auth/callback*` to the redirect
+   allow-list, then set `SUPABASE_URL` and `SUPABASE_ANON_KEY`. Sign-in uses an email magic link
+   (`supabase.auth.signInWithOtp`) by default — no provider console needed. Google/Microsoft OAuth
+   can also be enabled under Authentication → Providers; both flows land on the same callback,
+   which mirrors the Supabase identity into the local store and mints the same session the BFF
+   already understands.
 3. **Stripe**: set `STRIPE_SECRET_KEY` (test mode) and, for webhooks,
    `stripe listen --forward-to localhost:3000/api/stripe/webhook` → copy the `whsec_…` into
    `STRIPE_WEBHOOK_SECRET`. Plans use inline `price_data`, so no dashboard products are required.

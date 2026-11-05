@@ -130,7 +130,7 @@ if (!supabaseUrl || !supabaseAnon) {
     "Supabase",
     "Add http://localhost:3000/auth/callback* to Authentication → URL Configuration → Redirect URLs.",
   );
-  check("info", "Supabase", "Enable Google and Azure/Microsoft under Authentication → Providers.");
+  check("info", "Supabase", "Email magic links use the built-in Email provider; Google/Azure are only needed for OAuth.");
   if (has("SUPABASE_SERVICE_ROLE_KEY")) {
     check(
       "warn",
