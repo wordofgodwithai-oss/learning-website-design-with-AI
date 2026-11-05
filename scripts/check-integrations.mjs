@@ -86,7 +86,13 @@ if (openaiKey && openaiBase !== "https://api.openai.com/v1") {
 // ---------------------------------------------------------------------------
 // Supabase
 // ---------------------------------------------------------------------------
-const supabaseUrl = get("SUPABASE_URL") || get("NEXT_PUBLIC_SUPABASE_URL");
+const rawSupabaseUrl = get("SUPABASE_URL") || get("NEXT_PUBLIC_SUPABASE_URL");
+// The app normalizes the project origin itself; mirror that here so the report
+// matches runtime behavior when a `/rest/v1/` dashboard URL is pasted in.
+const supabaseUrl = rawSupabaseUrl
+  .replace(/\/+$/, "")
+  .replace(/\/rest\/v1$/, "")
+  .replace(/\/+$/, "");
 const supabaseAnon = get("SUPABASE_ANON_KEY") || get("NEXT_PUBLIC_SUPABASE_ANON_KEY");
 const authMode = mode("GOLPO_AUTH_MODE", supabaseUrl && supabaseAnon ? "supabase" : "local", [
   "local",
@@ -109,16 +115,27 @@ if (!supabaseUrl || !supabaseAnon) {
   }
   if (urlProblem) check("warn", "Supabase", `${urlProblem} Auth mode resolved to ${authMode}.`);
   else check("ok", "Supabase", `Auth mode: ${authMode} using ${supabaseUrl}.`);
+  if (rawSupabaseUrl !== supabaseUrl) {
+    check("warn", "Supabase", `SUPABASE_URL was normalized from ${rawSupabaseUrl} to ${supabaseUrl}.`);
+  }
+  if (!supabaseAnon.startsWith("sb_publishable_") && !supabaseAnon.startsWith("eyJ")) {
+    check(
+      "warn",
+      "Supabase",
+      "SUPABASE_ANON_KEY is neither a sb_publishable_... key nor a legacy eyJ... anon JWT.",
+    );
+  }
   check(
     "info",
     "Supabase",
-    "Add http://localhost:3000/auth/callback to Authentication → URL Configuration → Redirect URLs.",
+    "Add http://localhost:3000/auth/callback* to Authentication → URL Configuration → Redirect URLs.",
   );
+  check("info", "Supabase", "Enable Google and Azure/Microsoft under Authentication → Providers.");
   if (has("SUPABASE_SERVICE_ROLE_KEY")) {
     check(
       "warn",
       "Supabase",
-      "SUPABASE_SERVICE_ROLE_KEY is set but not used by this app. Remove it unless you add server-side admin calls.",
+      "SUPABASE_SERVICE_ROLE_KEY is set but is not used by this app. Remove it unless you add server-side admin calls.",
     );
   }
 }

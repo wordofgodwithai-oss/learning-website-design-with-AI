@@ -96,8 +96,21 @@ export const renderMode: RenderMode = resolveMode<RenderMode>(
 // Supabase (auth)
 // ---------------------------------------------------------------------------
 
-export const SUPABASE_URL =
-  text(process.env.SUPABASE_URL) || text(process.env.NEXT_PUBLIC_SUPABASE_URL);
+/**
+ * Supabase clients want the project origin, not a REST endpoint. People often
+ * copy the dashboard's `.../rest/v1/` URL into `.env.local`; strip any such
+ * suffix so `/auth/v1/...` still resolves correctly.
+ */
+function supabaseOrigin(value: string): string {
+  return value
+    .replace(/\/+$/, "")
+    .replace(/\/rest\/v1$/, "")
+    .replace(/\/+$/, "");
+}
+
+export const SUPABASE_URL = supabaseOrigin(
+  text(process.env.SUPABASE_URL) || text(process.env.NEXT_PUBLIC_SUPABASE_URL),
+);
 export const SUPABASE_ANON_KEY =
   text(process.env.SUPABASE_ANON_KEY) || text(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 export const SUPABASE_SERVICE_ROLE_KEY = text(process.env.SUPABASE_SERVICE_ROLE_KEY);
