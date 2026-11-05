@@ -6,12 +6,12 @@ import path from "node:path";
 
 import sharp from "sharp";
 
-import { openaiSpeech } from "@/lib/ai/openai";
+import { chunkForSpeech, groqSpeech } from "@/lib/ai/groq";
 import {
   FFMPEG_PATH,
   FFPROBE_PATH,
-  OPENAI_TTS_MODEL,
-  OPENAI_TTS_VOICE,
+  GROQ_TTS_MODEL,
+  GROQ_TTS_VOICE,
   renderMode,
   ttsMode,
 } from "@/lib/integrations";
@@ -23,7 +23,7 @@ import type { Video } from "@/lib/types";
 /**
  * Real renderer: storyboard frame → PNG (sharp) → MP4 (FFmpeg).
  *
- * Narration comes from OpenAI TTS when configured. Without a key (or if TTS
+ * Narration comes from Groq TTS when configured. Without a key (or if TTS
  * fails) the same frames are encoded with silent audio, so the output is still
  * a playable 1280x720 MP4. Scene timing follows the audio; silent timing is
  * derived from the word count at ~2.4 words/second.
@@ -157,6 +157,32 @@ function concatEntry(file: string): string {
   return `file '${file.replace(/\\/g, "/").replace(/'/g, "'\\''")}'`;
 }
 
+/**
+ * Groq's Orpheus voices cap a single request at 200 characters, so a scene is
+ * synthesised in chunks and the WAV parts are joined into one track per scene.
+ */
+async function concatAudio(parts: string[], output: string): Promise<void> {
+  if (!FFMPEG_PATH) throw new Error("FFmpeg is not available to join narration chunks.");
+  const listPath = `${output}.concat.txt`;
+  await fs.writeFile(listPath, parts.map(concatEntry).join("\n"), "utf8");
+  try {
+    await run(FFMPEG_PATH, [
+      "-y",
+      "-f",
+      "concat",
+      "-safe",
+      "0",
+      "-i",
+      listPath,
+      "-c:a",
+      "pcm_s16le",
+      output,
+    ]);
+  } finally {
+    await fs.rm(listPath, { force: true }).catch(() => undefined);
+  }
+}
+
 export async function renderVideo(video: Video): Promise<RenderResult> {
   if (renderMode !== "ffmpeg" || !FFMPEG_PATH || !FFPROBE_PATH) {
     throw new Error("FFmpeg renderer is not available in this environment.");
@@ -186,18 +212,33 @@ export async function renderVideo(video: Video): Promise<RenderResult> {
       let audioPath: string | null = null;
       let seconds = estimateSeconds(scene.narration);
 
-      if (ttsMode === "openai" && scene.narration.trim()) {
+      if (ttsMode === "groq" && scene.narration.trim()) {
         try {
-          const bytes = await openaiSpeech(scene.narration, {
-            model: OPENAI_TTS_MODEL,
-            voice: OPENAI_TTS_VOICE,
-          });
-          audioPath = path.join(workDir, `voice-${index}.mp3`);
-          await fs.writeFile(audioPath, bytes);
-          const probed = await probeDuration(audioPath);
-          if (probed > 0.2) {
-            seconds = probed + SCENE_TAIL_SECONDS;
-            hadAudio = true;
+          const chunks = chunkForSpeech(scene.narration);
+          const parts: string[] = [];
+          for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex += 1) {
+            const bytes = await groqSpeech(chunks[chunkIndex], {
+              model: GROQ_TTS_MODEL,
+              voice: GROQ_TTS_VOICE,
+            });
+            const part = path.join(workDir, `voice-${index}-${chunkIndex}.wav`);
+            await fs.writeFile(part, bytes);
+            parts.push(part);
+          }
+
+          let voicePath = parts[0] ?? null;
+          if (parts.length > 1) {
+            voicePath = path.join(workDir, `voice-${index}.wav`);
+            await concatAudio(parts, voicePath);
+          }
+
+          if (voicePath) {
+            const probed = await probeDuration(voicePath);
+            if (probed > 0.2) {
+              audioPath = voicePath;
+              seconds = probed + SCENE_TAIL_SECONDS;
+              hadAudio = true;
+            }
           }
         } catch (error) {
           console.warn(

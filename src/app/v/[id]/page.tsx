@@ -119,7 +119,7 @@ export default async function VideoPage({ params }: { params: Promise<{ id: stri
           <p className="hint">
             {playable
               ? "This video was rendered on your machine: storyboard frames, narration and FFmpeg encoding. No media left your computer."
-              : "This is an animated storyboard preview rendered from the stored script. Set OPENAI_API_KEY and keep GOLPO_RENDER_MODE=auto to get a real MP4."}
+              : "This is an animated storyboard preview rendered from the stored script. Set GROQ_API_KEY and keep GOLPO_RENDER_MODE=auto to get a real MP4."}
           </p>
         </div>
       </main>

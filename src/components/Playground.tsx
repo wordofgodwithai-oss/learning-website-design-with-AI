@@ -317,13 +317,24 @@ export function Playground({
         headers: headers(),
         body: form,
       });
-      const data = (await response.json()) as { text?: string; error?: string; word_count?: number };
+      const data = (await response.json()) as {
+        text?: string;
+        error?: string;
+        word_count?: number;
+        source_type?: string;
+        language?: string | null;
+        words?: Array<{ word: string; start: number; end: number }>;
+      };
       if (!response.ok || !data.text) {
         setNotice({ kind: "error", text: data.error ?? "Could not read that file." });
         return;
       }
       setPrompt(data.text.slice(0, 8000));
-      setNotice({ kind: "ok", text: `Imported ${data.word_count ?? 0} words from ${file.name}.` });
+      const detail =
+        data.source_type === "audio"
+          ? `Transcribed ${data.word_count ?? 0} words${data.language ? ` (${data.language})` : ""} with ${data.words?.length ?? 0} word timestamps`
+          : `Imported ${data.word_count ?? 0} words`;
+      setNotice({ kind: "ok", text: `${detail} from ${file.name}.` });
     } catch {
       setNotice({ kind: "error", text: "Import failed." });
     }
@@ -468,10 +479,10 @@ export function Playground({
             />
             <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
               <label className="btn btn-sm" style={{ cursor: "pointer" }}>
-                Import script
+                Import script or audio
                 <input
                   type="file"
-                  accept=".txt,.md,.srt,.vtt,.csv,.json,.html"
+                  accept=".txt,.md,.srt,.vtt,.csv,.json,.html,.mp3,.wav,.m4a,.ogg,.webm,.flac,.mp4"
                   className="sr-only"
                   onChange={(event) => {
                     const file = event.target.files?.[0];

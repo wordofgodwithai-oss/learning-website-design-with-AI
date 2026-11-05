@@ -1,28 +1,38 @@
 #!/usr/bin/env node
 /**
- * Minimal OpenAI-compatible stub for local integration testing.
+ * Minimal Groq-compatible stub for local integration testing.
  *
- * It implements just the two endpoints this app calls:
- *   POST /v1/chat/completions  -> deterministic JSON script
- *   POST /v1/audio/speech      -> synthesized WAV tone sized to the input
+ * Groq exposes an OpenAI-compatible surface under /openai/v1, so this stub
+ * implements the three endpoints the app calls:
+ *   POST /v1/chat/completions      -> deterministic JSON script
+ *   POST /v1/audio/speech          -> synthesized WAV tone sized to the input
+ *   POST /v1/audio/transcriptions  -> verbose_json transcript with word timestamps
  *
  * Usage:
- *   npm run mock:openai
+ *   npm run mock:groq
  *   # then in .env.local:
- *   # OPENAI_API_KEY=stub
- *   # OPENAI_BASE_URL=http://127.0.0.1:4010/v1
- *   # GOLPO_SCRIPT_MODE=openai
- *   # GOLPO_TTS_MODE=openai
+ *   # GROQ_API_KEY=stub
+ *   # GROQ_BASE_URL=http://127.0.0.1:4010/openai/v1
+ *   # GOLPO_SCRIPT_MODE=groq
+ *   # GOLPO_TTS_MODE=groq
+ *   # GOLPO_TRANSCRIBE_MODE=groq
  *
  * Nothing here is a real model: it exists so the live code paths can be
- * exercised (and the HTTP/JSON/TTS plumbing verified) without spending money.
+ * exercised (and the HTTP/JSON/TTS/Whisper plumbing verified) without spending
+ * money.
  */
 
 import { createServer } from "node:http";
 
-const PORT = Number(process.env.MOCK_OPENAI_PORT ?? 4010);
+const PORT = Number(process.env.MOCK_GROQ_PORT ?? 4010);
 
 const SCENE_TARGETS = 4;
+
+const TRANSCRIPT_SENTENCES = [
+  "This is a short recording used to test transcription.",
+  "The stub returns word level timestamps for every word.",
+  "That lets the player highlight the narration as it plays.",
+];
 
 function words(text) {
   return text.trim().split(/\s+/).filter(Boolean);
@@ -90,6 +100,43 @@ function makeWav(text) {
   return buffer;
 }
 
+/** Builds verbose_json-shaped output with word and segment timestamps. */
+function buildTranscript() {
+  const text = TRANSCRIPT_SENTENCES.join(" ");
+  const wordList = [];
+  const segments = [];
+  let cursor = 0.4;
+
+  for (const sentence of TRANSCRIPT_SENTENCES) {
+    const segmentStart = cursor;
+    for (const word of words(sentence)) {
+      const duration = Math.max(0.18, word.length / 14);
+      wordList.push({
+        word,
+        start: Number(cursor.toFixed(3)),
+        end: Number((cursor + duration).toFixed(3)),
+      });
+      cursor += duration + 0.05;
+    }
+    segments.push({
+      id: segments.length,
+      text: sentence,
+      start: Number(segmentStart.toFixed(3)),
+      end: Number(cursor.toFixed(3)),
+    });
+    cursor += 0.2;
+  }
+
+  return {
+    task: "transcribe",
+    language: "english",
+    duration: Number((cursor + 0.2).toFixed(3)),
+    text,
+    words: wordList,
+    segments,
+  };
+}
+
 function json(res, status, body) {
   const payload = Buffer.from(JSON.stringify(body));
   res.writeHead(status, {
@@ -103,10 +150,12 @@ async function readBody(req) {
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
   if (chunks.length === 0) return {};
+  const raw = Buffer.concat(chunks);
+  // Chat/TTS bodies are JSON; transcription is multipart and is not parsed here.
   try {
-    return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    return JSON.parse(raw.toString("utf8"));
   } catch {
-    return {};
+    return { __raw_bytes: raw.length };
   }
 }
 
@@ -114,7 +163,7 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
 
   if (req.method === "GET" && url.pathname === "/health") {
-    return json(res, 200, { ok: true, stub: "mock-openai", port: PORT });
+    return json(res, 200, { ok: true, stub: "mock-groq", port: PORT });
   }
 
   if (req.method === "POST" && url.pathname.endsWith("/chat/completions")) {
@@ -152,9 +201,18 @@ const server = createServer(async (req, res) => {
     return res.end(wav);
   }
 
+  if (req.method === "POST" && url.pathname.endsWith("/audio/transcriptions")) {
+    const body = await readBody(req);
+    const transcript = buildTranscript();
+    console.log(
+      `[stub] audio/transcriptions -> ${body.__raw_bytes ?? 0} bytes in, ${transcript.words.length} words out`,
+    );
+    return json(res, 200, transcript);
+  }
+
   return json(res, 404, { error: { message: `No stub route for ${req.method} ${url.pathname}` } });
 });
 
 server.listen(PORT, "127.0.0.1", () => {
-  console.log(`Mock OpenAI listening on http://127.0.0.1:${PORT}/v1`);
+  console.log(`Mock Groq listening on http://127.0.0.1:${PORT}/openai/v1`);
 });

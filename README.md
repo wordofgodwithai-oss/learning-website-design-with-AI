@@ -8,10 +8,11 @@ Everything is optional and switched from `.env.local`:
 
 | Capability | Default (no keys) | With credentials |
 | --- | --- | --- |
-| Scripts | Deterministic local writer | OpenAI chat completions |
-| Narration | Silent | OpenAI text-to-speech |
+| Scripts | Deterministic local writer | Groq chat completions |
+| Transcription | Disabled (text files only) | Groq Whisper + word timestamps |
+| Narration | Silent | Groq text-to-speech |
 | Video | MP4 via bundled FFmpeg | MP4 via bundled FFmpeg |
-| Auth | Local HMAC sessions | Supabase Google/Microsoft OAuth |
+| Auth | Local HMAC sessions | Supabase email magic link / OAuth |
 | Billing | Mock, 999,999 credits | Stripe Checkout + webhooks |
 
 Without `STRIPE_SECRET_KEY` billing stays mocked: every account has **999,999 credits**, every
@@ -57,8 +58,8 @@ as `Authorization: Bearer …`), so the BFF and public API behave like the real 
    a `/v/{id}` page with the script, variants and a downloadable poster.
 
 The render pipeline produces a real MP4 with bundled FFmpeg (`ffmpeg-static`), a JPEG
-poster and byte-range streaming (`/api/media/{id}/preview`). Narration is silent unless an OpenAI
-key is present; without one the video is still rendered. Scripts come from OpenAI when configured
+poster and byte-range streaming (`/api/media/{id}/preview`). Narration is silent unless a Groq
+key is present; without one the video is still rendered. Scripts come from Groq when configured
 and from a deterministic local writer otherwise. If FFmpeg fails, the job falls back to an
 animated SVG storyboard so generation never hard-fails.
 
@@ -66,10 +67,11 @@ animated SVG storyboard so generation never hard-fails.
 
 | Area | Status |
 | --- | --- |
-| Google/Microsoft sign-in, sessions, sign-out | Working (local mock or Supabase OAuth) |
+| Google/Microsoft sign-in, sessions, sign-out | Working (local mock, Supabase magic link or OAuth) |
 | Playground: prompt, script import, engine/style/language/voice/variants | Working |
 | Generation jobs, stage progress, polling, language variants | Working |
-| Scripts | Local writer or OpenAI |
+| Scripts | Local writer or Groq |
+| Transcription | Groq Whisper (word + segment timestamps) or disabled |
 | Render | Real MP4 + JPEG poster (FFmpeg), SVG fallback |
 | Library: search, filters, visibility, delete, playlists | Working |
 | Characters, saved styles, voice clones, custom music, avatars | Working (stored locally) |
@@ -78,7 +80,7 @@ animated SVG storyboard so generation never hard-fails.
 | `/api/get-subscription-details`, `/api/active-subscriptions` | 200 locally (production returns 404) |
 | Public REST API v1 (multipart) and v2 (JSON) | Working |
 | MCP JSON-RPC endpoint with 6 tools | Working |
-| PDF/DOCX import | Not implemented (plain text only) |
+| PDF/DOCX import | Not implemented (plain text or audio only) |
 
 ## Useful commands
 
@@ -136,13 +138,14 @@ Everything is optional. Create `.env.local` to override.
 | `GOLPO_SIMULATED_RENDER_MS` | `14000` | Simulated progress duration |
 | `GOLPO_MAX_CONCURRENT_JOBS` | `5` | Concurrency cap per user |
 | `PORT` | `3000` | Next.js port |
-| `GOLPO_SCRIPT_MODE` | `auto` | `auto` → OpenAI when a key exists |
-| `OPENAI_API_KEY` | — | Enables real scripts and narration |
-| `GOLPO_OPENAI_MODEL` | `gpt-4o-mini` | Script model |
-| `GOLPO_OPENAI_TTS_MODEL` / `_VOICE` | `tts-1` / `alloy` | Narration model and voice |
+| `GOLPO_SCRIPT_MODE` | `auto` | `auto` → Groq when a key exists |
+| `GROQ_API_KEY` | — | Enables real scripts, transcription and narration |
+| `GOLPO_GROQ_MODEL` | `llama-3.3-70b-versatile` | Script model |
+| `GOLPO_GROQ_TRANSCRIBE_MODEL` | `whisper-large-v3` | Speech-to-text model |
+| `GOLPO_GROQ_TTS_MODEL` / `_VOICE` | `canopylabs/orpheus-v1-english` / `hannah` | Narration model and voice |
 | `GOLPO_RENDER_MODE` | `auto` | `auto` → FFmpeg (bundled binaries) |
 | `GOLPO_AUTH_MODE` | `auto` | `auto` → Supabase when URL + anon key exist |
-| `SUPABASE_URL` / `SUPABASE_ANON_KEY` | — | Enables Supabase OAuth |
+| `SUPABASE_URL` / `SUPABASE_ANON_KEY` | — | Enables Supabase magic-link auth |
 | `GOLPO_BILLING_MODE` | `auto` | `auto` → Stripe when a secret key exists |
 | `STRIPE_SECRET_KEY` | — | Enables real checkout and the credit ledger |
 | `STRIPE_WEBHOOK_SECRET` | — | Verifies `/api/stripe/webhook` |
@@ -156,7 +159,9 @@ See `.env.example` for the annotated list. Restart the dev server after editing 
 0. Create `.env.local` (a commented template is already there, mirroring `.env.example`) and run
    `npm run integrations:check`. It validates the values and lists exactly what is still missing
    without calling any provider. Add `-- --strict` to make it exit non-zero when incomplete.
-1. **OpenAI**: set `OPENAI_API_KEY`. Scripts switch to chat completions and narration to TTS.
+1. **Groq**: set `GROQ_API_KEY=gsk_...`. Scripts switch to chat completions, narration to
+   Orpheus TTS, and audio uploads to Whisper transcription. Groq is OpenAI-compatible, so only the
+   base URL and model names differ; no `OPENAI_API_KEY` is used anywhere.
 2. **Supabase**: create a project, add `http://localhost:3000/auth/callback*` to the redirect
    allow-list, then set `SUPABASE_URL` and `SUPABASE_ANON_KEY`. Sign-in uses an email magic link
    (`supabase.auth.signInWithOtp`) by default — no provider console needed. Google/Microsoft OAuth
@@ -168,7 +173,7 @@ See `.env.example` for the annotated list. Restart the dev server after editing 
    `STRIPE_WEBHOOK_SECRET`. Plans use inline `price_data`, so no dashboard products are required.
 
 After restarting the dev server, `GET /api/health` reports which implementation each capability
-resolved to (`local`, `openai`, `supabase`, `stripe`, `ffmpeg`), without exposing any secret.
+resolved to (`local`, `groq`, `supabase`, `stripe`, `ffmpeg`), without exposing any secret.
 
 ## Data and reset
 
@@ -197,7 +202,7 @@ These are deliberate and documented in `docs/IMPLEMENTATION.md`:
 5. **Voice catalogues and stock-avatar IDs are local stand-ins.** Their real values are not
    observable from the shipped client.
 6. **Analytics/ads endpoints acknowledge and do nothing**, so no data leaves the machine unless
-   you enable OpenAI/Supabase/Stripe.
+   you enable Groq/Supabase/Stripe.
 7. **Per-minute credit pricing is inferred.** The real platform rate is unobservable; the estimate
    is documented in `src/lib/billing/shared.ts`.
 

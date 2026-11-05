@@ -1,11 +1,15 @@
+import { groqTranscribe } from "@/lib/ai/groq";
 import { getUserFromRequest } from "@/lib/auth";
+import { transcriptionMode } from "@/lib/integrations";
 import { fail, json, readJson, safeFetch, str } from "@/lib/http";
 
 /**
  * POST /api/extract-script-source
  *
- * Turns a document into script text. Accepts:
+ * Turns a document or recording into script text. Accepts:
  *   - multipart `file` (.txt, .md, .csv, .json, .srt, .html)
+ *   - multipart `file` audio/video (.mp3, .wav, .m4a, .ogg, .webm, .flac, .mp4)
+ *     → Groq Whisper with word-level timestamps when GROQ_API_KEY is set
  *   - JSON `{ text: "…" }`
  *   - JSON `{ url: "https://…" }` (size- and address-guarded)
  *
@@ -15,7 +19,24 @@ import { fail, json, readJson, safeFetch, str } from "@/lib/http";
  * TODO(REAL-EXTRACT): add pdf-parse / mammoth and an OCR path.
  */
 const MAX_BYTES = 2 * 1024 * 1024;
+const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 const TEXT_EXTENSIONS = [".txt", ".md", ".markdown", ".csv", ".json", ".srt", ".vtt", ".html", ".htm"];
+const AUDIO_EXTENSIONS = [".mp3", ".wav", ".m4a", ".ogg", ".webm", ".flac", ".mp4"];
+
+const AUDIO_CONTENT_TYPES: Record<string, string> = {
+  ".mp3": "audio/mpeg",
+  ".wav": "audio/wav",
+  ".m4a": "audio/mp4",
+  ".ogg": "audio/ogg",
+  ".webm": "audio/webm",
+  ".flac": "audio/flac",
+  ".mp4": "video/mp4",
+};
+
+function extensionOf(name: string): string {
+  const dot = name.lastIndexOf(".");
+  return dot >= 0 ? name.slice(dot).toLowerCase() : "";
+}
 
 function htmlToText(html: string): string {
   return html
@@ -77,15 +98,55 @@ export async function POST(request: Request) {
   if (!form) return fail(400, "Expected multipart/form-data.");
   const file = form.get("file") ?? form.get("source");
   if (!(file instanceof File) || file.size === 0) {
-    return fail(400, "Attach a .txt, .md, .srt, .csv, .json or .html file.");
+    return fail(400, "Attach a text file or an audio recording.");
   }
-  if (file.size > MAX_BYTES) return fail(413, "Files must be 2 MB or smaller.");
 
-  const extension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+  const extension = extensionOf(file.name);
+
+  if (AUDIO_EXTENSIONS.includes(extension)) {
+    if (file.size > MAX_AUDIO_BYTES) {
+      return fail(413, "Audio files must be 25 MB or smaller (the Groq upload limit).");
+    }
+    if (transcriptionMode !== "groq") {
+      return fail(
+        503,
+        "Audio transcription needs GROQ_API_KEY. Add it to .env.local and restart the server.",
+      );
+    }
+
+    try {
+      const transcript = await groqTranscribe(await file.arrayBuffer(), {
+        filename: file.name,
+        contentType: (AUDIO_CONTENT_TYPES[extension] ?? file.type) || "application/octet-stream",
+        // Omit `language` so Whisper auto-detects instead of forcing English.
+        language: "auto",
+      });
+      if (!transcript.text) return fail(422, "No speech was detected in that recording.");
+      return json({
+        success: true,
+        text: transcript.text,
+        source_type: "audio",
+        filename: file.name,
+        language: transcript.language,
+        duration: transcript.duration,
+        // Word-level timestamps drive the highlight animation in the player.
+        words: transcript.words,
+        segments: transcript.segments,
+        word_count: wordCount(transcript.text),
+      });
+    } catch (error) {
+      return fail(
+        502,
+        `Transcription failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
+  if (file.size > MAX_BYTES) return fail(413, "Files must be 2 MB or smaller.");
   if (!TEXT_EXTENSIONS.includes(extension)) {
     return fail(
       415,
-      "Only plain-text formats are supported locally (.txt, .md, .srt, .vtt, .csv, .json, .html). PDF and DOCX extraction is not implemented.",
+      "Unsupported file. Use a text file (.txt, .md, .srt, .vtt, .csv, .json, .html) or audio (.mp3, .wav, .m4a, .ogg, .webm, .flac, .mp4). PDF and DOCX extraction is not implemented.",
     );
   }
 

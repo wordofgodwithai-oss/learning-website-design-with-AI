@@ -6,7 +6,7 @@ production services. Read `README.md` first for usage.
 ## 1. Stack and layout
 
 - **Next.js 15 (App Router) + React 19 + TypeScript**, no CSS framework (one hand-written
-  stylesheet), no database driver. External SaaS is optional: OpenAI, Supabase and Stripe are only
+  stylesheet), no database driver. External SaaS is optional: Groq, Supabase and Stripe are only
   used when their credentials are present (`src/lib/integrations.ts`).
 - All persistence is a single JSON document at `.data/db.json` with atomic writes and an
   in-process mutex. This keeps the clone dependency-free and makes state easy to inspect/reset.
@@ -32,7 +32,7 @@ src/
     auth.ts                      HMAC sessions, cookie + bearer, Supabase fallbacks
     api-auth.ts                  x-api-key auth for public API
     features.ts                  plan + add-on entitlement checks
-    integrations.ts              mode resolution (openai/ffmpeg/supabase/stripe)
+    integrations.ts              mode resolution (groq/ffmpeg/supabase/stripe)
     http.ts                      envelopes, parsing, SSRF-guarded fetch
     storage.ts                   local upload storage
     generation/                  request normalization, script provider, pipeline
@@ -68,7 +68,7 @@ scripts/
 | §8 | Plans, credits, add-ons, annual discount, PAYG tiers | `src/lib/billing/constants.ts`, `/pricing` |
 | §8 | 11 billing BFF routes + webhook | Intent handlers in `src/lib/billing/{index,stripe-billing}.ts`; routes under `src/app/api/*`; `/api/stripe/webhook` |
 | §9 | Tables: `user_credits`, `api_key`, `organizations`, `system_status`, … | `src/lib/types.ts` + `db.ts` seed |
-| §10 | Supabase, S3, OpenAI ads, analytics | Supabase auth and OpenAI scripts/TTS are optional integrations; ads/analytics remain no-ops (`track-openai-ads-event`) |
+| §10 | Supabase, S3, OpenAI ads, analytics | Supabase auth and Groq scripts/transcription/TTS are optional integrations; ads/analytics remain no-ops (`track-openai-ads-event`) |
 | §11 | Library filters, playlists, characters, styles, voices, music, avatars | `/api/videos`, `/api/playlists`, `/api/characters*`, `/api/saved-styles`, `/api/clone-voice`, `/api/upload-custom-music`, `/api/*avatars*` |
 | §11 | Feature gating per plan | `src/lib/features.ts` checks the ledger plan/add-ons; local unlimited bypasses it |
 | §12 | Production defects (404 billing routes, etc.) | Deliberate deviations listed below |
@@ -136,10 +136,13 @@ Reset by deleting `.data/` while the server is stopped.
 language variant (`variant_of` + `variant_language`).
 
 Script generation goes through `writeScript()` in `src/lib/generation/script-provider.ts`:
-OpenAI chat completions when `OPENAI_API_KEY` is set (plain `fetch`, JSON-mode prompt, timeout),
-otherwise the deterministic local writer in `script.ts`. OpenAI failures fall back to the local
-writer so a job never fails because of the provider. Narration uses OpenAI TTS when enabled and is
-silent otherwise.
+Groq chat completions when `GROQ_API_KEY` is set (plain `fetch` against the OpenAI-compatible
+`/openai/v1` surface, JSON-mode prompt, timeout), otherwise the deterministic local writer in
+`script.ts`. Groq failures fall back to the local writer so a job never fails because of the
+provider. Narration uses Groq Orpheus TTS when enabled and is silent otherwise; because Orpheus
+caps input at 200 characters, scenes are split into ~190-character chunks and the WAV parts are
+joined by FFmpeg. Audio uploads to `/api/extract-script-source` are transcribed by Groq Whisper
+(`whisper-large-v3`, `verbose_json`, word + segment timestamps, language auto-detected).
 
 Rendering (`src/lib/media/render.ts`) uses the binaries bundled by `ffmpeg-static` /
 `ffprobe-static` plus `sharp` for scene stills. Once the simulated progress reaches 100% the job
@@ -256,7 +259,7 @@ the facade and must not be regenerated.
    not observable.
 4. Voice names, stock avatars and some catalogue values are local stand-ins (marked in
    `src/lib/generation/config.ts`).
-5. Analytics, ads and affiliate calls are accepted and ignored; only OpenAI, Supabase and Stripe
+5. Analytics, ads and affiliate calls are accepted and ignored; only Groq, Supabase and Stripe
    make outbound calls, and only when configured.
 6. Email-sending routes (`organizations/invitation`, `tell-your-manager`) record the request and
    return `mocked_email: true`.

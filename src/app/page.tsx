@@ -62,7 +62,7 @@ export default async function LandingPage({
             <p className="hero-lead">
               The Golpo dashboard rebuilt to run on your machine: prompt-to-video playground,
               library, BFF, public API v1/v2 and an MCP endpoint. Real MP4 rendering, optional
-              OpenAI scripts, Supabase auth and Stripe billing.
+              Groq scripts, Supabase auth and Stripe billing.
             </p>
             <ul className="hero-points">
               <li>Canvas and Sketch engines with the full style catalogue</li>

@@ -24,7 +24,7 @@ export interface BuiltScript {
   scenes: Scene[];
   wordCount: number;
   /** Where the text came from — surfaced in logs and the job snapshot. */
-  source: "local" | "openai" | "user";
+  source: "local" | "groq" | "user";
   model?: string;
 }
 

@@ -16,21 +16,22 @@ import ffprobeStatic from "ffprobe-static";
  *   live   — the real provider, enabled automatically as soon as its
  *            credentials exist, or explicitly through GOLPO_*_MODE
  *
- * The point of `auto` is that `.env.local` is the only switch. Put an
- * OPENAI_API_KEY in it and scripts become real; put Supabase keys in and auth
- * becomes real; put a Stripe key in and billing becomes real. Remove them and
- * the app falls back without a code change.
+ * The point of `auto` is that `.env.local` is the only switch. Put a
+ * GROQ_API_KEY in it and scripts, transcription and narration become real;
+ * put Supabase keys in and auth becomes real; put a Stripe key in and billing
+ * becomes real. Remove them and the app falls back without a code change.
  *
  * Modes are read once per server process. Restart `npm run dev` after editing
  * `.env.local` (Next.js already does this).
  * ===========================================================================
  */
 
-export type ScriptMode = "local" | "openai";
+export type ScriptMode = "local" | "groq";
 export type RenderMode = "storyboard" | "ffmpeg";
 export type AuthMode = "local" | "supabase";
 export type BillingMode = "mock" | "stripe";
-export type TtsMode = "none" | "openai";
+export type TtsMode = "none" | "groq";
+export type TranscriptionMode = "none" | "groq";
 
 function text(value: string | undefined): string {
   return (value ?? "").trim();
@@ -52,26 +53,40 @@ function resolveMode<T extends string>(
 }
 
 // ---------------------------------------------------------------------------
-// OpenAI (scripts + narration)
+// Groq (scripts, transcription and narration)
+//
+// Groq exposes an OpenAI-compatible surface under /openai/v1, so the same fetch
+// code works with a single key. See src/lib/ai/groq.ts.
 // ---------------------------------------------------------------------------
 
-export const OPENAI_API_KEY = text(process.env.OPENAI_API_KEY);
-export const OPENAI_BASE_URL = text(process.env.OPENAI_BASE_URL) || "https://api.openai.com/v1";
-export const OPENAI_MODEL = text(process.env.GOLPO_OPENAI_MODEL) || "gpt-4o-mini";
-export const OPENAI_TTS_MODEL = text(process.env.GOLPO_OPENAI_TTS_MODEL) || "tts-1";
-export const OPENAI_TTS_VOICE = text(process.env.GOLPO_OPENAI_TTS_VOICE) || "alloy";
-export const OPENAI_TIMEOUT_MS = Number(process.env.GOLPO_OPENAI_TIMEOUT_MS ?? 45_000);
+export const GROQ_API_KEY = text(process.env.GROQ_API_KEY);
+export const GROQ_BASE_URL =
+  text(process.env.GROQ_BASE_URL) || "https://api.groq.com/openai/v1";
+export const GROQ_MODEL =
+  text(process.env.GOLPO_GROQ_MODEL) || "llama-3.3-70b-versatile";
+export const GROQ_TRANSCRIBE_MODEL =
+  text(process.env.GOLPO_GROQ_TRANSCRIBE_MODEL) || "whisper-large-v3";
+export const GROQ_TTS_MODEL =
+  text(process.env.GOLPO_GROQ_TTS_MODEL) || "canopylabs/orpheus-v1-english";
+export const GROQ_TTS_VOICE = text(process.env.GOLPO_GROQ_TTS_VOICE) || "hannah";
+export const GROQ_TIMEOUT_MS = Number(process.env.GOLPO_GROQ_TIMEOUT_MS ?? 45_000);
 
 export const scriptMode: ScriptMode = resolveMode<ScriptMode>(
   process.env.GOLPO_SCRIPT_MODE,
-  OPENAI_API_KEY ? "openai" : "local",
-  ["local", "openai"],
+  GROQ_API_KEY ? "groq" : "local",
+  ["local", "groq"],
 );
 
 export const ttsMode: TtsMode = resolveMode<TtsMode>(
   process.env.GOLPO_TTS_MODE,
-  OPENAI_API_KEY ? "openai" : "none",
-  ["none", "openai"],
+  GROQ_API_KEY ? "groq" : "none",
+  ["none", "groq"],
+);
+
+export const transcriptionMode: TranscriptionMode = resolveMode<TranscriptionMode>(
+  process.env.GOLPO_TRANSCRIBE_MODE,
+  GROQ_API_KEY ? "groq" : "none",
+  ["none", "groq"],
 );
 
 // ---------------------------------------------------------------------------
@@ -171,7 +186,7 @@ export function publicConfig(): PublicIntegrationConfig {
       authMode === "supabase" && SUPABASE_URL && SUPABASE_ANON_KEY
         ? { url: SUPABASE_URL, anonKey: SUPABASE_ANON_KEY }
         : null,
-    model: scriptMode === "openai" ? OPENAI_MODEL : null,
+    model: scriptMode === "groq" ? GROQ_MODEL : null,
   };
 }
 
@@ -180,8 +195,10 @@ export function integrationSummary(): Record<string, string> {
   return {
     auth: authMode,
     billing: billingMode,
-    scripts: scriptMode === "openai" ? `openai:${OPENAI_MODEL}` : "local",
-    narration: ttsMode === "openai" ? `openai:${OPENAI_TTS_MODEL}` : "silent",
+    scripts: scriptMode === "groq" ? `groq:${GROQ_MODEL}` : "local",
+    transcription:
+      transcriptionMode === "groq" ? `groq:${GROQ_TRANSCRIBE_MODEL}` : "none",
+    narration: ttsMode === "groq" ? `groq:${GROQ_TTS_MODEL}` : "silent",
     render: renderMode === "ffmpeg" ? "ffmpeg" : "storyboard",
   };
 }

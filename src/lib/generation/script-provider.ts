@@ -1,7 +1,7 @@
 import "server-only";
 
-import { openaiChatJson } from "@/lib/ai/openai";
-import { OPENAI_MODEL, scriptMode } from "@/lib/integrations";
+import { groqChatJson } from "@/lib/ai/groq";
+import { GROQ_MODEL, scriptMode } from "@/lib/integrations";
 import { languageName } from "@/lib/generation/config";
 import {
   buildScript,
@@ -16,7 +16,7 @@ import type { GenerationKind } from "@/lib/types";
  * Picks the script writer.
  *
  * - A user-supplied script is never rewritten.
- * - With GOLPO_SCRIPT_MODE=openai (the default once OPENAI_API_KEY is set),
+ * - With GOLPO_SCRIPT_MODE=groq (the default once GROQ_API_KEY is set),
  *   the prompt goes to the model.
  * - Anything that goes wrong (missing key, timeout, malformed JSON, model
  *   refusal) logs a warning and falls back to the deterministic local writer,
@@ -99,7 +99,7 @@ function toScenes(
   });
 }
 
-async function writeWithOpenAI(options: WriteScriptOptions): Promise<BuiltScript> {
+async function writeWithGroq(options: WriteScriptOptions): Promise<BuiltScript> {
   const budget = targetWords(options.durationSeconds);
   const requestedScenes = sceneTarget(options.durationSeconds);
   const language = options.displayLanguage?.trim() || languageName("en");
@@ -114,10 +114,10 @@ async function writeWithOpenAI(options: WriteScriptOptions): Promise<BuiltScript
     options.prompt.trim(),
   ].join("\n");
 
-  const result = await openaiChatJson<ModelScript>({
+  const result = await groqChatJson<ModelScript>({
     system: SYSTEM_PROMPT,
     user: userPrompt,
-    model: OPENAI_MODEL,
+    model: GROQ_MODEL,
     temperature: 0.65,
     maxTokens: Math.min(4_000, Math.max(900, Math.round(budget * 2.4))),
   });
@@ -137,7 +137,7 @@ async function writeWithOpenAI(options: WriteScriptOptions): Promise<BuiltScript
     if (!script) throw new Error("model returned no usable narration");
     // Re-run the local structurer with the model text as a user-supplied script.
     const local = buildScript({ ...options, scriptText: script });
-    return { ...local, source: "openai", model: OPENAI_MODEL };
+    return { ...local, source: "groq", model: GROQ_MODEL };
   }
 
   scenes = fitScenes(scenes, budget);
@@ -153,20 +153,20 @@ async function writeWithOpenAI(options: WriteScriptOptions): Promise<BuiltScript
     script,
     scenes: toScenes(scenes, options.durationSeconds),
     wordCount: countWords(script),
-    source: "openai",
-    model: OPENAI_MODEL,
+    source: "groq",
+    model: GROQ_MODEL,
   };
 }
 
 export async function writeScript(options: WriteScriptOptions): Promise<BuiltScript> {
   if (options.scriptText?.trim()) return buildScript(options);
-  if (scriptMode !== "openai") return buildScript(options);
+  if (scriptMode !== "groq") return buildScript(options);
 
   try {
-    return await writeWithOpenAI(options);
+    return await writeWithGroq(options);
   } catch (error) {
     console.warn(
-      `[script] OpenAI failed, falling back to the local writer: ${
+      `[script] Groq failed, falling back to the local writer: ${
         error instanceof Error ? error.message : String(error)
       }`,
     );

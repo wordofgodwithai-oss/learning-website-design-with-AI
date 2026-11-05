@@ -59,28 +59,47 @@ function check(level, area, message) {
 }
 
 // ---------------------------------------------------------------------------
-// OpenAI
+// Groq (scripts, transcription, narration)
 // ---------------------------------------------------------------------------
-const openaiKey = get("OPENAI_API_KEY");
-const openaiBase = get("OPENAI_BASE_URL") || "https://api.openai.com/v1";
-const scriptMode = mode("GOLPO_SCRIPT_MODE", openaiKey ? "openai" : "local", ["local", "openai"]);
-const ttsMode = mode("GOLPO_TTS_MODE", openaiKey ? "openai" : "none", ["none", "openai"]);
+const groqKey = get("GROQ_API_KEY");
+const groqBase = get("GROQ_BASE_URL") || "https://api.groq.com/openai/v1";
+const scriptMode = mode("GOLPO_SCRIPT_MODE", groqKey ? "groq" : "local", ["local", "groq"]);
+const ttsMode = mode("GOLPO_TTS_MODE", groqKey ? "groq" : "none", ["none", "groq"]);
+const transcriptionMode = mode("GOLPO_TRANSCRIBE_MODE", groqKey ? "groq" : "none", [
+  "none",
+  "groq",
+]);
 
-if (!openaiKey) {
-  check("missing", "OpenAI", "OPENAI_API_KEY is not set — scripts stay local and narration stays silent.");
-} else if (openaiKey === "stub-key" || openaiKey.startsWith("stub")) {
+if (!groqKey) {
+  check(
+    "missing",
+    "Groq",
+    "GROQ_API_KEY is not set — scripts stay local, transcription is disabled and narration stays silent.",
+  );
+} else if (groqKey === "stub-key" || groqKey.startsWith("stub")) {
   check(
     "warn",
-    "OpenAI",
-    `Using a stub key against ${openaiBase}. Fine for local tests, not for real scripts.`,
+    "Groq",
+    `Using a stub key against ${groqBase}. Fine for local tests, not for real scripts.`,
   );
-} else if (!openaiKey.startsWith("sk-")) {
-  check("warn", "OpenAI", "OPENAI_API_KEY does not look like an OpenAI key (expected sk-...).");
+} else if (!groqKey.startsWith("gsk_")) {
+  check("warn", "Groq", "GROQ_API_KEY does not look like a Groq key (expected gsk_...).");
 } else {
-  check("ok", "OpenAI", `Scripts: ${scriptMode}, narration: ${ttsMode} (${openaiBase}).`);
+  check(
+    "ok",
+    "Groq",
+    `Scripts: ${scriptMode}, transcription: ${transcriptionMode}, narration: ${ttsMode} (${groqBase}).`,
+  );
 }
-if (openaiKey && openaiBase !== "https://api.openai.com/v1") {
-  check("warn", "OpenAI", `Custom endpoint in use: ${openaiBase}. Only do this for compatible gateways.`);
+if (get("OPENAI_API_KEY")) {
+  check(
+    "warn",
+    "Groq",
+    "OPENAI_API_KEY is set but unused. This app calls Groq only; remove it from .env.local.",
+  );
+}
+if (groqKey && groqBase !== "https://api.groq.com/openai/v1") {
+  check("warn", "Groq", `Custom endpoint in use: ${groqBase}. Only do this for compatible gateways.`);
 }
 
 // ---------------------------------------------------------------------------
@@ -246,7 +265,7 @@ for (const level of order) {
 const missing = checks.filter((entry) => entry.level === "missing");
 console.log("");
 console.log(
-  `Resolved modes → auth: ${authMode}, billing: ${billingMode}, scripts: ${scriptMode}, narration: ${ttsMode}, render: ${renderOk ? "ffmpeg" : "storyboard"}`,
+  `Resolved modes → auth: ${authMode}, billing: ${billingMode}, scripts: ${scriptMode}, transcription: ${transcriptionMode}, narration: ${ttsMode}, render: ${renderOk ? "ffmpeg" : "storyboard"}`,
 );
 console.log(
   missing.length === 0
