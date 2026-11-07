@@ -63,7 +63,7 @@ export const GROQ_API_KEY = text(process.env.GROQ_API_KEY);
 export const GROQ_BASE_URL =
   text(process.env.GROQ_BASE_URL) || "https://api.groq.com/openai/v1";
 export const GROQ_MODEL =
-  text(process.env.GOLPO_GROQ_MODEL) || "llama-3.3-70b-versatile";
+  text(process.env.GOLPO_GROQ_MODEL) || "openai/gpt-oss-120b";
 export const GROQ_TRANSCRIBE_MODEL =
   text(process.env.GOLPO_GROQ_TRANSCRIBE_MODEL) || "whisper-large-v3";
 export const GROQ_TTS_MODEL =

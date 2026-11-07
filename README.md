@@ -8,7 +8,7 @@ Everything is optional and switched from `.env.local`:
 
 | Capability | Default (no keys) | With credentials |
 | --- | --- | --- |
-| Scripts | Deterministic local writer | Groq chat completions |
+| Scripts | Deterministic local writer | Groq chat completions (`gpt-oss-120b`) |
 | Transcription | Disabled (text files only) | Groq Whisper + word timestamps |
 | Narration | Silent | Groq text-to-speech |
 | Video | MP4 via bundled FFmpeg | MP4 via bundled FFmpeg |
@@ -140,7 +140,7 @@ Everything is optional. Create `.env.local` to override.
 | `PORT` | `3000` | Next.js port |
 | `GOLPO_SCRIPT_MODE` | `auto` | `auto` → Groq when a key exists |
 | `GROQ_API_KEY` | — | Enables real scripts, transcription and narration |
-| `GOLPO_GROQ_MODEL` | `llama-3.3-70b-versatile` | Script model |
+| `GOLPO_GROQ_MODEL` | `openai/gpt-oss-120b` | Script model |
 | `GOLPO_GROQ_TRANSCRIBE_MODEL` | `whisper-large-v3` | Speech-to-text model |
 | `GOLPO_GROQ_TTS_MODEL` / `_VOICE` | `canopylabs/orpheus-v1-english` / `hannah` | Narration model and voice |
 | `GOLPO_RENDER_MODE` | `auto` | `auto` → FFmpeg (bundled binaries) |
@@ -159,9 +159,12 @@ See `.env.example` for the annotated list. Restart the dev server after editing 
 0. Create `.env.local` (a commented template is already there, mirroring `.env.example`) and run
    `npm run integrations:check`. It validates the values and lists exactly what is still missing
    without calling any provider. Add `-- --strict` to make it exit non-zero when incomplete.
-1. **Groq**: set `GROQ_API_KEY=gsk_...`. Scripts switch to chat completions, narration to
-   Orpheus TTS, and audio uploads to Whisper transcription. Groq is OpenAI-compatible, so only the
-   base URL and model names differ; no `OPENAI_API_KEY` is used anywhere.
+1. **Groq**: set `GROQ_API_KEY=gsk_...`. Scripts switch to chat completions (default
+   `openai/gpt-oss-120b` on Groq), narration to Orpheus TTS, and audio uploads to Whisper
+   transcription. Groq is OpenAI-compatible, so only the base URL and model names differ; no
+   `OPENAI_API_KEY` is used anywhere. Orpheus needs a one-time terms acceptance at
+   <https://console.groq.com/playground?model=canopylabs%2Forpheus-v1-english>; until then
+   narration logs a warning and renders silent audio.
 2. **Supabase**: create a project, add `http://localhost:3000/auth/callback*` to the redirect
    allow-list, then set `SUPABASE_URL` and `SUPABASE_ANON_KEY`. Sign-in uses an email magic link
    (`supabase.auth.signInWithOtp`) by default — no provider console needed. Google/Microsoft OAuth
