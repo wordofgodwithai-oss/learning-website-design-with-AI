@@ -59,6 +59,16 @@ function stripCodeFence(value: string): string {
   return fenced ? fenced[1] : trimmed;
 }
 
+/** Pulls the first JSON object/array out of a reply that may wrap it in prose. */
+function extractJson(value: string): string {
+  const stripped = stripCodeFence(value);
+  if (/^[[{]/.test(stripped)) return stripped;
+  const start = stripped.search(/[[{]/);
+  if (start === -1) return stripped;
+  const end = Math.max(stripped.lastIndexOf("}"), stripped.lastIndexOf("]"));
+  return end > start ? stripped.slice(start, end + 1) : stripped.slice(start);
+}
+
 // ---------------------------------------------------------------------------
 // Chat completions (script generation)
 // ---------------------------------------------------------------------------
@@ -72,62 +82,125 @@ interface ChatOptions {
   timeoutMs?: number;
 }
 
+interface ChatReply {
+  content: string;
+  finishReason: string;
+  reasoning: string;
+}
+
+async function requestChat(
+  body: Record<string, unknown>,
+  timeoutMs: number,
+): Promise<ChatReply> {
+  const response = await fetch(endpoint("chat/completions"), {
+    method: "POST",
+    headers: {
+      authorization: authorization(),
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+  if (!response.ok) throw new GroqError(await describeFailure(response), response.status);
+  const data = (await response.json()) as {
+    choices?: Array<{
+      finish_reason?: string;
+      message?: { content?: string; reasoning?: string };
+    }>;
+  };
+  const choice = data.choices?.[0];
+  return {
+    content: choice?.message?.content ?? "",
+    finishReason: choice?.finish_reason ?? "",
+    reasoning: choice?.message?.reasoning ?? "",
+  };
+}
+
+/** True for replies we can safely retry with a different request shape. */
+function isRetryableShape(error: unknown): boolean {
+  if (!(error instanceof GroqError) || error.status !== 400) return false;
+  return /json|response_format|failed_generation/i.test(error.message);
+}
+
 /**
- * Asks for a JSON object and parses it. If the endpoint rejects
- * `response_format`, the request is retried once without it.
+ * Reasoning models on Groq (gpt-oss, qwen3, deepseek-r1) reject
+ * `response_format: {type: "json_object"}` with `400 json_validate_failed`, so
+ * asking for it only wastes a round trip. They are still told to answer with
+ * JSON in the system prompt, and `extractJson` handles the reply.
+ */
+function supportsJsonMode(model: string): boolean {
+  return !/gpt-oss|qwen3|deepseek|reason|thinking/i.test(model);
+}
+
+/**
+ * Asks for a JSON object and parses it.
+ *
+ * Some Groq models (notably `openai/gpt-oss-120b`) are reasoning models and
+ * reject `response_format: json_object` with a 400 `json_validate_failed`, and
+ * they spend part of `max_tokens` on hidden reasoning before writing the final
+ * answer. The retry ladder handles both: drop `response_format` and give the
+ * model enough headroom to finish reasoning *and* emit the JSON.
  */
 export async function groqChatJson<T>(options: ChatOptions): Promise<T> {
-  const body: Record<string, unknown> = {
-    model: options.model,
-    temperature: options.temperature ?? 0.6,
-    max_tokens: options.maxTokens ?? 2_000,
-    response_format: { type: "json_object" },
-    messages: [
-      { role: "system", content: options.system },
-      { role: "user", content: options.user },
-    ],
-  };
+  const baseTokens = options.maxTokens ?? 2_000;
+  const jsonMode = supportsJsonMode(options.model);
+  // Reasoning models burn tokens before writing the answer, so their first
+  // attempt already gets extra headroom (no response_format round trip).
+  const attempts: Array<{ responseFormat: boolean; maxTokens: number }> = jsonMode
+    ? [
+        { responseFormat: true, maxTokens: baseTokens },
+        { responseFormat: false, maxTokens: Math.max(baseTokens, 4_000) },
+        { responseFormat: false, maxTokens: Math.max(baseTokens * 2, 6_000) },
+      ]
+    : [
+        { responseFormat: false, maxTokens: Math.max(baseTokens, 4_000) },
+        { responseFormat: false, maxTokens: Math.max(baseTokens * 2, 8_000) },
+      ];
 
-  const run = async (includeResponseFormat: boolean): Promise<string> => {
-    if (!includeResponseFormat) delete body.response_format;
-    const response = await fetch(endpoint("chat/completions"), {
-      method: "POST",
-      headers: {
-        authorization: authorization(),
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(options.timeoutMs ?? GROQ_TIMEOUT_MS),
-    });
-    if (!response.ok) throw new GroqError(await describeFailure(response), response.status);
-    const data = (await response.json()) as {
-      choices?: Array<{ message?: { content?: string } }>;
+  let lastError: Error | undefined;
+
+  for (const attempt of attempts) {
+    const body: Record<string, unknown> = {
+      model: options.model,
+      temperature: options.temperature ?? 0.6,
+      max_tokens: attempt.maxTokens,
+      messages: [
+        { role: "system", content: options.system },
+        { role: "user", content: options.user },
+      ],
     };
-    const content = data.choices?.[0]?.message?.content;
-    if (!content) throw new GroqError("Groq returned an empty completion.");
-    return content;
-  };
+    if (attempt.responseFormat) body.response_format = { type: "json_object" };
 
-  let content: string;
-  try {
-    content = await run(true);
-  } catch (error) {
-    if (
-      error instanceof GroqError &&
-      error.status === 400 &&
-      /response_format/i.test(error.message)
-    ) {
-      content = await run(false);
-    } else {
+    let reply: ChatReply;
+    try {
+      reply = await requestChat(body, options.timeoutMs ?? GROQ_TIMEOUT_MS);
+    } catch (error) {
+      if (isRetryableShape(error)) {
+        lastError = error as Error;
+        continue;
+      }
       throw error;
+    }
+
+    const content = reply.content.trim();
+    if (!content) {
+      // Reasoning-only reply: the token budget was consumed before any answer.
+      lastError = new GroqError(
+        reply.reasoning
+          ? `Groq returned reasoning without a final answer (finish=${reply.finishReason || "unknown"}).`
+          : "Groq returned an empty completion.",
+      );
+      continue;
+    }
+
+    try {
+      return JSON.parse(extractJson(content)) as T;
+    } catch {
+      lastError = new GroqError("Groq returned malformed JSON.");
     }
   }
 
-  try {
-    return JSON.parse(stripCodeFence(content)) as T;
-  } catch {
-    throw new GroqError("Groq returned malformed JSON.");
-  }
+  throw lastError ?? new GroqError("Groq could not return valid JSON.");
 }
 
 // ---------------------------------------------------------------------------

@@ -137,19 +137,52 @@ language variant (`variant_of` + `variant_language`).
 
 Script generation goes through `writeScript()` in `src/lib/generation/script-provider.ts`:
 Groq chat completions when `GROQ_API_KEY` is set (plain `fetch` against the OpenAI-compatible
-`/openai/v1` surface, JSON-mode prompt, timeout), otherwise the deterministic local writer in
-`script.ts`. Groq failures fall back to the local writer so a job never fails because of the
-provider. Narration uses Groq Orpheus TTS when enabled and is silent otherwise; because Orpheus
-caps input at 200 characters, scenes are split into ~190-character chunks and the WAV parts are
-joined by FFmpeg. Audio uploads to `/api/extract-script-source` are transcribed by Groq Whisper
-(`whisper-large-v3`, `verbose_json`, word + segment timestamps, language auto-detected).
+`/openai/v1` surface, timeout), otherwise the deterministic local writer in
+`script.ts`. The model is asked for a word budget derived from the requested duration
+(~2.3 words/second, the slow end of the observed TTS range) and for one scene per ~9 seconds.
+If a draft comes back short, the provider retries with an explicit expansion prompt (up to three
+attempts) and splits long scenes at sentence boundaries, so a 20-second request produces a
+20-second script instead of a 6-second one. Groq failures fall back to the local writer so a job
+never fails because of the provider. Reasoning models such as `openai/gpt-oss-120b` skip
+`response_format: json_object`, which they reject, and get extra token headroom for hidden
+reasoning.
+
+Narration (`src/lib/media/audio.ts`) uses Groq Orpheus for English when it is available. Orpheus
+caps input at 200 characters, so scenes are split into ~190-character chunks and the WAV parts are
+joined by FFmpeg. Neural voices insert long dramatic pauses at commas and around numbers, so every
+narration clip is tightened (edge silence trimmed, gaps over 0.35 s squeezed to 0.16 s) before the
+renderer plans the timeline from its real length. Because the free Orpheus quota is only 3,600
+tokens/day, English automatically falls back to the free Microsoft Edge read-aloud voices, which
+also cover 50+ other languages (`GOLPO_TTS_MODE=edge` forces them). Audio uploads to
+`/api/extract-script-source` are transcribed by Groq Whisper (`whisper-large-v3`, `verbose_json`,
+word + segment timestamps, language auto-detected).
+
+The requested duration is enforced at two points: the writer aims for ~2.3 words/second, and the
+renderer measures the finished narration and applies a small `atempo` pace change (0.9×–1.25×) so
+the speech itself fills the requested runtime; any residual shortfall is spread across all scenes
+instead of freezing one frame at the end. A script that runs long loses trailing sentences, never
+whole scenes, so the story stays intact.
+
+Scene artwork comes from `src/lib/media/artwork.ts` when a free provider is configured:
+Cloudflare Workers AI FLUX.1-schnell (10,000 neurons/day, about 100 images) or Pollinations (no
+key, one image per 45 seconds per IP). Generated art is cached by prompt hash in
+`.data/media/art`, post-processed to match the sketch/canvas theme, and replaced by the bundled
+vector doodles (`illustration.ts`) whenever the provider is off or fails.
 
 Rendering (`src/lib/media/render.ts`) uses the binaries bundled by `ffmpeg-static` /
-`ffprobe-static` plus `sharp` for scene stills. Once the simulated progress reaches 100% the job
-moves to 97% / `encoding`, the FFmpeg render runs **outside** the database mutex, and a second
-transaction finalizes the job. A render error, or a render stale for more than 10 minutes after a
-restart, falls back to the animated SVG storyboard instead of hanging the job. Politeness: media
-is served with `Range`/`206` support and a JPEG poster.
+`ffprobe-static` plus `sharp` for scene stills. It honours orientation (16:9, 9:16, 1:1), every
+canvas/sketch style, colour/monochrome, pacing, `skip_animation`, watermark and logo, presenter
+avatar, uploaded media, own-narration PiP (the webcam clip is looped and overlaid, split or
+fullscreen), podcast waveforms, and custom or generated music. The timeline is fitted to the
+requested duration from the measured narration (pace nudge, then a spread across scenes), so a
+20-second request ships a ~20-second video even when the model's script or the voice's pacing
+drifts. Once the simulated
+progress reaches 100% the job moves to 97% / `encoding`, the FFmpeg render runs **outside** the
+database mutex, and a second transaction finalizes the job. A render error, or a render stale for
+more than 10 minutes after a restart, falls back to the animated SVG storyboard instead of hanging
+the job. Language variants are marked `processing` when created, get a Groq-translated script,
+render their own narration, and only become `ready` once their MP4 exists (a failed translation is
+recorded on the row). Politeness: media is served with `Range`/`206` support and a JPEG poster.
 
 **Real backend seams**
 

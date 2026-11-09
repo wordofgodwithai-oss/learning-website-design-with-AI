@@ -184,9 +184,27 @@ export function countWords(text: string): number {
   return text.split(/\s+/).filter(Boolean).length;
 }
 
-/** ~2.4 spoken words per second; trims the tail when a script runs long. */
-export function trimToDuration(script: string, durationSeconds: number): string {
-  const maxWords = Math.max(20, Math.round(durationSeconds * 2.4));
+/**
+ * Planning pace for narration. Orpheus and Edge speak at roughly 2.4–2.7
+ * words/second depending on punctuation, so this deliberately sits at the slow
+ * end: a slight underrun is filled with the outro hold, while an overrun would
+ * make the video longer than the requested duration.
+ */
+export const SPOKEN_WORDS_PER_SECOND = 2.3;
+
+export function targetWordCount(durationSeconds: number): number {
+  return Math.max(20, Math.round(durationSeconds * SPOKEN_WORDS_PER_SECOND));
+}
+
+/**
+ * Trims the tail when a script runs long.
+ *
+ * `tolerance` is a multiplier on the word budget. Narration is planned at the
+ * slow end of the speaking rate, so a draft a few percent over is fine and
+ * should not lose a whole 17-word sentence just to get under the target.
+ */
+export function trimToDuration(script: string, durationSeconds: number, tolerance = 1): string {
+  const maxWords = Math.round(targetWordCount(durationSeconds) * Math.max(1, tolerance));
   const sentences = splitSentences(script);
   const kept: string[] = [];
   let words = 0;

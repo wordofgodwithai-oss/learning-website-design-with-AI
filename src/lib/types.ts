@@ -63,6 +63,40 @@ export interface CreditAccount {
   longer_videos_add_on: boolean;
 }
 
+export type Orientation = "16:9" | "9:16" | "1:1";
+
+export interface RenderMedia {
+  url: string;
+  type: string;
+  description: string;
+}
+
+/**
+ * Everything the renderer needs beyond the script. Persisted on the video so
+ * `/api/regenerate`, variants and poster generation all see the same settings
+ * that the original request carried (REPORT.md §6 multipart vocabulary).
+ */
+export interface RenderSettings {
+  engine: Engine;
+  style: string;
+  orientation: Orientation;
+  useColor: boolean;
+  pacing: string;
+  timing: string;
+  penStyle: string | null;
+  imageStyle: string | null;
+  imageGenerationModel: string;
+  skipAnimation: boolean;
+  watermark: boolean;
+  logo: { url: string; placement: string } | null;
+  music: { url: string | null; name: string | null } | null;
+  avatar: { renderer: string; presentation: string; imageUrl: string | null } | null;
+  ownNarration: { url: string; mode: string; position: string; splitSize: string } | null;
+  media: RenderMedia[];
+  voice: { name: string | null; instructions: string | null };
+  scriptSource: string | null;
+}
+
 export interface Video {
   id: string;
   user_id: string;
@@ -87,6 +121,8 @@ export interface Video {
   media_format: "mp4" | "svg";
   watermark: boolean;
   is_audio_only: boolean;
+  /** Renderer configuration; absent on rows created before this field existed. */
+  render?: RenderSettings | null;
   variant_of: string | null;
   variant_language: string | null;
   error: string | null;

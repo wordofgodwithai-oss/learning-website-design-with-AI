@@ -2,11 +2,11 @@ import "server-only";
 
 import { withDb, readDb, nowIso } from "@/lib/db";
 import { jobId as newJobId, videoId as newVideoId } from "@/lib/ids";
-import { num, clamp } from "@/lib/http";
-import type { Database, Job, User, Video } from "@/lib/types";
+import { num, clamp, str } from "@/lib/http";
+import type { Database, Job, RenderSettings, User, Video } from "@/lib/types";
 import type { NormalizedGenerationRequest } from "@/lib/generation/request";
 import { normalizeGenerationInput, validateGenerationInput } from "@/lib/generation/request";
-import { writeScript } from "@/lib/generation/script-provider";
+import { writeScript, translateScenes } from "@/lib/generation/script-provider";
 import {
   concurrentGeneration,
   insufficientCredits,
@@ -14,6 +14,7 @@ import {
   validationError,
 } from "@/lib/generation/errors";
 import { languageName } from "@/lib/generation/config";
+import { normaliseOrientation } from "@/lib/media/theme";
 import { renderMode } from "@/lib/integrations";
 import { estimateCredits, getBalance } from "@/lib/billing";
 import { isFeatureUnlocked, type Feature } from "@/lib/features";
@@ -99,6 +100,92 @@ function variantTitle(title: string, language: string): string {
   return `${title} (${languageName(language)})`;
 }
 
+/** Everything the renderer needs, resolved from the normalized request. */
+function buildRenderSettings(input: NormalizedGenerationRequest): RenderSettings {
+  const orientation = normaliseOrientation(str(input.raw.video_orientation));
+  const background = str(input.raw.background_track);
+  const avatarImage =
+    str(input.raw.avatar_image_url) ||
+    str(input.raw.custom_avatar_url) ||
+    "";
+
+  const media: RenderSettings["media"] = [
+    ...input.userImages.map((url, index) => ({
+      url,
+      type: "image",
+      description: input.userImagesDescription[index] ?? "",
+    })),
+    ...input.userVideos.map((url, index) => ({
+      url,
+      type: "video",
+      description: input.userVideosDescription[index] ?? "",
+    })),
+    ...input.mediaFiles.map((url, index) => ({
+      url,
+      type: input.mediaFileTypes[index] ?? "image",
+      description: input.mediaFileDescriptions[index] ?? "",
+    })),
+  ];
+
+  const narrationVideo =
+    input.userVideos[0] ??
+    input.mediaFiles.find((_, index) => (input.mediaFileTypes[index] ?? "").startsWith("video")) ??
+    "";
+
+  const music = input.customMusicUrl
+    ? { url: input.customMusicUrl, name: input.musicName ?? null }
+    : background && background !== "none"
+      ? { url: null, name: background }
+      : input.musicName && input.musicName !== "none"
+        ? { url: null, name: input.musicName }
+        : null;
+
+  const avatar = input.avatarRenderer
+    ? {
+        renderer: input.avatarRenderer,
+        presentation: input.avatarPresentationMode ?? "half_body",
+        imageUrl: avatarImage || null,
+      }
+    : input.ownNarration
+      ? {
+          renderer: "whiteboard",
+          presentation: "half_body",
+          imageUrl: avatarImage || null,
+        }
+      : null;
+
+  const ownNarration =
+    input.ownNarration && narrationVideo
+      ? {
+          url: narrationVideo,
+          mode: input.ownNarration.videoMode,
+          position: input.ownNarration.pipPosition,
+          splitSize: input.ownNarration.splitSize,
+        }
+      : null;
+
+  return {
+    engine: input.engine,
+    style: input.style,
+    orientation,
+    useColor: input.useColor,
+    pacing: input.pacing,
+    timing: input.timing,
+    penStyle: input.penStyle,
+    imageStyle: input.imageStyle,
+    imageGenerationModel: input.imageGenerationModel,
+    skipAnimation: input.skipAnimation,
+    watermark: input.forceWatermark || input.includeWatermark,
+    logo: input.logoUrl ? { url: input.logoUrl, placement: input.logoPlacement ?? "top_right" } : null,
+    music,
+    avatar,
+    ownNarration,
+    media,
+    voice: { name: input.voiceName, instructions: input.voiceInstructions },
+    scriptSource: null,
+  };
+}
+
 /** Which plan-gated features a request actually uses. */
 function requiredFeatures(input: NormalizedGenerationRequest): Feature[] {
   const features: Feature[] = [];
@@ -160,6 +247,11 @@ export async function startGeneration(
     displayLanguage: input.displayLanguage,
   });
 
+  const renderSettings = {
+    ...buildRenderSettings(input),
+    scriptSource: scriptResult.source,
+  };
+
   const now = nowIso();
   const createdAt = Date.now();
   const videoId = input.justReturnScript ? null : newVideoId();
@@ -203,6 +295,7 @@ export async function startGeneration(
         media_format: "svg",
         watermark: input.forceWatermark || input.includeWatermark,
         is_audio_only: input.isAudioOnly,
+        render: renderSettings,
         variant_of: null,
         variant_language: null,
         error: null,
@@ -351,6 +444,7 @@ async function runRender(jobId: string): Promise<void> {
     const { renderVideo } = await import("@/lib/media/render");
     const rendered = await renderVideo(video);
 
+    let variants: string[] = [];
     await withDb((current) => {
       const currentJob = current.jobs.find((row) => row.id === jobId);
       const currentVideo = currentJob?.video_id
@@ -359,8 +453,17 @@ async function runRender(jobId: string): Promise<void> {
       if (!currentJob || !currentVideo || currentJob.status === "ready") return;
       currentJob.request.render_scenes = rendered.sceneCount;
       currentJob.request.render_audio = rendered.hadAudio;
+      currentJob.request.render_artwork = rendered.artwork;
+      currentJob.request.render_narration = rendered.narration;
+      currentJob.request.render_music = rendered.music;
+      currentJob.request.render_pip = rendered.pip;
       finalize(currentJob, currentVideo, current, "mp4");
+      variants = [...currentJob.variant_video_ids];
     });
+
+    // Language variants get their own narration, so they render in the
+    // background after the main video is already playable.
+    if (variants.length > 0) void renderVariants(variants);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.warn(`[render] ${jobId} failed, serving storyboard: ${message}`);
@@ -383,8 +486,7 @@ function finalize(
   video: Video | null,
   db: Database,
   mediaFormat: "mp4" | "svg",
-): void {
-  const timestamp = nowIso();
+): void {  const timestamp = nowIso();
 
   // Variants: one sibling video per requested language (REPORT.md §6 step 5).
   const variantLanguages = Array.isArray(job.request.variant_languages)
@@ -416,6 +518,11 @@ function finalize(
       variant_language: language,
       video_url: `/api/media/${id}/preview`,
       poster_url: `/api/media/${id}/poster`,
+      // In storyboard mode the variant simply shares the parent preview. With
+      // FFmpeg it needs its own narration, so it stays `processing` (and the
+      // media route serves the parent until `renderVariants` finishes).
+      status: mediaFormat === "svg" ? "ready" : "processing",
+      error: null,
       created_at: timestamp,
       updated_at: timestamp,
     };
@@ -427,6 +534,86 @@ function finalize(
   job.stage = "ready";
   job.progress = 100;
   job.updated_at = timestamp;
+}
+
+/**
+ * Language variants are created when the parent finalises. Each one gets a
+ * translated script (when the model is available) and its own render, because
+ * narration must be in the variant's language.
+ *
+ * The variant stays `processing` until its own MP4 exists; the media route
+ * serves the parent render in the meantime. A failed translation or render is
+ * recorded on the row instead of silently shipping the wrong language.
+ */
+async function renderVariants(ids: string[]): Promise<void> {
+  for (const id of ids) {
+    try {
+      const db = await readDb();
+      const variant = db.videos.find((row) => row.id === id);
+      if (!variant || !variant.variant_language) continue;
+      if (variant.status === "ready") continue;
+      const parent = variant.variant_of
+        ? db.videos.find((row) => row.id === variant.variant_of)
+        : null;
+
+      const { scenes, translated } = await translateScenes(
+        variant.scenes ?? [],
+        variant.variant_language,
+        parent?.language,
+      );
+      if (!translated) {
+        throw new Error(
+          `Could not translate narration into ${languageName(variant.variant_language)}.`,
+        );
+      }
+
+      const target: Video = {
+        ...variant,
+        status: "processing",
+        scenes,
+        script: scenes.map((scene) => scene.narration).join(" "),
+        render: variant.render ? { ...variant.render, scriptSource: "variant" } : variant.render,
+      };
+
+      // Persist the translated script up front so the page can show it while
+      // FFmpeg is still working.
+      await withDb((current) => {
+        const row = current.videos.find((entry) => entry.id === id);
+        if (!row) return;
+        row.status = "processing";
+        row.scenes = scenes;
+        row.script = target.script;
+        row.error = null;
+        row.updated_at = nowIso();
+      });
+
+      const { renderVideo } = await import("@/lib/media/render");
+      await renderVideo(target);
+
+      await withDb((current) => {
+        const row = current.videos.find((entry) => entry.id === id);
+        if (!row) return;
+        row.scenes = scenes;
+        row.script = target.script;
+        row.video_url = `/api/media/${id}/preview`;
+        row.poster_url = `/api/media/${id}/poster`;
+        row.media_format = "mp4";
+        row.status = "ready";
+        row.error = null;
+        row.updated_at = nowIso();
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn(`[render] variant ${id} failed: ${message}`);
+      await withDb((current) => {
+        const row = current.videos.find((entry) => entry.id === id);
+        if (!row) return;
+        row.status = "failed";
+        row.error = message;
+        row.updated_at = nowIso();
+      });
+    }
+  }
 }
 
 /** Re-runs a finished job's request, optionally with overridden fields. */

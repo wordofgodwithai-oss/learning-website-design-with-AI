@@ -30,8 +30,9 @@ export type ScriptMode = "local" | "groq";
 export type RenderMode = "storyboard" | "ffmpeg";
 export type AuthMode = "local" | "supabase";
 export type BillingMode = "mock" | "stripe";
-export type TtsMode = "none" | "groq";
+export type TtsMode = "none" | "groq" | "edge";
 export type TranscriptionMode = "none" | "groq";
+export type ImageMode = "off" | "cloudflare" | "pollinations";
 
 function text(value: string | undefined): string {
   return (value ?? "").trim();
@@ -79,14 +80,51 @@ export const scriptMode: ScriptMode = resolveMode<ScriptMode>(
 
 export const ttsMode: TtsMode = resolveMode<TtsMode>(
   process.env.GOLPO_TTS_MODE,
-  GROQ_API_KEY ? "groq" : "none",
-  ["none", "groq"],
+  GROQ_API_KEY ? "groq" : "edge",
+  ["none", "groq", "edge"],
 );
 
 export const transcriptionMode: TranscriptionMode = resolveMode<TranscriptionMode>(
   process.env.GOLPO_TRANSCRIBE_MODE,
   GROQ_API_KEY ? "groq" : "none",
   ["none", "groq"],
+);
+
+// ---------------------------------------------------------------------------
+// Scene artwork (free image generation)
+//
+// Cloudflare Workers AI gives 10,000 free neurons/day, which is roughly 100
+// FLUX.1-schnell images. Pollinations needs no key at all but throttles to one
+// image per 45 seconds per IP. The default picks Cloudflare when its
+// credentials exist and Pollinations otherwise, so scenes are illustrated with
+// zero setup; set GOLPO_IMAGE_MODE=off to stay on the local vector doodles.
+// ---------------------------------------------------------------------------
+
+export const CLOUDFLARE_ACCOUNT_ID = text(process.env.CLOUDFLARE_ACCOUNT_ID);
+export const CLOUDFLARE_AI_TOKEN = text(process.env.CLOUDFLARE_AI_TOKEN);
+export const CLOUDFLARE_IMAGE_MODEL =
+  text(process.env.GOLPO_CLOUDFLARE_IMAGE_MODEL) ||
+  "@cf/black-forest-labs/flux-1-schnell";
+export const POLLINATIONS_BASE_URL =
+  text(process.env.GOLPO_POLLINATIONS_URL) || "https://image.pollinations.ai";
+
+const cloudflareReady = Boolean(CLOUDFLARE_ACCOUNT_ID && CLOUDFLARE_AI_TOKEN);
+
+export const imageMode: ImageMode = resolveMode<ImageMode>(
+  process.env.GOLPO_IMAGE_MODE,
+  cloudflareReady ? "cloudflare" : "pollinations",
+  ["off", "cloudflare", "pollinations"],
+);
+
+/** Pollinations is rate limited per IP; keep a safe gap between requests. */
+export const POLLINATIONS_INTERVAL_MS = Math.max(
+  0,
+  Number(process.env.GOLPO_POLLINATIONS_INTERVAL_MS ?? 46_000),
+);
+
+export const IMAGE_TIMEOUT_MS = Math.max(
+  5_000,
+  Number(process.env.GOLPO_IMAGE_TIMEOUT_MS ?? 90_000),
 );
 
 // ---------------------------------------------------------------------------
@@ -198,7 +236,18 @@ export function integrationSummary(): Record<string, string> {
     scripts: scriptMode === "groq" ? `groq:${GROQ_MODEL}` : "local",
     transcription:
       transcriptionMode === "groq" ? `groq:${GROQ_TRANSCRIBE_MODEL}` : "none",
-    narration: ttsMode === "groq" ? `groq:${GROQ_TTS_MODEL}` : "silent",
+    narration:
+      ttsMode === "groq"
+        ? `groq:${GROQ_TTS_MODEL}`
+        : ttsMode === "edge"
+          ? "edge:multilingual"
+          : "silent",
+    artwork:
+      imageMode === "cloudflare"
+        ? `cloudflare:${CLOUDFLARE_IMAGE_MODEL}`
+        : imageMode === "pollinations"
+          ? "pollinations:flux"
+          : "vector-doodles",
     render: renderMode === "ffmpeg" ? "ffmpeg" : "storyboard",
   };
 }
