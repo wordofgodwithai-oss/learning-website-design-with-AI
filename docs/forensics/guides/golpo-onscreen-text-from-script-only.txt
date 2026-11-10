@@ -1,0 +1,218 @@
+Use Only Script Words for On-Screen Text in Golpo About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Features & Editing Generate On-Screen Text Using Only Your Script in Golpo
+Keep every generated on-screen word inside your approved script. See four API-generated Canvas and Sketch examples made with the exact same script, learn where to enable the control, and copy a working API v2 payload.
+Sudip Kar • August 21, 2026 • 9 min read 
+
+Golpo feature guide
+
+Use only your script for on-screen text
+
+The short answer: keep Generate on-screen text using only the script content enabled when every generated word visible in the video must already exist in your supplied script. Golpo can still choose which script phrases to show, but it will not invent extra labels, captions, titles, or other wording.
+
+Updated August 20, 2026 · Four controlled API v2 renders
+
+One wording boundary, applied to both Golpo Canvas and Golpo Sketch. 
+
+What the switch changes
+
+On: every generated on-screen word must come from the script. Off: Golpo may add useful scene text—such as a title, diagram label, category name, or annotation—even if that wording was never narrated.
+
+The exact script used in all four tests
+
+To isolate the control, all four API requests used the same prompt, script, duration, voice, language, orientation, and fast scene pacing. Only the engine/style and onscreen_text_from_script_only value changed.
+
+Small ideas become clear when we remove distraction. Start with one question, connect each step, and let every visual support the message. When the screen shows only words from this script, viewers can focus on the explanation. 
+See the controls held constant Prompt: Create a concise visual explainer about turning complex ideas into clear stories.
+Timing: 0.25 minutes
+Voice: female-1
+Narration language: English
+Orientation: horizontal
+Scene pacing: fast
+Watermark: false
+Visibility: public
+
+Canvas: the difference is visible
+
+The enabled Canvas video uses phrases found in the script, including “Small ideas become clear,” “Start with one question,” and “only words from this script.” The disabled video adds diagram labels that do not appear in the script: IDEA, PROCESS, OUTCOME, GROWTH, and INSIGHTS FOUND .
+
+Canvas · flag on
+
+Only script words are allowed
+
+Your browser does not support HTML video. 
+▶ 
+
+API: onscreen_text_from_script_only: true · open MP4 
+
+Canvas · flag off
+
+Golpo may add scene labels
+
+Your browser does not support HTML video. 
+▶ 
+
+API: onscreen_text_from_script_only: false · open MP4 
+
+Sketch: Professional Clean on vs Classic with Words off
+
+This pair makes the boundary immediately visible. The Professional Clean video keeps the flag on and displays readable phrases taken directly from the script. The flag-off Classic-with-Words treatment adds prominent labels such as CLARITY, CLEAR IDEA, SCRIPT ONLY, and FOCUS —words that were never supplied in the narration.
+
+Sketch Professional Clean · flag on
+
+Readable phrases, strict vocabulary
+
+Your browser does not support HTML video. 
+▶ 
+
+API: onscreen_text_from_script_only: true · open MP4 
+
+Sketch Classic with Words treatment · flag off
+
+Large labels beyond the script
+
+Your browser does not support HTML video. 
+▶ 
+
+API v1: flag omitted/default off · Classic plus word-label visual instruction · open MP4 
+
+How to enable it in Golpo
+
+Start a script workflow. The control normally appears when you select Script Only mode or Edit script before creating video .
+
+Paste or approve the exact narration. Treat the script as the allowed vocabulary for generated display text.
+
+Leave the checkbox selected. In the creation interface it is checked by default.
+
+Generate and verify. Compare every readable word in the finished frames with the approved script, especially names, dates, claims, and regulated wording.
+
+Keep this checkbox selected when the generated display vocabulary must remain inside the script. 
+
+API v2 payload
+
+In API workflows, set the boolean explicitly. Unlike the checked creation-interface control, the API field should not be left to an assumed default.
+
+POST https://api.golpoai.com/api/v2/videos/generate
+x-api-key: YOUR_API_KEY
+Content-Type: application/json
+
+{
+"prompt": "Create a concise visual explainer about turning complex ideas into clear stories.",
+"custom_script": "Small ideas become clear when we remove distraction. Start with one question, connect each step, and let every visual support the message. When the screen shows only words from this script, viewers can focus on the explanation.",
+"onscreen_text_from_script_only": true,
+"golpo_video_engine": "golpo_canvas",
+"canvas_style_variant": "editorial",
+"timing": "0.25",
+"narration_voice": "female-1",
+"narration_language": "english",
+"video_orientation": "horizontal",
+"scene_pacing": "fast",
+"watermark": false,
+"visibility": "public"
+} 
+
+For the flag-on Sketch test, v2 used "golpo_video_engine": "golpo_sketch" , "sketch_style_variant": "professional_clean" , and "onscreen_text_from_script_only": true . For the flag-off treatment, v1 used Classic ( "use_lineart_2_style": "false" ) plus the visual instruction “include a few large key words and short labels in every scene.”
+
+API compatibility note: the public v1 documentation lists classic_words , but the live v1 validator rejected that value with HTTP 422 on August 20, 2026; v2 also rejected classic_words and classic_with_words . The flag-off example therefore reproduces the documented Classic-with-Words behavior using the accepted Classic style plus explicit word-label direction. The narration script remains identical, but this Sketch comparison is intentionally not a style-only A/B test. 
+
+When to keep it on—or turn it off
+
+Keep it on
+Consider turning it off
+
+Approved product, policy, legal, medical, financial, or compliance wording
+Creative explainers where short generated labels improve a diagram
+
+Translated scripts with reviewed terminology
+Early drafts where Golpo can propose titles and annotations
+
+Brand language that must not drift
+Scenes that benefit from concise category, process, or chart labels
+
+Frequently asked questions
+
+Is this the same as captions?
+
+No. The feature restricts text generated inside the visual scenes. It does not promise a full, timed accessibility caption track or transcript.
+
+Will every word from my script appear?
+
+No. It is an allowed-vocabulary boundary, not a requirement to display the complete narration. A scene can show one script phrase, several script words, or no readable text.
+
+Does turning it off always create extra words?
+
+No. Turning the flag off gives the visual generator permission; the scene design still determines whether text is useful. In the Classic treatment above, explicit visual direction encouraged large labels so the difference would be easy to inspect.
+
+Does it rewrite my script?
+
+No. This setting governs generated on-screen text. Use Script Only mode, Edit script before creating video, or API custom_script to control the narration source.
+
+Create with a controlled display vocabulary
+
+Supply the approved script, keep the on-screen-text restriction enabled, then review the final frames before publishing.
+
+Open Golpo → 
+
+Tags
+# On-Screen Text # Script Only # Golpo API # Golpo Canvas # Golpo Sketch 
+
+In this guide
+The exact script used in all four tests 
+Canvas: the difference is visible 
+Only script words are allowed 
+Golpo may add scene labels 
+Sketch: Professional Clean on vs Classic with Words off 
+Readable phrases, strict vocabulary 
+Large labels beyond the script 
+How to enable it in Golpo 
+API v2 payload 
+When to keep it on—or turn it off 
+Frequently asked questions 
+Is this the same as captions? 
+Will every word from my script appear? 
+Does turning it off always create extra words? 
+Does it rewrite my script? 
+Create with a controlled display vocabulary 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

@@ -1,0 +1,2710 @@
+Golpo AI API Documentation — Programmatic Video Generation About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+API Docs Endpoints REST API v2 · Latest 
+
+REST API
+v2 Reference
+
+Getting Started
+Quick Start 
+API Reference
+Video Endpoints Request Body Parameter Groups Custom Style Endpoints 
+AI Presenter (Avatar)
+Overview Golpo Avatars Create a Custom Avatar Layout & Framing Generate Presenter Videos Video Preflight Track Progress Full Example My Avatars Endpoint Reference Errors 
+File Management
+Upload File User Assets Local Paths 
+Examples
+Language Quickstarts Display Language Own Narration Video Multi-Language Variants Custom Style (Canvas + Sketch) Frame Transition 
+Preview Gallery
+Golpo Canvas Canvas Compact vs Expanded Pen in Hand Canvas Custom Style Golpo Sketch Sketch Custom Style Background Music Narration Voices 
+Video Editing
+Overview List Frame Versions Edit Frames Edit Job Status Combine Frames Set Frame Version 
+Parameter Reference
+Timing Video Orientation Narration Voices Background Music Voice Instructions Video Instructions Golpo Engine Canvas Style Sketch Style Custom Style Pen Animation Style Visual Animation Style Frame Transition Inserting Images in Script Inserting Videos in Script Language Support 
+Reference
+HTTP Status Codes Error Response API Only Tier $ 
+Need Help?
+Questions about the API?
+support@golpoai.com → 
+
+Quick Start
+Everything you need to start generating videos with the Golpo REST API v2.
+
+Auth header
+x-api-key: YOUR_API_KEY 
+Content-Type
+application/json 
+Best for
+Server-to-server integrations, automation workflows, internal dashboards, partner apps
+
+Prerequisites
+Valid API plan · API key issued per workspace · HTTPS requests only · files must be under 10 MB
+
+NOTE: POST /api/v2/videos/generate requires x-api-key . Returns 403 with the message “API v2 requires API key authentication. Provide ‘x-api-key’ header.” if the header is missing. 
+Your API base URL is provided when you create an API key in the dashboard. All requests must be made over HTTPS. 
+
+Video Endpoints
+Seven REST endpoints covering the full video lifecycle — generate, list, retrieve, update, delete, job status, and user credits.
+
+POST /api/v2/videos/generate 
+Generate a video from a prompt or script. JSON body, x-api-key required.
+
+JavaScript Python .NET Java curl 
+generate.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key"; // Replace with your Golpo API key
+
+const payload = {
+prompt: "Explain the quarterly roadmap",
+background_track: "engaging"
+};
+
+const BASE_URL = "{BASE_URL}"; // You will receive this when creating an API key
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": API_KEY
+},
+body: JSON.stringify(payload)
+});
+
+const data = await response.json();
+console.log(data); 
+Run with: node --env-file=.env generate.js
+
+GET /api/v2/videos 
+Retrieve videos belonging to the authenticated user. Supports limit and offset query params. x-api-key required.
+
+JavaScript Python .NET Java curl 
+list-videos.js Copy 
+import fetch from "node-fetch";
+
+const BASE_URL = "{BASE_URL}"; // You will receive this when creating an API key
+
+// Query params:
+// limit — max number of videos to return (optional)
+// offset — number of videos to skip (optional, for pagination)
+const response = await fetch(`${BASE_URL}/api/v2/videos?limit=10&offset=0`, {
+headers: {
+"x-api-key": "api-key"
+}
+});
+
+const data = await response.json();
+console.log(data.videos); // array of video objects
+console.log(data.total); // total number of videos 
+Run with: node --env-file=.env list-videos.js
+
+GET /api/v2/videos/{video_id} 
+Retrieve metadata for a single video by ID. x-api-key required.
+
+JavaScript Python .NET Java curl 
+get-video.js Copy 
+const BASE_URL = "{BASE_URL}"; // You will receive this when creating an API key
+const VIDEO_ID = "video_id";
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/${VIDEO_ID}`, {
+headers: { "x-api-key": "api-key" }
+});
+console.log(await response.json()); 
+Run with: node --env-file=.env get-video.js <video_id>
+
+PATCH /api/v2/videos/{video_id} 
+Update video metadata. Only 'title' and 'visibility' can be updated.
+
+JavaScript Python .NET Java curl 
+update-video.js Copy 
+const BASE_URL = "{BASE_URL}"; // You will receive this when creating an API key
+const VIDEO_ID = "video_id";
+
+const payload = { title: "Updated internal briefing", visibility: "private" };
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/${VIDEO_ID}`, {
+method: "PATCH",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": "api-key"
+},
+body: JSON.stringify(payload)
+});
+
+console.log(await response.json()); 
+Run with: node --env-file=.env update-video.js <video_id>
+
+DELETE /api/v2/videos/{video_id} 
+Delete a generated video (soft delete). x-api-key required.
+
+JavaScript Python .NET Java curl 
+delete-video.js Copy 
+const BASE_URL = "{BASE_URL}"; // You will receive this when creating an API key
+const VIDEO_ID = "video_id";
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/${VIDEO_ID}`, {
+method: "DELETE",
+headers: { "x-api-key": "api-key" }
+});
+
+console.log(await response.json()); 
+Run with: node --env-file=.env delete-video.js <video_id>
+
+GET /api/v2/users/credits 
+Return the authenticated API key user's plan, current stored credit balance, and API status.
+
+JavaScript Python curl 
+user-credits.js Copy 
+const BASE_URL = "{BASE_URL}"; // You will receive this when creating an API key
+
+const response = await fetch(`${BASE_URL}/api/v2/users/credits`, {
+method: "GET",
+headers: { "x-api-key": "api-key" }
+});
+
+console.log(await response.json());
+// { "plan": "api_only", "credits": 124.5, "status": "active" } 
+Run with: node --env-file=.env user-credits.js
+
+Request Body
+Full parameter reference for POST /api/v2/videos/generate.
+
+Only prompt is required. All other parameters are optional. 
+Parameter Type Default Required Description 
+prompt string — Required Main prompt/topic for the video.
+
+reference_source array[string] None Optional List of document URLs (https/s3) used as reference material. Use /upload-file to obtain URLs; server-side callers may also pass local file paths.
+
+narration_instructions string "" Optional Describe how the narration voice should sound — accent, tone, pace, and delivery style.
+Examples: "Speak in a warm British accent with a calm, professorial tone", "Fast-paced sports commentator style". 
+
+enable_script_only_mode boolean false Optional Only generate the script — skip TTS and video rendering. Status response returns script_text.
+NOTE: This parameter will not work with own_narration_source (own-narration mode). Requests will follow the standard own_narration workflow regardless of the parameter value. 
+
+custom_script string None Optional Use a script you supply instead of generating one. Capped at approximately 15 estimated minutes.
+NOTE: Scripts longer than ~15 estimated minutes are rejected with 422. If timing is also set, it must be greater than or equal to the estimated script duration. 
+Embedding paired [START][IMAGE N]...[END][IMAGE N] and [START][VIDEO N]...[END][VIDEO N] markers in your script controls where your uploaded custom_images and custom_videos appear. See the Inserting Images in Script and Inserting Videos in Script sections for the placement rules — markers that violate the format are silently dropped. 
+
+onscreen_text_from_script_only boolean false Optional Generate on-screen text using script-source content only. No extra labels, captions, titles, or other words are added.
+NOTE: Supports normal prompt flow, script-based flow, and own-narration flow. Source text comes from generated script (prompt), provided script (custom_script), or narration transcription source (own_narration_source). 
+
+narration_voice string "female-1" Optional Narration voice.
+Allowed values: "female-1" (default), "female-2", "female-3", "female-4", "female-5", "female-6", "female-7", "male-1", "male-2", "male-3", "male-4", "male-5", "male-6", "male-7". 
+
+enable_color boolean true Optional Enable color video generation pipeline.
+
+narration_language string "en" Optional Language for narration. Lowercase only — accepts language keywords (e.g. "english", "hindi"), ISO 639-1 codes (e.g. "en", "hi"), or code-switch variants (e.g. "hi-en").
+
+background_track string None Optional Background music track.
+Allowed values: "jazz", "lofi", "dramatic", "engaging", "hyper", "inspirational", "documentary". 
+
+video_orientation string "horizontal" Optional Video orientation: "horizontal" (16:9) or "vertical" (9:16).
+
+enable_podcast_engine boolean false Optional When true, generate audio-only podcast output (no video). Status response returns podcast_url.
+
+timing string "1" Optional Video/podcast duration in minutes (as string) or "auto" to let the system determine it.
+Supported values: "0.25", "0.5", "1", "2", "4", "8", "10", "15", "auto". 
+NOTE: "15" requires Enterprise Custom, or Scale with the Longer Videos add-on enabled. Other API plan/add-on combinations receive a 403. 
+
+watermark boolean false Optional Include a watermark in the video.
+
+custom_logo string None Optional Custom logo URL (https/s3). Use /upload-file first; server-side callers may also pass local file paths.
+
+logo_position string None Optional Logo placement. Allowed values: "tl" (top-left), "tr" (top-right), "bl" (bottom-left), "br" (bottom-right).
+NOTE: Only valid when watermark=true or custom_logo is provided. Setting logo_position without either is rejected with 422, since no logo or watermark would render. 
+
+visual_instructions string "" Optional Visual instructions to guide how the video looks.
+Examples: "Show more graphs and charts", "Cinematic transitions", "Dark moody aesthetic with neon accents". 
+
+golpo_video_engine string "golpo_canvas" Optional Video generation engine: "golpo_canvas" (default) or "golpo_sketch".
+NOTE: When using golpo_canvas, canvas_style_variant is required. When using golpo_sketch, sketch_style_variant is required. Setting either to null is rejected with 422. 
+
+canvas_style_variant string "chalkboard_color" Optional Golpo Canvas style variant. Unsuffixed values select the Expanded profile. For the ten pre-Notebook style families, append '_compact' to select the Compact profile. Notebook is Compact-only and remains unsuffixed.
+Allowed values: "chalkboard_bw", "chalkboard_bw_compact", "chalkboard_black_on_white", "chalkboard_black_on_white_compact", "chalkboard_color", "chalkboard_color_compact", "whiteboard", "whiteboard_compact", "modern_minimal", "modern_minimal_compact", "playful", "playful_compact", "technical", "technical_compact", "editorial", "editorial_compact", "sharpie", "sharpie_compact", "illustrations", "illustrations_compact", "notebook_infographic". Required when golpo_video_engine is "golpo_canvas". 
+
+sketch_style_variant string "classic" Optional Golpo Sketch style variant.
+Allowed values: "classic" (default), "improved(beta)", "formal", "crayon", "dry_erase", "professional_clean", "creative", "infographics", "chalkboard_black_on_white". Required when golpo_video_engine is "golpo_sketch". 
+
+custom_style string None Optional Use your own custom visual style. First save a style (from an image URL, a video URL, or a text description) with POST /api/v2/custom-styles , then pass its id here. Works with both Golpo Canvas and Golpo Sketch — when set, canvas_style_variant / sketch_style_variant are ignored.
+NOTE: Requires a Business or above plan. Not allowed with enable_podcast_engine=true (422). 
+
+own_narration_source string None Optional URL (https/s3) to an audio or video file to use instead of generating script and TTS. Server-side callers may also pass local file paths.
+Useful for generating a video from your own existing audio or video narration. 
+
+use_ai_audio_at array[integer] None Optional List of 1-indexed positions in custom_videos whose original audio should be replaced with AI-generated narration. Videos not listed keep their original audio.
+NOTE: Only valid when custom_videos is provided. Length must not exceed the number of custom_videos. 
+
+custom_images array[string] None Optional List of image URLs (https/s3) to insert into the video. Server-side callers may also pass local file paths.
+
+custom_images_description array[string] None Optional List of descriptions for custom images (one per image).
+NOTE: Required when custom_images is provided. Must have the same length as custom_images. 
+Descriptions tell the Golpo AI what each image shows, so it can place each image at the right moment in the script and reference it in the narration. More specific descriptions produce more contextually accurate videos. 
+
+keep_original_images array[boolean] None Optional List of booleans indicating whether to use each image as-is without AI processing (one per image).
+NOTE: Only valid when custom_images is provided. Length must not exceed the number of custom_images. 
+
+disable_image_animation array[boolean] None Optional List of booleans indicating whether to skip animation for each image (one per image).
+NOTE: Only valid when custom_images is provided. Length must not exceed the number of custom_images. 
+
+custom_videos array[string] None Optional List of video URLs (https/s3) to insert into the video. Server-side callers may also pass local file paths.
+
+custom_videos_description array[string] None Optional List of descriptions for custom videos (one per video).
+NOTE: Required when custom_videos is provided. Must have the same length as custom_videos. 
+Descriptions tell the Golpo AI what each video shows, so it can cut to each clip at the right moment in the script and frame the surrounding narration. More specific descriptions produce more contextually accurate videos. 
+
+visibility string None Optional Video visibility. Allowed values: "public" (appears in the Golpo gallery) or "private".
+
+video_id string None Optional Optional custom video/job id assigned by the caller.
+
+reference_images array[string] None Optional List of reference image URLs (https/s3) for problem-solving mode. The video is generated around the provided images. Server-side callers may also pass local file paths.
+Best suited for explaining math, science, or any problem captured as an image — pair with timing: "auto" so the Golpo AI picks a duration that matches the complexity of the problem. 
+
+pen_animation_style string None Optional Pen cursor animation style. Allowed values: "stylus", "marker", "pen".
+NOTE: Only supported with the Golpo Canvas engine. Setting this field with "golpo_video_engine": "golpo_sketch" is rejected with 422. 
+
+visual_animation_style string "auto" Optional Visual animation style for generated visual components in Golpo Canvas (for example: illustrations, diagrams, icons, arrows, and annotations). Default value: "auto" (Golpo Canvas engine decides the animation style). Allowed values: "auto", "fade_in", "sketch".
+NOTE: Only supported with the Golpo Canvas engine. Setting this field with "golpo_video_engine": "golpo_sketch" is rejected with 422. 
+
+own_narration_video_mode boolean None Optional Deprecated compatibility field. true shows the narration video; false uses only its audio. New requests should select own_narration_video_layout directly.
+NOTE: Existing payloads remain supported. true without a layout keeps the circular PiP behavior. 
+
+own_narration_video_position string "right-bottom" Optional Placement of the narration video. PiP uses the full corner. Split layout reads left/right for horizontal videos and top/bottom for vertical videos. Allowed values: "left-top", "right-top", "left-bottom", "right-bottom" (default).
+
+own_narration_video_layout string None Optional Narration-video layout: "round_overlay" uses a circular corner overlay; "side_by_side" uses left/right regions for horizontal output and top/bottom regions for vertical output. Omit for narration audio only.
+Existing integrations may retain "pip" or "split" together with the deprecated own_narration_video_mode=true. New integrations should use the canonical layout values without the boolean. 
+
+own_narration_split_size string "50%" Optional In side_by_side layout, the narrator share of the active axis: width horizontally or height vertically. Allowed values: "25%", "30%", "35%", "40%", "50%".
+
+own_narration_video_fit string "crop" Optional "crop" fills the narrator card without distortion and enables framing focus. "full" keeps the complete narrator frame using the existing stretch behavior.
+
+own_narration_focus_position number 50 Optional Framing slider from 0–100 when fit is crop. Horizontal output: 0 keeps more left and 100 more right. Vertical output: 0 keeps more top and 100 more bottom.
+NOTE: Only valid with own_narration_video_layout="side_by_side" and own_narration_video_fit="crop". 
+
+own_narration_webcam_crop_x number | null None Optional Deprecated 0–1 framing value retained for compatibility. Use own_narration_focus_position (0–100) instead.
+
+avatar_id string None Optional Turn on AI Presenter: an avatar that lip-syncs the narration. Pass a Golpo avatar id from GET /api/v2/avatars/stock (for example "stock-maya-v1") or the id of a Ready custom avatar created with POST /api/v2/avatars.
+NOTE: Golpo avatars use 3 credits/min. Custom avatars use 5 credits/min. Cannot be combined with own_narration_video_layout or own_narration_video_mode=true; own_narration_source audio is allowed (up to 15 minutes) and the avatar lip-syncs it. 
+
+avatar_layout string "auto" Optional Layout: "auto" (Auto: uses approved layouts automatically), "side_by_side" (Side by side in horizontal videos, Top and bottom in vertical videos), "round_overlay" (Round overlay: circular corner overlay), or "fullscreen" (Full screen: presenter fills the complete frame). Requires avatar_id.
+A layout the avatar cannot render returns 422 avatar_layout_unavailable. Check available_layouts on GET /api/v2/avatars/{avatar_id}. 
+
+avatar_position string "right-bottom" Optional Presenter placement: "left-top", "right-top", "left-bottom", "right-bottom". Round overlay uses it as the corner; Side by side uses the side (Presenter left / Presenter right); Top and bottom uses top or bottom (Presenter top / Presenter bottom). Requires avatar_id.
+
+avatar_split_size string saved split, else "30%" Optional Presenter size: "25%", "30%", "35%", "40%", "50%" of the width (Side by side) or height (Top and bottom). Defaults to the split saved in the avatar layout_config. Not valid with avatar_layout="round_overlay". Requires avatar_id.
+
+avatar_framing object None Optional The orientation_framing object returned by POST /api/v2/avatars/{avatar_id}/video-preflight. Pass it to accept a best-effort crop for this video. Requires avatar_id.
+
+custom_videos_avatar_modes object None Optional Avatar during this clip, keyed by the 1-indexed custom_videos position: "off" (Hide avatar: video uses the full frame) or "round_overlay" (Show avatar: round corner overlay). Example: {"1": "off"}. Requires avatar_id and custom_videos.
+
+scene_pacing string "normal" Optional Pacing level: "normal" (15s max per scene) or "fast" (10s max per scene). Works with both Golpo Canvas and Golpo Sketch.
+NOTE: Animated frame_transition values are only available with scene_pacing "normal". Combining them with "fast" is rejected with 422. 
+
+frame_transition array[string] ["none"] Optional How a finished frame moves into the next frame. Allowed values: "none" (hard cut), "left", "right", "up", "down", "zoom_in", "zoom_out". Send several values (for example ["left", "zoom_in"]) and one is picked at random for every frame change. Works with both Golpo Canvas and Golpo Sketch.
+NOTE: Only available with scene_pacing "normal". Any value other than ["none"] combined with scene_pacing "fast" is rejected with 422. 
+NOTE: "none" cannot be combined with other values, and each value must be its own array item (not a comma separated string). 
+Only works with Golpo Canvas and Golpo Sketch. See the Frame Transition section for details. 
+
+transition_hand_animation boolean false Optional Have an animated hand push every slide of frame_transition. Accepts only true or false.
+NOTE: true requires frame_transition to contain at least one of "left", "right", "up", "down", and cannot be combined with "zoom_in" or "zoom_out". Otherwise the request is rejected with 422. Like frame_transition, it needs scene_pacing "normal". 
+
+onscreen_text_language string None Optional Language for on-screen text. Same value space as narration_language. Useful when displayed text should differ from the narration language.
+NOTE: Only supported with the Golpo Canvas engine. Setting this field with "golpo_video_engine": "golpo_sketch" is rejected with 422. 
+If omitted, on-screen text uses the same language as narration_language. 
+Example: narration_language: "hindi", onscreen_text_language: "english" — narration in Hindi, on-screen text in English. 
+
+language_variants array[string] None Optional Generate additional language versions of the video alongside the primary narration_language . Provide an array of supported languages (e.g. ["spanish", "french", "hi"]). A separate video will be generated for each specified language.
+Each language version is billed as a separate render. For example, a 2-minute video with 2 additional languages is billed as 3 renders × 2 minutes. Duplicate languages, including the primary narration_language, are not allowed and will return a 400 error. 
+NOTE: All language variants use the same prompt, duration, voice, and visual settings. Only the narration_language changes for each variant. 
+
+variant_visuals_mode string "shared" Optional Controls how visuals are generated across language variants. shared (default) reuses the primary video's visuals across all language variants. per_language generates separate visuals for each language variant.
+
+Parameter Groups
+Parameters organized by purpose for easier discovery.
+
+Content
+
+prompt custom_script onscreen_text_from_script_only enable_script_only_mode reference_source reference_images 
+
+Narration
+
+narration_voice narration_instructions narration_language onscreen_text_language language_variants variant_visuals_mode own_narration_source own_narration_video_layout own_narration_video_position own_narration_split_size own_narration_video_fit own_narration_focus_position own_narration_video_mode own_narration_webcam_crop_x 
+
+AI Avatar
+
+avatar_id avatar_layout avatar_position avatar_split_size avatar_framing custom_videos_avatar_modes 
+
+Visual
+
+golpo_video_engine canvas_style_variant sketch_style_variant custom_style enable_color visual_instructions pen_animation_style visual_animation_style scene_pacing frame_transition transition_hand_animation 
+
+User Media
+
+custom_images custom_images_description keep_original_images disable_image_animation custom_videos custom_videos_description use_ai_audio_at 
+
+Audio
+
+background_track 
+
+Format
+
+timing video_orientation enable_podcast_engine 
+
+Branding
+
+watermark custom_logo logo_position 
+
+Workflow
+
+visibility video_id 
+
+Custom Style Endpoints
+Save your own visual style from an image URL, a video URL, or a text description, then reference it by custom_style_id in custom_style on POST /api/v2/videos/generate . Works with both Golpo Canvas and Golpo Sketch.
+
+Create your custom style first, then reference it by custom_style_id
+POST /custom-styles GET /custom-styles POST /videos/generate with custom_style: "<id>" 
+
+NOTE: Available from the Business plan and above. All endpoints require x-api-key . 
+
+Endpoint Method Description 
+{BASE_URL}/api/v2/custom-styles GET List your saved styles (newest first) 
+{BASE_URL}/api/v2/custom-styles POST Save a style from an image URL, video URL, or text description 
+{BASE_URL}/api/v2/custom-styles/{custom_style_id} GET Get one saved style 
+{BASE_URL}/api/v2/custom-styles/{custom_style_id} DELETE Delete one saved style 
+
+Request body — POST /api/v2/custom-styles 
+Field Type Required Description 
+style_name string (1–60) Required Display name for the style. 
+source string (1–5000) Required An HTTPS URL to an image (moodboard, brand frame, illustration), an HTTPS URL to a video file (frames are sampled and analyzed for the still art style), or a free-text style description . Use /upload-file to host your own image or video and pass the returned file_url . 
+kind string Optional Allowed values: "image" ( source is an HTTPS image URL), "video" ( source is an HTTPS video URL — frames are sampled and analyzed), or "text" ( source is a style description). 
+
+create-response.json Copy 
+// 201 from POST /api/v2/custom-styles
+{
+"success": true,
+"style": {
+"id": "7f3d5a2e-2c8e-4c0f-9c8f-9a2b1d3e4f56", // use as custom_style
+"style_name": "Brand moodboard",
+"source": "https://cdn.example.com/brand-moodboard.png",
+"kind": "image",
+"created_at": "2026-09-20T12:00:00Z",
+"updated_at": "2026-09-20T12:00:00Z"
+}
+} 
+
+list-response.json Copy 
+// 200 from GET /api/v2/custom-styles
+{
+"success": true,
+"styles": [
+{
+"id": "7f3d5a2e-2c8e-4c0f-9c8f-9a2b1d3e4f56",
+"style_name": "Brand moodboard",
+"source": "https://cdn.example.com/brand-moodboard.png",
+"kind": "image",
+"created_at": "2026-09-20T12:00:00Z",
+"updated_at": "2026-09-20T12:00:00Z"
+}
+]
+}
+// DELETE returns { "success": true } 
+
+Validation summary
+Situation Status 
+Plan without Custom Style Support 403 
+style_id not found or not owned by the caller (GET, DELETE) 404 
+kind="image" or kind="video" with a non-HTTPS source 422 
+
+POST /api/v2/custom-styles 
+Save a custom style from an HTTPS image URL, an HTTPS video URL, or a free-text description.
+
+JavaScript Python .NET Java curl 
+create-custom-style.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key"; // Replace with your Golpo API key
+const BASE_URL = "{BASE_URL}"; // You will receive this when creating an API key
+
+// kind: "image" (HTTPS image URL) | "video" (HTTPS video URL) | "text" (style description)
+const payload = {
+style_name: "Brand moodboard",
+source: "https://cdn.example.com/brand-moodboard.png",
+kind: "image"
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/custom-styles`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": API_KEY
+},
+body: JSON.stringify(payload)
+});
+
+const data = await response.json();
+console.log("Style ID:", data.style.id); // pass as custom_style on /generate 
+Run with: node --env-file=.env create-custom-style.js
+
+GET /api/v2/custom-styles 
+List the custom styles you have saved, newest first. Use the id of any entry as custom_style on /generate.
+
+JavaScript Python .NET Java curl 
+list-custom-styles.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+const response = await fetch(`${BASE_URL}/api/v2/custom-styles`, {
+headers: { "x-api-key": API_KEY }
+});
+
+const { styles } = await response.json();
+styles.forEach((s) => console.log(s.id, s.style_name, s.kind)); 
+Run with: node --env-file=.env list-custom-styles.js
+
+GET /api/v2/custom-styles/{style_id} 
+Retrieve one saved custom style by id. Returns 404 if the style does not exist or belongs to another account.
+
+JavaScript Python .NET Java curl 
+get-custom-style.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+const STYLE_ID = "7f3d5a2e-2c8e-4c0f-9c8f-9a2b1d3e4f56";
+
+const response = await fetch(`${BASE_URL}/api/v2/custom-styles/${STYLE_ID}`, {
+headers: { "x-api-key": API_KEY }
+});
+
+const { style } = await response.json();
+console.log(style); 
+Run with: node --env-file=.env get-custom-style.js
+
+DELETE /api/v2/custom-styles/{style_id} 
+Delete a saved custom style. Videos already generated with it are not affected.
+
+JavaScript Python .NET Java curl 
+delete-custom-style.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+const STYLE_ID = "7f3d5a2e-2c8e-4c0f-9c8f-9a2b1d3e4f56";
+
+const response = await fetch(`${BASE_URL}/api/v2/custom-styles/${STYLE_ID}`, {
+method: "DELETE",
+headers: { "x-api-key": API_KEY }
+});
+
+console.log(await response.json()); // { "success": true } 
+Run with: node --env-file=.env delete-custom-style.js
+
+AI Presenter (Avatar)
+Add a lip-synced AI Presenter to any Golpo video. Use a ready-made Golpo avatar, or create a custom avatar from a portrait of yourself or a colleague.
+
+Golpo avatar
+Pick a Golpo avatar and pass its id as avatar_id . Ready to use, nothing to set up. Golpo avatars use 3 credits/min .
+
+Custom avatar
+Upload a portrait, approve its framing in each layout, and save it to My Avatars. Reuse it in any video. Custom avatars use 5 credits/min .
+
+Custom avatar flow
+Step 1
+Upload portrait
+POST /avatars/upload
+
+Step 2
+Preview layouts
+POST /avatars/layout-preview
+
+Step 3
+Create avatar
+POST /avatars
+
+Step 4
+Generate video
+POST /videos/generate
+
+Step 5
+Poll status
+GET /videos/status/{job_id}
+
+Base URL
+https://api.golpoai.com Every avatar endpoint below is {BASE_URL}/api/v2/avatars/… , for example https://api.golpoai.com/api/v2/avatars/stock .
+
+Auth header
+x-api-key: YOUR_API_KEY JSON bodies use Content-Type: application/json ; the portrait upload uses multipart/form-data .
+
+NOTE: All avatar endpoints need the x-api-key header; portal session tokens return 403. Avatars are private to the account that owns the key. Natural avatars, layout previews, and preflight have no creation credit. A Polished avatar costs 1 credit after successful creation. 
+Golpo Avatars
+The same 20 ready-made presenters as the playground's Golpo avatar library. Pass the id as avatar_id; nothing to set up.
+
+20 Golpo avatars
+See each presenter's preview and copy its avatar_id.
+
+Browse all 20 Golpo avatars 
+GET {BASE_URL} /api/v2/avatars/stock 
+Returns the Golpo avatar catalog. Every Golpo avatar works with every layout and video type. Pass its id as avatar_id ; preview_url is the portrait image.
+GET /api/v2/avatars/stock → 200 Copy 
+{
+"success": true,
+"catalog_version": "preview-v1",
+"avatars": [
+{
+"id": "stock-maya-v1",
+"name": "Maya",
+"tagline": "Warm educator",
+"preview_url": "https://video.golpoai.com/stock-avatars/maya.png"
+}
+// … the other Golpo avatars
+]
+} 
+
+POST /api/v2/videos/generate Copy 
+{
+"prompt": "Why the sky is blue",
+"timing": "1",
+"avatar_id": "stock-maya-v1",
+"avatar_layout": "side_by_side",
+"avatar_split_size": "30%"
+} 
+
+Create a Custom Avatar
+Four calls: upload, preview, create, and (for Polished avatars) wait until Ready.
+
+1 Upload a portrait
+POST {BASE_URL} /api/v2/avatars/upload 
+Send multipart/form-data with image and kind=source . PNG, JPEG, or WebP, up to 10 MB.
+Use a clear, front-facing photo, lit evenly, with the head and shoulders visible.
+Leave some space above the head; tightly cropped faces fit fewer layouts.
+One person only, no sunglasses or hands covering the face.
+upload.sh Copy 
+curl -X POST "{BASE_URL}/api/v2/avatars/upload" \
+-H "x-api-key: $GOLPO_API_KEY" \
+-F image=@portrait.jpg \
+-F kind=source 
+
+200 response Copy 
+{
+"success": true,
+"upload": {
+"object_url": "https://…/avatars/…/source-….jpg",
+"content_type": "image/jpeg"
+}
+} 
+
+For large files, call POST /api/v2/avatars/upload-url with {"content_type": "image/png"} . PUT the bytes to the returned url with the same Content-Type , then use object_url .
+
+2 Preview the layouts
+POST {BASE_URL} /api/v2/avatars/layout-preview 
+Send the object_url and a layout_config . For every layout and orientation Golpo returns two images and tells you whether the presenter fits. It's the API version of the playground's Live preview: adjust Zoom, Horizontal position, and Vertical position, and call it again until every layout looks right.
+frame_preview_url : the presenter beside "Your content" in a full Landscape 16:9 or Portrait 9:16 frame, exactly where the final video puts it. Set avatar_position ( left-top , right-top , left-bottom , or right-bottom , the default) to see other placements.
+preview_url : the presenter crop on its own.
+request Copy 
+{
+"image_url": "<object_url>",
+"layout_config": {
+"side_by_side": { "focus_y": 25, "split_size": "35%", "approved": true },
+"top_bottom": { "focus_y": 25, "approved": true },
+"round_overlay": {
+"horizontal": { "zoom": 1.2, "focus_y": 20 },
+"vertical": { "zoom": 1.2, "focus_y": 20 },
+"approved": true
+}
+},
+"avatar_position": "right-bottom"
+} 
+
+200 response Copy 
+{
+"success": true,
+"previews": [
+{
+"layout": "side_by_side",
+"orientation": "horizontal",
+"frame_preview_url": "https://…png", // presenter in the video frame
+"preview_url": "https://…png", // presenter crop alone
+"position": "right-bottom",
+"presenter_fits": true,
+"split_size": "35%",
+"crop": { "x": 0.05, "y": 0.0, "width": 0.9, "height": 1.0 }
+}
+// … top_bottom, round_overlay ×2, fullscreen ×2
+],
+"available_layouts": ["side_by_side", "top_bottom", "round_overlay"],
+"unavailable_layouts": ["fullscreen"],
+"side_by_side_safe_split_sizes": ["25%", "30%", "35%"]
+} 
+
+Approve a layout ( approved: true ) only when presenter_fits is true for every orientation it renders in. If a face is cut off, lower the Vertical position ( focus_y ) to move the crop up, or reduce zoom . Both image URLs are valid for 1 hour. Previews are limited to 20 per minute per account.
+
+3 Create the avatar
+POST {BASE_URL} /api/v2/avatars 
+Send the same layout_config you previewed.
+request Copy 
+{
+"name": "Priya",
+"mode": "direct",
+"source_image_url": "<object_url>",
+"consent_confirmed": true,
+"layout_config": { … }
+} 
+
+201 response Copy 
+{
+"success": true,
+"avatar": {
+"id": "38521eff-b743-4a34-bc39-589283f8a3e5",
+"name": "Priya",
+"mode": "direct",
+"status": "ready",
+"preview_url": "https://…png",
+"layout_config": { … },
+"approved_layouts": ["side_by_side", "top_bottom", "round_overlay"],
+"available_layouts": ["side_by_side", "top_bottom", "round_overlay"],
+"layout_compatibility": { … }
+}
+} 
+
+Field Required Description 
+name Yes Display name. 
+source_image_url Yes The object_url from step 1. 
+consent_confirmed Yes Image use confirmation. Must be true: "I confirm that I own this image or have permission to use and animate this person's photo." 
+mode No Presenter style. direct = Natural avatar (default): uses your original portrait and approved framing, ready immediately, no creation credit. Returns 201 with status: "ready" . polished_3d = Polished avatar : an AI-styled portrait that keeps your recognizable appearance, 1 credit after successful creation. Returns 202 with status: "processing" . 
+layout_config No Framing and approval per layout. Omitted layouts use defaults and stay unapproved. 
+instructions No Polished avatar only: styling directions, such as "navy blazer, soft studio light". 
+generation_orientation No Polished avatar formats: both (default, recommended), horizontal (16:9 videos), or vertical (9:16 videos). 
+normalized_image_url No Your own 720×1280 crop. If omitted, Golpo center-crops the portrait. 
+
+4 Wait for Polished avatars
+GET {BASE_URL} /api/v2/avatars/{avatar_id} 
+Natural avatars are Ready immediately. For a Polished avatar, poll every 15–30 seconds until status is ready or failed ; it usually takes a few minutes. A Failed avatar can be retried with POST /avatars/ {avatar_id} /retry .
+status Playground label Meaning 
+processing Processing The Polished avatar is being created. 
+pending_approval Finalizing Created and waiting to be finished. Call POST /avatars/ {avatar_id} /approve . 
+ready Ready Ready for AI Presenter videos. 
+failed Failed Avatar creation failed; retry it or delete it. 
+
+Layout & Framing
+How the presenter is placed in the video, and how to frame the crop for each layout. Names match the playground's AI Presenter panel.
+
+Side by side
+side_by_side 
+Landscape 16:9. Presenter left or right of content; Presenter size sets its width.
+
+Top and bottom
+top_bottom 
+Portrait 9:16. Presenter above or below content. Videos request it as side_by_side; vertical videos render it as Top and bottom.
+
+Round overlay
+round_overlay 
+Circular corner overlay, in the corner set by avatar_position. Content stays full frame.
+
+Full screen
+fullscreen 
+Presenter fills the complete frame. Auto can switch to it for some scenes.
+
+layout_config fields
+Layout Fields Used for 
+side_by_side zoom, focus_x, focus_y, split_size, approved Side by side, Landscape 16:9 
+top_bottom zoom, focus_x, focus_y, approved Top and bottom, Portrait 9:16 
+round_overlay horizontal {…} , vertical {…} , approved Round overlay, both formats, cropped separately 
+fullscreen horizontal {…} , vertical {…} , approved Full screen, both formats, cropped separately 
+
+Field Playground control Values 
+zoom Zoom (Wider / Closer) 1.0 (no zoom) to 2.0. 
+focus_x Horizontal position (Left / Right) 0 to 100, where 50 is centered. 
+focus_y Vertical position (Up / Down) 0 to 100, where 50 is centered. Lower values move the crop toward the top of the photo. 
+split_size Presenter size 25%, 30%, 35%, 40%, or 50%. Prefer a value from side_by_side_safe_split_sizes . 
+approved Approve this layout true saves your crop and makes the layout available for Auto or manual selection. Golpo may also enable an unapproved layout when its default crop fits safely. 
+
+NOTE: Framing is saved with the avatar and locked once it is Ready. To change it, create a new avatar. PUT /avatars/ {avatar_id} /layout-config only works while a Polished avatar is still Processing; on a Ready avatar it returns 409. 
+
+Reading the result
+Field Meaning 
+approved_layouts Layouts you approved in layout_config. 
+available_layouts Layouts this avatar can actually render. Pass one of these as avatar_layout, or use auto. 
+layout_compatibility Details per layout: safe split sizes, and the reason a layout is unavailable (for example face_cropped). 
+
+Generate Presenter Videos
+Add the AI Presenter fields to a normal POST /api/v2/videos/generate request.
+
+Parameter Type Default Description 
+avatar_id string null A Golpo avatar id, or the id of one of your Ready custom avatars. 
+avatar_layout enum auto Layout. auto = Auto (uses approved layouts automatically), side_by_side = Side by side in horizontal videos and Top and bottom in vertical videos, round_overlay = Round overlay, fullscreen = Full screen. 
+avatar_position enum right-bottom Placement: left-top , right-top , left-bottom , or right-bottom . Round overlay uses it as the corner. Side by side uses the side (Presenter left / Presenter right); Top and bottom uses top or bottom (Presenter top / Presenter bottom). 
+avatar_split_size enum saved, else 30% Presenter size: 25%, 30%, 35%, 40%, or 50% of the width (Side by side) or height (Top and bottom). Not valid with round_overlay. 
+avatar_framing object null The orientation_framing from video preflight, to accept a best-effort crop. 
+custom_videos_avatar_modes object null Avatar during this clip, per inserted video, keyed by its 1-based position in custom_videos : off = Hide avatar (video uses the full frame), round_overlay = Show avatar (round corner overlay). 
+
+Rules
+Every other avatar_* field requires avatar_id .
+avatar_id takes the presenter slot, so it can't be combined with own_narration_video_layout or own_narration_video_mode: true .
+own_narration_source still works: the avatar lip-syncs your recorded audio, and billing follows the narration length (up to 15 minutes).
+Avatar fields are rejected with enable_podcast_engine: true .
+A layout the avatar can't render returns 422 with code avatar_layout_unavailable . Pick from available_layouts , or use auto .
+Credits are checked before the job starts. Without enough credits you get 402 and no job is created.
+custom avatar, auto layout Copy 
+{
+"prompt": "A 60-second explainer on compound interest",
+"timing": "1",
+"avatar_id": "38521eff-b743-4a34-bc39-589283f8a3e5",
+"avatar_layout": "auto"
+} 
+
+round overlay, your own narration Copy 
+{
+"prompt": "Product walkthrough",
+"own_narration_source": "https://…/narration.mp3",
+"avatar_id": "stock-maya-v1",
+"avatar_layout": "round_overlay",
+"avatar_position": "left-bottom"
+} 
+
+Video Preflight
+Optional: check how a layout will look for a given orientation before spending credits.
+
+POST {BASE_URL} /api/v2/avatars/{avatar_id}/video-preflight 
+request Copy 
+{
+"avatar_layout": "fullscreen",
+"video_orientation": "vertical",
+"avatar_split_size": null
+} 
+
+200 response Copy 
+{
+"success": true,
+"preflight": {
+"status": "not_required",
+"compatible": true,
+"warning_required": false,
+"message": null,
+"preview_url": null,
+"previews": []
+},
+"orientation_framing": null
+} 
+
+When warning_required is true , Golpo had to use a best-effort crop. Check preview_url ; if it looks acceptable, pass the returned orientation_framing as avatar_framing on generate to accept it for that video.
+Track Progress
+Avatar videos use the usual job status endpoint, with an extra avatar object.
+
+GET {BASE_URL} /api/v2/videos/status/{job_id} 
+while rendering Copy 
+{
+"job_id": "9dd38c69-…",
+"status": "processing",
+"video_url": null,
+"avatar": { "layout": "side_by_side", "stage": "queued" }
+} 
+
+when done Copy 
+{
+"job_id": "9dd38c69-…",
+"status": "completed",
+"video_url": "https://…/avatar-composed/….mp4",
+"avatar": { "layout": "side_by_side", "stage": "composed" }
+} 
+
+avatar.stage Meaning 
+null The base video is still being generated; the presenter hasn't started. 
+queued The presenter render is queued. 
+running The presenter is being rendered and lip-synced. 
+waiting_for_shared_avatar Another video is rendering the same presenter; this job reuses it. 
+succeeded The presenter is rendered and the final video is being composed. 
+composed Done. status is completed and video_url is the final video. 
+failed The avatar step failed. status is failed and error explains why. 
+
+video_url stays null until status is completed , so you never receive a video without the presenter. Avatar videos take longer than standard videos; poll every 15–30 seconds. 
+Full Example
+Upload a portrait, preview its layouts, create the avatar, and generate a video.
+
+JavaScript Python cURL 
+avatar-video.js Copy 
+import fetch, { FormData, fileFromSync } from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+const headers = { "x-api-key": API_KEY };
+const json = { ...headers, "Content-Type": "application/json" };
+
+// 1. Upload a portrait (PNG, JPEG, or WebP, up to 10 MB)
+const form = new FormData();
+form.set("image", fileFromSync("./portrait.png", "image/png"));
+form.set("kind", "source");
+const { upload } = await (await fetch(`${BASE_URL}/api/v2/avatars/upload`, {
+method: "POST", headers, body: form,
+})).json();
+
+// 2. Preview every layout before creating the avatar (free)
+const layout_config = {
+side_by_side: { focus_y: 40, split_size: "35%", approved: true },
+top_bottom: { focus_y: 40, approved: true },
+round_overlay: { horizontal: { zoom: 1.3 }, vertical: { zoom: 1.3 }, approved: true },
+};
+const preview = await (await fetch(`${BASE_URL}/api/v2/avatars/layout-preview`, {
+method: "POST", headers: json,
+body: JSON.stringify({ image_url: upload.object_url, layout_config }),
+})).json();
+preview.previews.forEach((p) =>
+console.log(p.layout, p.orientation, p.presenter_fits, p.preview_url));
+
+// 3. Create the avatar with the same layout_config
+const { avatar } = await (await fetch(`${BASE_URL}/api/v2/avatars`, {
+method: "POST", headers: json,
+body: JSON.stringify({
+name: "Priya",
+mode: "direct", // Natural avatar; "polished_3d" = Polished avatar
+source_image_url: upload.object_url,
+consent_confirmed: true,
+layout_config,
+}),
+})).json();
+console.log(avatar.id, avatar.available_layouts);
+
+// 4. Generate a video with the avatar
+const job = await (await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST", headers: json,
+body: JSON.stringify({
+prompt: "Why the sky is blue",
+timing: "1",
+avatar_id: avatar.id, // or a Golpo avatar id such as "stock-maya-v1"
+avatar_layout: "side_by_side", // side_by_side | round_overlay | fullscreen | auto
+}),
+})).json();
+console.log(job.job_id); 
+Poll GET /api/v2/videos/status/{job_id}. While the presenter renders, status is "processing" and avatar.stage reports progress.
+
+My Avatars
+List, rename, edit, and delete your custom avatars.
+
+Task Call Notes 
+List My Avatars GET /avatars Newest first. polished_available tells you whether Polished avatars are enabled for your account. 
+View an avatar GET /avatars/ {avatar_id} Includes status, layout_config, and available_layouts. Preview URLs expire after 1 hour; fetch again for fresh ones. 
+See saved framing GET /avatars/ {avatar_id} /layout-previews Preview images of the avatar in every layout with its saved crop. 
+Rename PUT /avatars/ {avatar_id} {"name": "New name"} 
+Create edited version POST /avatars/ {avatar_id} /edit {"instructions": "…"} on any Ready avatar, Natural or Polished. Creates a new Polished version linked to the original ( parent_avatar_id ); returns 202, 1 credit after success. 
+Retry a Failed avatar POST /avatars/ {avatar_id} /retry Polished avatars only. No body. Returns 202; poll the avatar until it is Ready. 
+Delete avatar DELETE /avatars/ {avatar_id} Videos already generated keep their presenter. 
+
+Endpoint Reference
+Every avatar endpoint, with {BASE_URL} = https://api.golpoai.com.
+
+Endpoint Method Description 
+{BASE_URL}/api/v2/avatars/stock GET List Golpo avatars 
+{BASE_URL}/api/v2/avatars GET List My Avatars (your custom avatars) 
+{BASE_URL}/api/v2/avatars/upload POST Upload a portrait (multipart: image, kind=source) 
+{BASE_URL}/api/v2/avatars/upload-url POST Presigned PUT URL for a portrait 
+{BASE_URL}/api/v2/avatars/layout-preview POST Live preview of every layout for an uploaded portrait (20 per minute) 
+{BASE_URL}/api/v2/avatars POST Create a custom avatar, Natural or Polished, with its layout_config 
+{BASE_URL}/api/v2/avatars/{avatar_id} GET Get one avatar: status, layout_config, available_layouts 
+{BASE_URL}/api/v2/avatars/{avatar_id}/layout-previews GET Preview the avatar's saved layouts in video frames (optional ?avatar_position=) 
+{BASE_URL}/api/v2/avatars/{avatar_id}/layout-config PUT Replace the layout config (only while a Polished avatar is Processing) 
+{BASE_URL}/api/v2/avatars/{avatar_id}/video-preflight POST Check a layout and orientation before generating 
+{BASE_URL}/api/v2/avatars/{avatar_id}/edit POST Create an edited version of a Ready avatar (1 credit after success) 
+{BASE_URL}/api/v2/avatars/{avatar_id}/retry POST Retry a Failed Polished avatar 
+{BASE_URL}/api/v2/avatars/{avatar_id}/approve POST Finish a Polished avatar that is Finalizing (pending_approval) 
+{BASE_URL}/api/v2/avatars/{avatar_id} PUT Rename 
+{BASE_URL}/api/v2/avatars/{avatar_id} DELETE Delete 
+
+Errors
+Errors return the standard error body with a detail field.
+
+Status When 
+402 Not enough credits at the avatar rate 
+403 Called with a portal session token instead of an API key 
+404 Avatar or Golpo avatar id not found, or owned by another account 
+409 Custom avatar not Ready, or framing changed after the avatar is Ready 
+422 Image use not confirmed (consent_confirmed not true), invalid layout_config, rejected image, avatar_layout_unavailable, or avatar_id combined with own-narration layout fields 
+429 More than 20 layout previews in a minute 
+503 Person detection or the avatar service is temporarily unavailable; retry 
+
+Upload File
+Use /api/v2/videos/upload-file to get a hosted URL before calling /generate.
+
+NOTE: File size must be less than 10 MB . Larger files are rejected with HTTP 413. The upload endpoint is gated to Business Plus plans. 
+
+NOTE: Document URLs are single-use. When you pass a document URL (PDF, DOCX, TXT, etc.) from /upload-file into reference_source , the file is permanently deleted from storage after its text is extracted during generation. The same URL cannot be reused for another video or podcast — you must upload the document again via /upload-file to get a fresh URL for each new generation. 
+
+Content-Type: multipart/form-data 
+Field Type Required Description 
+file File Yes Single file to upload (file metadata is used to generate a presigned URL). 
+
+Documents
+PDF · DOC · DOCX · TXT · MD · CSV · XLSX · XLS · PPT · PPTX
+
+Audio
+MP3 · WAV · M4A · OGG · FLAC
+
+Video
+MP4 · MOV · M4V · AVI · MKV · WEBM
+
+Images
+JPG · JPEG · PNG · GIF · WEBP
+
+upload-response.json Copy 
+// Response from POST /api/v2/videos/upload-file
+{
+"upload_url": "https://...", // Presigned PUT URL — upload the file here
+"file_url": "https://...", // Pass this into /generate
+"file_name": "document.pdf",
+"content_type": "application/pdf"
+} 
+
+JavaScript Python .NET Java curl 
+upload-file.js Copy 
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+// Step 1: Get presigned URL
+async function uploadFile(file) {
+const formData = new FormData();
+formData.append('file', file);
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/upload-file`, {
+method: 'POST',
+headers: { 'x-api-key': API_KEY },
+body: formData
+});
+
+const { upload_url, file_url, content_type } = await response.json();
+
+// Step 2: Upload bytes to the presigned URL
+await fetch(upload_url, {
+method: 'PUT',
+headers: { 'Content-Type': content_type },
+body: file
+});
+
+// Step 3: Return file_url for use in /generate
+return file_url;
+}
+
+// Usage
+const fileInput = document.querySelector('#file-input');
+const fileUrl = await uploadFile(fileInput.files[0]);
+console.log('File uploaded, URL:', fileUrl);
+// Use fileUrl in your /generate request (reference_source, custom_logo, etc.) 
+
+User Assets
+Upload images or videos to embed directly into the generated video.
+
+NOTE: custom_images and custom_videos accept the file_url returned by /upload-file . Server-side callers may pass local file paths directly. Description arrays ( custom_images_description , custom_videos_description ) are required and must match the length of their image/video arrays. 
+JavaScript Python .NET Java curl 
+generate-with-user-assets.js Copy 
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+async function uploadFile(file) {
+const formData = new FormData();
+formData.append('file', file);
+
+const presign = await fetch(`${BASE_URL}/api/v2/videos/upload-file`, {
+method: 'POST',
+headers: { 'x-api-key': API_KEY },
+body: formData
+});
+const { upload_url, file_url, content_type } = await presign.json();
+
+await fetch(upload_url, {
+method: 'PUT',
+headers: { 'Content-Type': content_type },
+body: file
+});
+
+return file_url;
+}
+
+// Step 1: Upload images and videos
+const image1Url = await uploadFile(imageFile1);
+const image2Url = await uploadFile(imageFile2);
+const video1Url = await uploadFile(videoFile1);
+const video2Url = await uploadFile(videoFile2);
+
+// Step 2: Generate with custom images and videos
+const generatePayload = {
+prompt: "Create a product showcase video",
+custom_images: [image1Url, image2Url],
+custom_images_description: [
+"Product front view with logo",
+"Product in use by customer"
+],
+keep_original_images: [false, false],
+disable_image_animation: [false, true],
+custom_videos: [video1Url, video2Url],
+custom_videos_description: [
+"Customer testimonial",
+"Product walkthrough"
+],
+// 1-indexed positions in custom_videos whose original audio
+// should be replaced with AI-generated narration.
+use_ai_audio_at: [2],
+video_orientation: "horizontal",
+watermark: false
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+'x-api-key': API_KEY
+},
+body: JSON.stringify(generatePayload)
+});
+
+const result = await response.json();
+console.log('Job ID:', result.job_id); 
+
+Local Paths
+Pass absolute or relative file paths directly from server-side environments — the v2 backend uploads them transparently.
+
+NOTE: Local paths are only supported in server-side environments where the API server has filesystem access. For remote clients, upload via /upload-file first. 
+JavaScript Python .NET Java curl 
+generate-with-local-paths.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+// Server-side only: when the API server has filesystem access
+// to these files, it uploads them transparently before generation.
+const payload = {
+prompt: "Create a comprehensive product demo video",
+reference_source: [
+"./documents/product-spec.pdf",
+"C:\\Users\\Documents\\brief.docx",
+"/home/user/documents/slides.pptx"
+],
+custom_logo: "./assets/company-logo.png",
+custom_images: [
+"./images/product-front.jpg",
+"./images/product-in-use.jpg"
+],
+custom_images_description: [
+"Product front view with branding",
+"Product being used by customer"
+],
+keep_original_images: [false, false],
+disable_image_animation: [false, true],
+own_narration_source: "./audio/founder-narration.mp3",
+narration_voice: "female-1",
+background_track: "engaging",
+video_orientation: "horizontal",
+watermark: false,
+enable_color: true,
+narration_language: "en",
+timing: "5"
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": API_KEY
+},
+body: JSON.stringify(payload)
+});
+
+const data = await response.json();
+console.log("Job ID:", data.job_id); 
+Local paths only work when the API server can access these files. Remote clients must upload via /upload-file first.
+
+Language Quickstarts
+Ready-to-run examples for the most common video generation patterns.
+
+Upload Workflow
+
+Full pattern: upload supporting files via /upload-file, then call /generate with the returned URLs in reference_source.
+JavaScript Python .NET Java curl 
+generateVideoWithUploads.js Copy 
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+// Step 1: Helper to upload a file via /upload-file
+async function uploadFile(file) {
+const formData = new FormData();
+formData.append('file', file);
+
+const presign = await fetch(`${BASE_URL}/api/v2/videos/upload-file`, {
+method: 'POST',
+headers: { 'x-api-key': API_KEY },
+body: formData
+});
+const { upload_url, file_url, content_type } = await presign.json();
+
+await fetch(upload_url, {
+method: 'PUT',
+headers: { 'Content-Type': content_type },
+body: file
+});
+
+return file_url;
+}
+
+// Step 2: Upload all reference docs and collect URLs
+const fileInput = document.querySelector('#uploads');
+const referenceUrls = await Promise.all(
+Array.from(fileInput.files).map((f) => uploadFile(f))
+);
+
+// Step 3: Generate the video with the uploaded references
+const generatePayload = {
+prompt: 'Summarize this slide deck for executives',
+reference_source: referenceUrls,
+narration_voice: 'female-1',
+narration_language: 'spanish'
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+'x-api-key': API_KEY
+},
+body: JSON.stringify(generatePayload)
+});
+
+const result = await response.json();
+console.log('Generation started:', result); 
+Attach files via <input id="uploads" type="file" multiple /> before calling this helper.
+
+Golpo Sketch
+golpo_video_engine: golpo_sketch 
+Whiteboard-style sketch animation. Pick a sketch_style_variant and optionally tune scene_pacing (normal/fast).
+JavaScript Python .NET Java curl 
+golpo-sketch.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+const payload = {
+prompt: "Explain how neural networks work",
+golpo_video_engine: "golpo_sketch",
+// sketch_style_variant options:
+// "classic" (default), "improved(beta)", "formal",
+// "crayon", "dry_erase", "professional_clean",
+// "creative", "infographics"
+sketch_style_variant: "improved(beta)",
+scene_pacing: "fast", // "normal" (15s max) | "fast" (10s max)
+background_track: "engaging",
+watermark: false
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": API_KEY
+},
+body: JSON.stringify(payload)
+});
+
+console.log(await response.json()); 
+Run with: node --env-file=.env golpo-sketch.js
+
+Golpo Canvas
+golpo_video_engine: golpo_canvas 
+Canvas-based video with rich style variants (chalkboard, whiteboard, editorial…) plus pen_animation_style and scene_pacing.
+JavaScript Python .NET Java curl 
+golpo-canvas.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+const payload = {
+prompt: "Create a product overview video",
+golpo_video_engine: "golpo_canvas",
+// Unsuffixed values use Expanded; append "_compact" for Compact.
+// Notebook ("notebook_infographic") is Compact-only.
+canvas_style_variant: "modern_minimal_compact", // Compact; use "modern_minimal" for Expanded
+pen_animation_style: "stylus", // "stylus" | "marker" | "pen"
+scene_pacing: "normal", // "normal" (15s max) | "fast" (10s max)
+watermark: false
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": API_KEY
+},
+body: JSON.stringify(payload)
+});
+
+console.log(await response.json()); 
+Run with: node --env-file=.env golpo-canvas.js
+
+Display Language
+Generate a video where the narration and the on-screen text are in different languages. Only supported with the Golpo Canvas engine.
+
+Display Language
+onscreen_text_language 
+Generate a video where the narration and the on-screen text are in different languages — e.g. Hindi voice-over with English text displayed in the video. Only supported with the Golpo Canvas engine; setting onscreen_text_language with golpo_video_engine: golpo_sketch is rejected with 422.
+JavaScript Python .NET Java curl 
+display-language.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+// Narrator speaks Hindi; on-screen text, titles, and labels are in English.
+const payload = {
+prompt: "Explain the water cycle",
+narration_language: "hindi",
+onscreen_text_language: "english",
+narration_voice: "female-1",
+watermark: false
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": API_KEY
+},
+body: JSON.stringify(payload)
+});
+
+console.log(await response.json()); 
+Run with: node --env-file=.env display-language.js
+
+Own Narration Video
+Show an uploaded narrator video as a round overlay or in an orientation-aware side-by-side partition.
+
+Own Narration Layout and Framing
+round_overlay · side_by_side 
+Use the simple layout field for new integrations. Side-by-side defaults to a 50% narrator region with centered crop focus; focus runs left-to-right for horizontal output and top-to-bottom for vertical output.
+JavaScript Python cURL 
+own-narration.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+const narratorVideo = "https://example.com/narrator.mp4";
+
+const roundOverlay = {
+prompt: "Create supporting visuals for my narration",
+own_narration_source: narratorVideo,
+own_narration_video_layout: "round_overlay",
+own_narration_video_position: "right-bottom"
+};
+
+const centeredPartition = {
+prompt: "Create supporting visuals for my narration",
+own_narration_source: narratorVideo,
+own_narration_video_layout: "side_by_side"
+// Defaults: 50% narrator region, crop-to-fit, focus 50 (center)
+};
+
+const customFocus = {
+...centeredPartition,
+own_narration_split_size: "40%",
+own_narration_video_fit: "crop",
+// Horizontal output: 25 keeps more from the left.
+// Vertical output: 25 keeps more from the top.
+own_narration_focus_position: 25
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": API_KEY
+},
+body: JSON.stringify(customFocus)
+});
+
+console.log(await response.json()); 
+Use roundOverlay, centeredPartition, or customFocus as the request body.
+
+Multi-Language Variants
+Generate multiple language versions of the same video in a single request. Set the primary narration_language and add extra languages in language_variants . The response returns the generated video IDs in variant_video_ids .
+
+The table below shows the maximum number of languages you can generate per request for each timing value — both the total (primary + variants) and how many you can list in language_variants .
+
+timing Max languages primary + variants Max language_variants 
+0.25 0.5 1 
+10 9 
+2 
+5 4 
+4 
+3 2 
+8 10 15 
+2 1 
+auto 
+2 1 
+
+2–10
+Max languages
+depends on timing (≤1 min: 10; 2 min: 5; 4 min: 3; ≥8 min: 2)
+
+1
+API request
+generates a separate render for each provided language_variants value
+
+2 modes
+Visuals
+shared (default) reuses the primary's visuals across every language · per_language regenerates visuals separately for each language
+
+✓ shared (default) 
+
+Same visuals for every variant — only the audio changes per language.
+• All variants use the primary video's visuals
+
+↻ per_language
+
+Generate separate visuals for each language variant, with on-screen text in that language.
+• Podcasts (enable_podcast_engine: true) always use this mode, since there are no visuals to share
+
+Variant status lifecycle
+queued_for_variant generating completed / failed Poll GET /api/v2/videos/status/{job_id} 
+
+NOTE: Billing. Each variant bills as a full render — a 2-minute primary + 2 extra languages bills as 3 × 2-minute renders . Duplicate languages or duplicates of the primary are rejected with 400. 
+Example payload for each visuals mode
+shared.json Copy 
+{
+"prompt": "Explain photosynthesis",
+"narration_language": "english", // Primary language
+"language_variants": ["spanish", "french"],
+// Uses the same visuals across all language variant videos
+"variant_visuals_mode": "shared"
+} 
+
+per_language.json Copy 
+{
+"prompt": "Explain photosynthesis",
+"narration_language": "english", // Primary language
+"language_variants": ["spanish", "french"],
+// Generate separate visuals for each language
+"variant_visuals_mode": "per_language"
+} 
+
+Multi-Language Variants
+language_variants 
+Submit one prompt; receive one video per language. The example below renders English + Spanish + French in shared visuals mode.
+JavaScript Python .NET Java curl 
+multi-language-variants.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+// Generate the same video in English (primary) + Spanish + French.
+// "shared" visuals mode reuses the primary's frames so variants render
+// fast and cost less than full re-renders.
+const payload = {
+prompt: "Explain how photosynthesis works in simple terms.",
+narration_language: "english", // Primary narration language
+onscreen_text_language: "english",
+narration_voice: "female-1",
+golpo_video_engine: "golpo_canvas",
+canvas_style_variant: "playful",
+enable_color: true,
+timing: "4",
+
+// Extra languages (max depends on timing — 2 here at timing "4")
+language_variants: ["spanish", "french"],
+variant_visuals_mode: "shared", // "shared" or "per_language"
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": API_KEY,
+},
+body: JSON.stringify(payload),
+});
+
+const data = await response.json();
+console.log("Primary job_id :", data.job_id);
+console.log("Variant video IDs:", data.variant_video_ids); // parallel to language_variants
+
+// Poll the primary AND each variant independently.
+for (const id of [data.job_id, ...data.variant_video_ids]) {
+const s = await fetch(`${BASE_URL}/api/v2/videos/status/${id}`, {
+headers: { "x-api-key": API_KEY },
+}).then(r => r.json());
+console.log(id, "→", s.status, s.video_url ?? "");
+} 
+Run with: node --env-file=.env multi-language-variants.js
+
+Generate Video
+POST /api/v2/videos/generate 
+Generate a video from a prompt or script with customizable voice, visuals, music, and branding.
+JavaScript Python .NET Java curl 
+generate.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+const payload = {
+prompt: "Explain the quarterly roadmap",
+background_track: "engaging"
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": API_KEY
+},
+body: JSON.stringify(payload)
+});
+
+console.log(await response.json()); 
+Run with: node --env-file=.env generate.js
+
+List Videos
+GET /api/v2/videos 
+Retrieve videos belonging to the authenticated user. Supports limit and offset query params.
+JavaScript Python .NET Java curl 
+list-videos.js Copy 
+import fetch from "node-fetch";
+
+const BASE_URL = "{BASE_URL}";
+
+// Query params:
+// limit — max number of videos to return (optional)
+// offset — number of videos to skip (optional, for pagination)
+const response = await fetch(`${BASE_URL}/api/v2/videos?limit=10&offset=0`, {
+headers: { "x-api-key": "api-key" }
+});
+
+const data = await response.json();
+console.log(data.videos);
+console.log(data.total); 
+Run with: node --env-file=.env list-videos.js
+
+Get Video
+GET /api/v2/videos/{video_id} 
+Retrieve metadata for a single video by ID.
+JavaScript Python .NET Java curl 
+get-video.js Copy 
+const BASE_URL = "{BASE_URL}";
+const VIDEO_ID = "video_id";
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/${VIDEO_ID}`, {
+headers: { "x-api-key": "api-key" }
+});
+console.log(await response.json()); 
+Run with: node --env-file=.env get-video.js <video_id>
+
+Update Video
+PATCH /api/v2/videos/{video_id} 
+Update video metadata. Only 'title' and 'visibility' can be updated.
+JavaScript Python .NET Java curl 
+update-video.js Copy 
+const BASE_URL = "{BASE_URL}";
+const VIDEO_ID = "video_id";
+
+// Only 'title' and 'visibility' are accepted.
+const payload = { title: "Updated internal briefing", visibility: "private" };
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/${VIDEO_ID}`, {
+method: "PATCH",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": "api-key"
+},
+body: JSON.stringify(payload)
+});
+
+console.log(await response.json()); 
+Run with: node --env-file=.env update-video.js <video_id>
+
+Delete Video
+DELETE /api/v2/videos/{video_id} 
+Soft-delete a generated video.
+JavaScript Python .NET Java curl 
+delete-video.js Copy 
+const BASE_URL = "{BASE_URL}";
+const VIDEO_ID = "video_id";
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/${VIDEO_ID}`, {
+method: "DELETE",
+headers: { "x-api-key": "api-key" }
+});
+
+console.log(await response.json()); 
+Run with: node --env-file=.env delete-video.js <video_id>
+
+Job Status
+GET /api/v2/videos/status/{job_id} 
+Poll the status endpoint to track generation progress. Response shape depends on the original /generate request — script_text, podcast_url, or video_url.
+JavaScript Python .NET Java curl 
+job-status.js Copy 
+const BASE_URL = "{BASE_URL}";
+const JOB_ID = "job-id";
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/status/${JOB_ID}`, {
+headers: { "x-api-key": "api-key" }
+});
+
+const body = await response.json();
+console.log(body);
+// Three response shapes (depending on original generate request):
+// { job_id, status, created_at, script_text } // enable_script_only_mode=true
+// { job_id, status, created_at, podcast_url } // enable_podcast_engine=true
+// { job_id, status, created_at, video_url } // default (video) 
+Run with: node --env-file=.env job-status.js <job_id>
+
+Custom Style (Canvas + Sketch)
+Render a video in a look derived from your own reference. Save the style once via POST /api/v2/custom-styles , then pass its id as custom_style — the same saved style works with both engines.
+
+Step 1 — save the style (once): POST /api/v2/custom-styles with style_name + source (image URL, video URL, or text). See Custom Style Endpoints . Step 2 — generate : pick the engine and pass the returned id in custom_style . Requires the Business plan or above. 
+
+Golpo Canvas golpo_canvas 
+Full-colour composed scenes that closely follow the reference’s palette, texture and composition. custom_style replaces canvas_style_variant . pen_animation_style and visual_animation_style can still be combined with it.
+
+Golpo Sketch golpo_sketch 
+Progressive line-drawing reveal using the reference’s derived palette and texture — the “sketch” character stays dominant. custom_style replaces sketch_style_variant .
+
+Custom Style Workflow
+POST /custom-styles → POST /videos/generate 
+Full step-by-step pattern: create a custom style from an image URL (1a), a text description (1b), and a video URL (1c), then pass the returned id as custom_style on /generate. All three work with either engine.
+JavaScript Python .NET Java curl 
+custom-style-workflow.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key"; // Replace with your Golpo API key
+const BASE_URL = "{BASE_URL}"; // You will receive this when creating an API key
+const headers = { "Content-Type": "application/json", "x-api-key": API_KEY };
+
+// ── Step 1a: create a custom style from an IMAGE URL ─────────────────────────
+// Tip: host your own image with POST /api/v2/videos/upload-file and use file_url.
+const imageStyleRes = await fetch(`${BASE_URL}/api/v2/custom-styles`, {
+method: "POST",
+headers,
+body: JSON.stringify({
+style_name: "Brand moodboard",
+source: "https://cdn.example.com/brand-moodboard.png",
+kind: "image"
+})
+});
+const imageStyleId = (await imageStyleRes.json()).style.id;
+console.log("Image style id:", imageStyleId);
+
+// ── Step 1b: create a custom style from a TEXT description ───────────────────
+const textStyleRes = await fetch(`${BASE_URL}/api/v2/custom-styles`, {
+method: "POST",
+headers,
+body: JSON.stringify({
+style_name: "Flat vector",
+source: "Flat vector illustration, navy and coral palette, thick rounded outlines, generous whitespace",
+kind: "text"
+})
+});
+const textStyleId = (await textStyleRes.json()).style.id;
+console.log("Text style id:", textStyleId);
+
+// ── Step 1c: create a custom style from a VIDEO URL ──────────────────────────
+// Frames are sampled from the clip and analyzed for the still art style.
+const videoStyleRes = await fetch(`${BASE_URL}/api/v2/custom-styles`, {
+method: "POST",
+headers,
+body: JSON.stringify({
+style_name: "Brand reel",
+source: "https://cdn.example.com/brand-reel.mp4",
+kind: "video"
+})
+});
+const videoStyleId = (await videoStyleRes.json()).style.id;
+console.log("Video style id:", videoStyleId);
+
+// ── Step 2: generate a video with one of the saved styles ────────────────────
+const generateRes = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST",
+headers,
+body: JSON.stringify({
+prompt: "How photosynthesis works",
+golpo_video_engine: "golpo_canvas", // or "golpo_sketch" — same style id works
+custom_style: imageStyleId, // or textStyleId / videoStyleId
+timing: "1"
+})
+});
+const job = await generateRes.json();
+console.log("Job ID:", job.job_id);
+
+// ── Step 3: poll for completion ──────────────────────────────────────────────
+// GET ${BASE_URL}/api/v2/videos/status/${job.job_id} (see Job Status) 
+Run with: node --env-file=.env custom-style-workflow.js
+
+Custom Style + Golpo Canvas
+golpo_video_engine: golpo_canvas · custom_style 
+Canvas renders the saved style as full-colour composed scenes. Any canvas_style_variant you send is recorded but not used for rendering.
+JavaScript Python .NET Java curl 
+custom-style-canvas.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+// id returned by POST /api/v2/custom-styles (or GET /api/v2/custom-styles)
+const STYLE_ID = "7f3d5a2e-2c8e-4c0f-9c8f-9a2b1d3e4f56";
+
+const payload = {
+prompt: "How photosynthesis works",
+golpo_video_engine: "golpo_canvas",
+custom_style: STYLE_ID, // overrides canvas_style_variant
+visual_animation_style: "sketch", // optional, Canvas-only
+timing: "1"
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": API_KEY
+},
+body: JSON.stringify(payload)
+});
+
+console.log(await response.json()); 
+Run with: node --env-file=.env custom-style-canvas.js
+
+Custom Style + Golpo Sketch
+golpo_video_engine: golpo_sketch · custom_style 
+Sketch renders the same saved style as a line-drawing reveal with the derived palette. sketch_style_variant is not used for the look.
+JavaScript Python .NET Java curl 
+custom-style-sketch.js Copy 
+import fetch from "node-fetch";
+
+const API_KEY = "api-key";
+const BASE_URL = "{BASE_URL}";
+
+// Same saved style works with either engine
+const STYLE_ID = "7f3d5a2e-2c8e-4c0f-9c8f-9a2b1d3e4f56";
+
+const payload = {
+prompt: "How photosynthesis works",
+golpo_video_engine: "golpo_sketch",
+custom_style: STYLE_ID, // look comes from the saved style; sketch_style_variant is not used
+scene_pacing: "normal",
+timing: "1"
+};
+
+const response = await fetch(`${BASE_URL}/api/v2/videos/generate`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": API_KEY
+},
+body: JSON.stringify(payload)
+});
+
+console.log(await response.json()); 
+Run with: node --env-file=.env custom-style-sketch.js
+
+Frame Transition
+Add motion between frames with frame_transition , and optionally have an animated hand push each slide with transition_hand_animation . See the Frame Transition reference for all values and rules.
+
+frame-transition-random.json Copy 
+{
+"prompt": "How photosynthesis works",
+"golpo_video_engine": "golpo_canvas",
+"scene_pacing": "normal",
+"frame_transition": ["left", "zoom_in"]
+} 
+
+frame-transition-hand.json Copy 
+{
+"prompt": "How photosynthesis works",
+"golpo_video_engine": "golpo_sketch",
+"scene_pacing": "normal",
+"frame_transition": ["left", "up"],
+"transition_hand_animation": true
+} 
+
+Preview Gallery
+Short samples of every look-and-sound option the API exposes — Golpo Canvas styles, Pen in Hand animation, Golpo Sketch styles, Custom Styles, and Background Music. Click any tile to play, or copy its ready-to-send payload.
+
+Golpo Canvas
+Use with golpo_video_engine: "golpo_canvas" and a canvas_style_variant value. These videos preview the visual family only; see Compact vs Expanded below for a side-by-side of the two style profiles. Copied Canvas payloads use Compact values.
+Chalkboard White-on-Black chalkboard_bw 
+
+Copy payload 
+
+Chalkboard Color chalkboard_color 
+
+Copy payload 
+
+Whiteboard whiteboard 
+
+Copy payload 
+
+Modern Minimal modern_minimal 
+
+Copy payload 
+
+Technical technical 
+
+Copy payload 
+
+Sharpie sharpie 
+
+Copy payload 
+
+Playful playful 
+
+Copy payload 
+
+Editorial editorial 
+
+Copy payload 
+
+Illustrations illustrations 
+
+Copy payload 
+
+Chalkboard Black-on-White chalkboard_black_on_white 
+
+Copy payload 
+
+Golpo Canvas — Compact vs Expanded
+The same topic rendered in both style profiles for every Canvas family the API exposes. Compact ( _compact suffix) packs more content into each scene; Expanded (unsuffixed value, the default) spreads content across more scenes. Notebook is Compact -only. Each tile's payload sends the exact canvas_style_variant shown — see Canvas Style for the full value table.
+01 
+Chalkboard (White on Black)
+Galileo and Falling Objects
+
+Compact 
+More content in a scene
+
+chalkboard_bw_compact 
+
+Copy payload 
+
+Expanded 
+Content distributed in more scenes
+
+chalkboard_bw 
+
+Copy payload 
+
+02 
+Chalkboard (Black on White)
+Life in the Indus Valley
+
+Compact 
+More content in a scene
+
+chalkboard_black_on_white_compact 
+
+Copy payload 
+
+Expanded 
+Content distributed in more scenes
+
+chalkboard_black_on_white 
+
+Copy payload 
+
+03 
+Chalkboard Color
+How Cities Build Public Budgets
+
+Compact 
+More content in a scene
+
+chalkboard_color_compact 
+
+Copy payload 
+
+Expanded 
+Content distributed in more scenes
+
+chalkboard_color 
+
+Copy payload 
+
+04 
+Whiteboard
+The Monty Hall Probability Puzzle
+
+Compact 
+More content in a scene
+
+whiteboard_compact 
+
+Copy payload 
+
+Expanded 
+Content distributed in more scenes
+
+whiteboard 
+
+Copy payload 
+
+05 
+Modern Minimal
+How Compound Growth Works
+
+Compact 
+More content in a scene
+
+modern_minimal_compact 
+
+Copy payload 
+
+Expanded 
+Content distributed in more scenes
+
+modern_minimal 
+
+Copy payload 
+
+06 
+Playful
+The Octopus That Vanished
+
+Compact 
+More content in a scene
+
+playful_compact 
+
+Copy payload 
+
+Expanded 
+Content distributed in more scenes
+
+playful 
+
+Copy payload 
+
+07 
+Technical
+How GPS Calculates Your Location
+
+Compact 
+More content in a scene
+
+technical_compact 
+
+Copy payload 
+
+Expanded 
+Content distributed in more scenes
+
+technical 
+
+Copy payload 
+
+08 
+Editorial
+How Vaccines Train the Immune System
+
+Compact 
+More content in a scene
+
+editorial_compact 
+
+Copy payload 
+
+Expanded 
+Content distributed in more scenes
+
+editorial 
+
+Copy payload 
+
+09 
+Sharpie
+The Shared Meadow Problem
+
+Compact 
+More content in a scene
+
+sharpie_compact 
+
+Copy payload 
+
+Expanded 
+Content distributed in more scenes
+
+sharpie 
+
+Copy payload 
+
+10 
+Illustrations
+A Raindrop's Water Cycle Journey
+
+Compact 
+More content in a scene
+
+illustrations_compact 
+
+Copy payload 
+
+Expanded 
+Content distributed in more scenes
+
+illustrations 
+
+Copy payload 
+
+11 Compact only 
+Notebook
+Mean, Median, and Mode
+
+Compact 
+More content in a scene
+
+notebook_infographic 
+
+Copy payload 
+
+Expanded 
+Content distributed in more scenes
+
+Expanded isn't available for Notebook . Send notebook_infographic .
+
+Pen in Hand — a real hand draws it on screen 
+Golpo Canvas only. Add pen_animation_style to render a drawing hand — allowed values "pen" , "marker" , "stylus" .
+Pen Whiteboard pen 
+
+Copy payload 
+
+Marker Whiteboard marker 
+
+Copy payload 
+
+Stylus Whiteboard stylus 
+
+Copy payload 
+
+Canvas Custom Style — Business plan and above 
+Golpo Canvas videos rendered with a saved custom style. Each card shows the inspiration used to save the style and the result generated by passing its id as custom_style . Each source (text description, image URL, or video URL) is saved over the API with POST /api/v2/custom-styles . See Custom Style (Canvas + Sketch) for the full code.
+Text description golpo_canvas 
+Inspiration — saved with kind: " text " 
+“ Use a cinematic mythological animation style inspired by ancient Greek pottery, weathered parchment, and dramatic ocean landscapes. Blend heroic character illustrations, stormy sea transitions, and golden-blue lighting to capture the epic, mysterious journey of The Odyssey. ”
+
+Actual result
+
+Image URL golpo_canvas 
+Inspiration — saved with kind: " image " 
+
+Actual result
+
+Video URL golpo_canvas 
+Inspiration — saved with kind: " video " 
+
+Actual result
+
+Golpo Sketch
+Use with golpo_video_engine: "golpo_sketch" and a sketch_style_variant value.
+Classic classic 
+
+Copy payload 
+
+Improved (Beta) improved(beta) 
+
+Copy payload 
+
+Formal formal 
+
+Copy payload 
+
+Crayon crayon 
+
+Copy payload 
+
+Dry Erase dry_erase 
+
+Copy payload 
+
+Professional Clean professional_clean 
+
+Copy payload 
+
+Creative creative 
+
+Copy payload 
+
+Infographics infographics 
+
+Copy payload 
+
+Chalkboard Black-on-White chalkboard_black_on_white 
+
+Copy payload 
+
+Sketch Custom Style — Business plan and above 
+Golpo Sketch videos rendered with a saved custom style. Same two-step flow — save the inspiration (text, image URL, or video URL) with POST /api/v2/custom-styles , then pass its id as custom_style on a Sketch request. The line-drawing reveal is kept; the palette and texture come from your reference.
+Text description golpo_sketch 
+Inspiration — saved with kind: " text " 
+“ Use stickman figures for characters. For all other objects, use realistic images with solid colors filled in. ”
+
+Actual result
+
+Image URL golpo_sketch 
+Inspiration — saved with kind: " image " 
+
+Actual result
+
+Video URL golpo_sketch 
+Inspiration — saved with kind: " video " 
+
+Actual result
+
+Background Music
+Set background_track to add a soundtrack. Tap any track to preview it.
+Engaging engaging Hyper hyper Inspirational inspirational Documentary documentary Jazz jazz Lo-fi lofi Dramatic dramatic 
+
+Voices
+Set narration_voice to pick the narrator — female-1 to female-7 and male-1 to male-7 . Tap any voice to preview it.
+Female
+Female 1 female-1 Female 2 female-2 Female 3 female-3 Female 4 female-4 Female 5 female-5 Female 6 female-6 Female 7 female-7 
+
+Male
+Male 1 male-1 Male 2 male-2 Male 3 male-3 Male 4 male-4 Male 5 male-5 Male 6 male-6 Male 7 male-7 
+
+Sketch Video Editing
+Re-render individual frames of a generated Golpo Sketch video from natural-language prompts, then recombine them into a new final video — all over the REST API.
+
+NOTE: Frame editing is only supported for Golpo Sketch videos ( golpo_video_engine: "golpo_sketch" ). The source video must have finished rendering before you can edit or combine its frames. Like the rest of API v2 endpoints, every editing endpoint requires the x-api-key . 
+Editing workflow
+frame-versions edit-frames edits/{id}/status combine-frames final video 
+set-frame-version is optional — use it to revert a frame to an earlier take from its version history. Both edit-frames and combine-frames are async; poll their job IDs at the shared edits/{edit_job_id}/status endpoint.
+
+1 List Frame Versions
+
+GET /api/v2/videos/{video_id}/frame-versions 
+Return the per-frame animation history for a sketch video — the currently active MP4 for each frame plus every previous version. Use this to discover frame indices before editing or to find a URL to revert to. Requires x-api-key.
+
+JavaScript Python curl 
+frame-versions.js Copy 
+import fetch from "node-fetch";
+
+const BASE_URL = "{BASE_URL}"; // You will receive this when creating an API key
+const VIDEO_ID = "video_id"; // a completed Golpo Sketch video
+
+const response = await fetch(
+`${BASE_URL}/api/v2/videos/${VIDEO_ID}/frame-versions`,
+{ headers: { "x-api-key": "api-key" } }
+);
+
+const data = await response.json();
+// {
+// video_id: "...",
+// frame_animations: { "0": "https://...0.mp4?v=...", "1": "..." }, // active per frame
+// frame_animation_versions: { "0": [{ url, ts, note }, ...] } // full history per frame
+// }
+console.log(data.frame_animations); 
+Run with: node --env-file=.env frame-versions.js
+
+2 Edit Frames
+
+POST /api/v2/videos/{video_id}/edit-frames 
+Re-render one or more frames from natural-language instructions. frame_ids and edit_prompts must be the same length (one prompt per frame). Each frame returns its own pollable edit_job_id. Requires x-api-key.
+
+JavaScript Python curl 
+edit-frames.js Copy 
+import fetch from "node-fetch";
+
+const BASE_URL = "{BASE_URL}";
+const VIDEO_ID = "video_id";
+
+// frame_ids[i] is edited using edit_prompts[i] — the two arrays must match in length.
+// reference_images is optional style guidance (https/s3 URLs).
+const payload = {
+frame_ids: ["0", "2"],
+edit_prompts: [
+"Make the title text blue and bolder",
+"Add an arrow pointing to the diagram"
+],
+reference_images: ["https://example.com/style.png"] // optional
+};
+
+const response = await fetch(
+`${BASE_URL}/api/v2/videos/${VIDEO_ID}/edit-frames`,
+{
+method: "POST",
+headers: { "Content-Type": "application/json", "x-api-key": "api-key" },
+body: JSON.stringify(payload)
+}
+);
+
+const data = await response.json();
+// {
+// video_id: "...", status: "processing", message: "Started 2 frame edit job(s)",
+// edit_jobs: [{ frame_id: "0", edit_job_id: "..." }, { frame_id: "2", edit_job_id: "..." }]
+// }
+// Poll each edit_job_id at GET /api/v2/videos/edits/{edit_job_id}/status.
+console.log(data.edit_jobs); 
+Run with: node --env-file=.env edit-frames.js
+
+3 Edit Job Status
+
+GET /api/v2/videos/edits/{edit_job_id}/status 
+Poll the status of a frame edit or combine job. This endpoint supports both /edit-frames and /combine-frames jobs. Returns 'processing', a 'completed' result with the MP4 url, or 'failed' with an error message. Requires x-api-key.
+
+JavaScript Python curl 
+edit-status.js Copy 
+import fetch from "node-fetch";
+
+const BASE_URL = "{BASE_URL}";
+const EDIT_JOB_ID = "edit_job_id"; // from /edit-frames or /combine-frames
+
+const response = await fetch(
+`${BASE_URL}/api/v2/videos/edits/${EDIT_JOB_ID}/status`,
+{ headers: { "x-api-key": "api-key" } }
+);
+
+const data = await response.json();
+// { status: "processing" } -> still rendering
+// { status: "completed", url: "https://...mp4" } -> edited frame / combined video
+// { status: "failed", error: "..." }
+console.log(data.status, data.url ?? ""); 
+Run with: node --env-file=.env edit-status.js
+
+4 Combine Frames
+
+POST /api/v2/videos/{video_id}/combine-frames 
+Concatenate per-frame MP4s into a fresh final video, muxing audio from the original render. You must pass exactly one URL per frame, in order (a count mismatch returns 422). Mix edited URLs (from /edit-frames) with the unchanged frame_animations URLs (from /frame-versions). Returns a combine_job_id to poll via the status endpoint. Requires x-api-key.
+
+JavaScript Python curl 
+combine-frames.js Copy 
+import fetch from "node-fetch";
+
+const BASE_URL = "{BASE_URL}";
+const VIDEO_ID = "video_id";
+
+// One MP4 per frame, in order: edited URLs for frames you changed, and the
+// existing frame_animations URLs (from /frame-versions) for the rest.
+const payload = {
+frame_animation_urls: [
+"https://.../frame-0-edited.mp4",
+"https://.../frame-1.mp4",
+"https://.../frame-2-edited.mp4"
+]
+};
+
+const response = await fetch(
+`${BASE_URL}/api/v2/videos/${VIDEO_ID}/combine-frames`,
+{
+method: "POST",
+headers: { "Content-Type": "application/json", "x-api-key": "api-key" },
+body: JSON.stringify(payload)
+}
+);
+
+const data = await response.json();
+// { combine_job_id: "...", video_id: "...", status: "processing" }
+// Poll GET /api/v2/videos/edits/{combine_job_id}/status for the final video URL.
+console.log(data.combine_job_id); 
+Run with: node --env-file=.env combine-frames.js
+
+5 Set Frame Version
+
+POST /api/v2/videos/{video_id}/set-frame-version 
+Make a specific animation version the active one for a frame — e.g. revert to an earlier take. The frame_animation_url should come from frame_animation_versions[frame_id] returned by /frame-versions. The response returns the activated URL. Requires x-api-key.
+
+JavaScript Python curl 
+set-frame-version.js Copy 
+import fetch from "node-fetch";
+
+const BASE_URL = "{BASE_URL}";
+const VIDEO_ID = "video_id";
+
+// v2 names this field "frame_animation_url" (v1 calls it "url"). It should be one
+// of the versions listed in frame_animation_versions[frame_id] from /frame-versions.
+const payload = {
+frame_id: "0",
+frame_animation_url: "https://.../frame-0-v2.mp4"
+};
+
+const response = await fetch(
+`${BASE_URL}/api/v2/videos/${VIDEO_ID}/set-frame-version`,
+{
+method: "POST",
+headers: { "Content-Type": "application/json", "x-api-key": "api-key" },
+body: JSON.stringify(payload)
+}
+);
+
+const data = await response.json();
+// { video_id: "...", frame_id: "0", frame_animation_url: "https://.../frame-0-v2.mp4?v=..." }
+console.log(data.frame_animation_url); 
+Run with: node --env-file=.env set-frame-version.js
+
+Timing
+Timing parameter reference — provide duration in minutes as a string, or "auto" to let the system determine the optimal duration.
+
+Value Duration 
+" 0.25 " 15 seconds 
+" 0.5 " 30 seconds 
+" 1 " 1 minute 
+" 2 " 2 minutes 
+" 4 " 4 minutes 
+" 8 " 8 minutes Beta 
+" 10 " 10 minutes Beta 
+" 15 " 15 minutes Beta 
+"auto" System-determined 
+
+Supported values: "0.25" , "0.5" , "1" , "2" , "4" , "8" , "10" , "15" , "auto" . 
+NOTE: "15" is restricted: 15-minute videos require Enterprise Custom , or Scale with the Longer Videos add-on enabled. Other API plan/add-on combinations receive a 403 . 
+
+When to use "auto" timing: Use auto timing when the content complexity should determine the video length. Especially useful for problem-solving — pass a math or physics problem via reference_images and the golpo engine will analyze the complexity and generate a script of the appropriate length. 
+
+Example: Auto Timing with Problem Solving
+Pass a problem image via reference_images with Golpo Canvas and let the engine decide how long the explanation should be.
+auto-timing-example.json Copy 
+{
+"prompt": "Solve and explain this calculus problem step by step",
+"reference_images": [
+"https://your-bucket.s3.amazonaws.com/calculus-problem.png"
+],
+"golpo_video_engine": "golpo_canvas",
+"canvas_style_variant": "whiteboard",
+"timing": "auto",
+"narration_voice": "male-1",
+"video_orientation": "horizontal"
+} 
+
+Video Orientation
+Controls the video aspect ratio and orientation.
+
+Value Format Dimensions Use Cases 
+"vertical" Vertical / Portrait 1024×1536 px TikTok, Instagram Reels, YouTube Shorts 
+"horizontal" Horizontal / Landscape (Default) 1536×1024 px YouTube, standard video content 
+
+9:16 
+vertical
+1024×1536 px
+
+16:9 
+horizontal (default) 
+1536×1024 px
+
+Narration Voices
+Pick the voice that narrates your video. Pass your choice in the narration_voice parameter — two female voices and two male voices are available, each with its own tone and style.
+
+Value Voice Type Description 
+"female-1" Female 1 Female narrator voice (Default) 
+"female-2" Female 2 Alternative female narrator voice 
+"female-3" Female 3 Additional female narrator voice (New) 
+"female-4" Female 4 Additional female narrator voice (New) 
+"female-5" Female 5 Additional female narrator voice (New) 
+"female-6" Female 6 Additional female narrator voice (New) 
+"female-7" Female 7 Additional female narrator voice (New) 
+"male-1" Male 1 Male narrator voice 
+"male-2" Male 2 Alternative male narrator voice 
+"male-3" Male 3 Additional male narrator voice (New) 
+"male-4" Male 4 Additional male narrator voice (New) 
+"male-5" Male 5 Additional male narrator voice (New) 
+"male-6" Male 6 Additional male narrator voice (New) 
+"male-7" Male 7 Additional male narrator voice (New) 
+
+Background Music
+Send the background_track field in your JSON body using one of the following keys.
+
+background_track key Mood / Usage 
+" jazz " Warm, neutral bed 
+" lofi " Calm, study vibes 
+" dramatic " Cinematic tension 
+" engaging " Subtle corporate pulse 
+" hyper " High-energy electronic 
+" inspirational " Uplifting orchestral 
+" documentary " Serious factual tone 
+
+Voice Instructions
+Describe how the voice should sound — accent, tone, or pronunciation style.
+
+Pass instructions in the narration_instructions field to guide voice generation. The AI will adjust accent, tone, pace, and delivery accordingly.
+narration-instructions-example.json Copy 
+{
+"prompt": "Explain quantum computing basics",
+"narration_instructions": "Speak in a warm British accent with a calm, professorial tone. Pause slightly between key concepts for emphasis.",
+"narration_voice": "male-1"
+} 
+
+More examples
+• “ Talk in a French accent ” 
+• “ Use an enthusiastic, energetic tone ” 
+• “ Talk like a professor — measured and articulate ” 
+• “ Speak slowly and clearly, like a meditation guide ” 
+• “ Fast-paced sports commentator style ” 
+• “ Friendly and casual, like chatting with a friend ” 
+
+Video Instructions
+Describe how the video should look — visuals, style, and scene direction.
+
+Pass instructions in the visual_instructions field to guide the visual generation. The AI will adjust scene composition, imagery, and visual style accordingly.
+visual-instructions-example.json Copy 
+{
+"prompt": "Company quarterly results overview",
+"visual_instructions": "Use clean corporate visuals with data charts and graphs. Include stock footage of modern office environments. Prefer blue and white color palette.",
+"narration_voice": "female-1"
+} 
+
+More examples
+• “ Show more graphs and charts ” 
+• “ Include more stock footage ” 
+• “ Use cinematic transitions ” 
+• “ Female presenter in an office setting ” 
+• “ Urban background with modern architecture ” 
+• “ Dark moody aesthetic with neon accents ” 
+
+Golpo Engine
+Pick the video generation pipeline. golpo_canvas is the default; golpo_sketch produces whiteboard-style line-art animations.
+
+Value Engine Description 
+"golpo_canvas" Golpo Canvas (Default) Canvas-based video with rich style variants. Requires canvas_style_variant . 
+"golpo_sketch" Golpo Sketch Whiteboard line-art animation. Requires sketch_style_variant . 
+
+NOTE: Setting canvas_style_variant to null with golpo_canvas (or sketch_style_variant to null with golpo_sketch ) is rejected with HTTP 422. 
+Canvas Style Variant
+canvas_style_variant controls the visual family and Compact or Expanded style profile for golpo_video_engine: "golpo_canvas" .
+
+Unsuffixed canvas_style_variant values select Expanded , the default profile. The ten pre-Notebook families also accept the matching _compact value for Compact . Notebook is Compact-only and remains notebook_infographic . Migration note: _legacy remains accepted as a deprecated Expanded alias for existing integrations; use the unsuffixed value for new requests. 
+Style Compact value Expanded value Description 
+Chalkboard (White on Black) " chalkboard_bw_compact " "chalkboard_bw" White chalk on a black background 
+Chalkboard (Black on White) " chalkboard_black_on_white_compact " "chalkboard_black_on_white" Black ink on a white background 
+Chalkboard Color " chalkboard_color_compact " "chalkboard_color" Colorful neon chalkboard style 
+Whiteboard " whiteboard_compact " "whiteboard" Clean whiteboard illustrations 
+Modern Minimal " modern_minimal_compact " "modern_minimal" Sleek, minimal modern aesthetic 
+Playful " playful_compact " "playful" Fun, colorful playful illustrations 
+Technical " technical_compact " "technical" Technical diagram style 
+Editorial " editorial_compact " "editorial" Magazine/editorial illustration style 
+Sharpie " sharpie_compact " "sharpie" Bold marker/sharpie drawn style 
+Illustrations " illustrations_compact " "illustrations" Vox-style editorial explainer with a paper-textured infographic look 
+Notebook " notebook_infographic " Not available Notebook infographic style; Compact only 
+
+golpo-canvas-example.json Copy 
+{
+"prompt": "How solar panels convert sunlight to electricity",
+"golpo_video_engine": "golpo_canvas",
+"canvas_style_variant": "modern_minimal_compact",
+"pen_animation_style": "stylus",
+"scene_pacing": "normal",
+"timing": "2"
+} 
+
+This example uses the Compact profile. To request Expanded for the same family, send canvas_style_variant: "modern_minimal" .
+Sketch Style Variant
+sketch_style_variant controls the look for golpo_video_engine: "golpo_sketch" .
+
+Value Label Description 
+"classic" Classic Original Golpo Sketch — classic whiteboard line-art animation (Default) 
+"improved(beta)" Improved Improved line-art with cleaner strokes and a more polished look 
+"formal" Formal Advanced sketch generation with higher detail and refined aesthetics 
+"crayon" Crayon Storytelling crayon sketch look 
+"dry_erase" Dry Erase Whiteboard dry-erase aesthetic 
+"professional_clean" Professional Clean Clean, minimal professional sketch 
+"creative" Creative After Skool whiteboard-marker variant with bold colorful strokes 
+"infographics" Infographics Vox-style editorial explainer with paper-textured infographic look 
+"chalkboard_black_on_white" Chalkboard (Black on White) Black ink on a white background 
+
+scene_pacing applies to both engines: "normal" caps frames at 15s; "fast" caps frames at 10s. 
+Custom Style
+custom_style renders the video in a look derived from your own reference (an image URL, a video URL, or a text description) instead of a preset canvas_style_variant / sketch_style_variant . The value is the id of a style you saved via POST /api/v2/custom-styles .
+
+Parameter Type Default Description 
+custom_style string None Saved style id you own (from GET /api/v2/custom-styles ). Inline URLs or text are not accepted here. Optional; works with both engines. 
+
+Behaviour per engine
+golpo_video_engine What custom_style does Overridden field 
+"golpo_canvas" Renders full-colour composed scenes in the Custom canvas style (Expanded profile) that closely resemble the reference. pen_animation_style , visual_animation_style , scene_pacing and onscreen_text_language still apply. canvas_style_variant recorded if sent, not used for rendering 
+"golpo_sketch" Renders a progressive line-drawing reveal using the derived palette and texture; the sketch character stays dominant. Pen animation still applies. sketch_style_variant not used for the look 
+
+NOTE: Plan-gated. Requires a plan that includes Custom style (Business and above). Other plans receive 403 on both /custom-styles and /generate . 
+NOTE: custom_style cannot be combined with enable_podcast_engine: true — no visuals are rendered for podcasts, so the request is rejected with 422 . 
+The saved style is analyzed the first time it is used and the result is cached, so the first video generated with a new style may take slightly longer. Later jobs — either engine, any language_variants — reuse the cached analysis, so all variants look identical. Style analysis is not billed separately. 
+
+Validation summary — POST /api/v2/videos/generate 
+Situation Status 
+Plan without Custom Style Support 403 
+custom_style not found, not owned by the caller, or malformed id 404 
+custom_style is an empty string 422 
+Saved style is a YouTube reference (saved on the platform) 422 
+custom_style together with enable_podcast_engine=true 422 
+
+custom-style-canvas.json Copy 
+{
+"prompt": "How photosynthesis works",
+"golpo_video_engine": "golpo_canvas",
+"custom_style": "7f3d5a2e-2c8e-4c0f-9c8f-9a2b1d3e4f56",
+"visual_animation_style": "sketch",
+"timing": "1"
+} 
+
+custom-style-sketch.json Copy 
+{
+"prompt": "How photosynthesis works",
+"golpo_video_engine": "golpo_sketch",
+"custom_style": "7f3d5a2e-2c8e-4c0f-9c8f-9a2b1d3e4f56",
+"scene_pacing": "normal",
+"timing": "1"
+} 
+
+Full runnable examples in five languages are in Custom Style (Canvas + Sketch) ; endpoint details are in Custom Style Endpoints .
+Pen Animation Style
+pen_animation_style adds a drawing cursor effect to the animation. Only supported with the Golpo Canvas engine — setting it with golpo_video_engine: "golpo_sketch" is rejected with 422.
+
+Value Description 
+null No pen cursor (Default) 
+"stylus" Thin stylus pen cursor 
+"marker" Thick marker cursor 
+"pen" Classic pen cursor 
+
+Visual Animation Style
+visual_animation_style controls the default animation style for generated visual components in Golpo Canvas (for example: illustrations, diagrams, icons, arrows, and annotations).
+
+Value Description 
+"auto" Golpo Canvas engine decides the animation style (Default). 
+"fade_in" Uses fade-in animation for generated visual components. 
+"sketch" Uses sketch animation for generated visual components. 
+
+NOTE: visual_animation_style is supported only with golpo_video_engine: "golpo_canvas" . Sending it with golpo_video_engine: "golpo_sketch" is rejected with 422. 
+Frame Transition
+frame_transition controls how a finished frame moves into the next one. It works with both Golpo Canvas and Golpo Sketch . Without it, every frame change is a hard cut.
+
+Value Description 
+"none" Hard cut, no animation (Default). 
+"left" The next frame slides in from the right, pushing the current frame out to the left. 
+"right" The next frame slides in from the left, pushing the current frame out to the right. 
+"up" The next frame slides in from the bottom, pushing the current frame out the top. 
+"down" The next frame slides in from the top, pushing the current frame out the bottom. 
+"zoom_in" The current frame zooms in while the next frame grows into place and blends in. 
+"zoom_out" The current frame zooms out and fades away, revealing the next frame. 
+
+frame_transition is an array of strings . Send one value for the same effect on every frame change, or several values to have Golpo pick one of them at random for every frame change . For example, ["left", "zoom_in"] mixes slides to the left with zoom-ins.
+The transition plays between two frames, so the last frame and the frames next to a clip you inserted with custom_videos always use a hard cut. 
+Hand animation
+Set transition_hand_animation to true to have an animated hand push each slide to the next frame. It defaults to false and accepts only true or false . It needs at least one slide effect ( left , right , up , down ) in frame_transition and cannot be combined with zoom_in or zoom_out .
+NOTE: Frame transitions are only available with scene_pacing: "normal" (the default). Sending any value other than ["none"] — or transition_hand_animation: true — together with scene_pacing: "fast" is rejected with 422. 
+Ready-to-send payloads are in the Frame Transition example .
+Validation errors
+Invalid combinations are rejected before any credits are used. All of the following return 422 .
+Request Reason 
+"frame_transition": ["left"], "scene_pacing": "fast" Frame transitions need normal pacing. 
+"frame_transition": "left" Must be an array of strings. 
+"frame_transition": ["left,up"] Send each value as its own array item, not comma separated. 
+"frame_transition": ["spin"] Unknown value. Use none, left, right, up, down, zoom_in or zoom_out. 
+"frame_transition": ["none", "left"] "none" cannot be combined with other values. 
+"frame_transition": ["left", "hand"] "hand" is not a frame_transition value. Use transition_hand_animation. 
+"transition_hand_animation": true with ["none"] The hand needs at least one slide effect. 
+"frame_transition": ["zoom_in"], "transition_hand_animation": true The hand animation does not work with zoom_in or zoom_out. 
+"transition_hand_animation": "yes" Must be a boolean (true or false). 
+
+Inserting Images in Script
+How to place paired [START][IMAGE N] and [END][IMAGE N] markers inside custom_script so your uploaded custom_images land at the right moment in the narration.
+
+When you supply your own script via custom_script and also upload custom_images , wrap a sentence in paired markers to control where each image appears. [IMAGE 1] refers to the first image in custom_images , [IMAGE 2] to the second, and so on (marker numbers start at 1, not 0). The image displays for the duration of the spoken text between [START][IMAGE N] and [END][IMAGE N] .
+Follow these rules to make sure your image inserts are never silently skipped:
+Use 1 for your first uploaded image, 2 for the second, and so on. [IMAGE 1] → first item in custom_images . If you write [IMAGE 3] but only uploaded 2 images, that image won’t appear.
+Every [START][IMAGE N] needs a matching [END][IMAGE N] with the same number. Missing or mismatched closing tags drop the marker.
+Put whitespace around marker tags when they sit next to sentence punctuation. Always leave a space (or newline) between the preceding sentence's period and [START] , and between [END][IMAGE N] and the next sentence. Write story. [START][IMAGE 2] and [END][IMAGE 1] Next sentence. — never story.[START][IMAGE 2] or [END][IMAGE 1]Next sentence. . Without these spaces the sentence splitter cannot find a clean break and the marker is dropped.
+Wrap a complete, simple sentence of 8–15 plain words between the markers. Shorter than 5 words is fragile; longer than 20 holds the image on-screen too long.
+Avoid colons ( : ), em-dashes ( — ), semicolons ( ; ), and parentheses inside the marker span. 
+Keep commas inside the marker to at most one or two. Stacked lists like "not X, not Y, not Z" confuse the matcher.
+NOTE: Image markers that violate any of these rules are silently dropped — no error, no warning. The frame at that position falls back to an AI-generated visual and your uploaded image never appears. 
+Example 1 — Good shape (use as a template): 
+image-markers-good-shape.json Copy 
+{
+"custom_script": "Travel changes how we see the world. [START][IMAGE 1] This is a quiet beach at sunset with golden waves rolling onto soft sand. [END][IMAGE 1] Coastal trips help us slow down and breathe deeply for a few days. [START][IMAGE 2] This is a mountain village tucked between tall green peaks and clouds. [END][IMAGE 2] Highland trips reward you with cool air and stunning scenic views.",
+"custom_images": [
+"https://example.com/beach.png",
+"https://example.com/mountain.png"
+],
+"custom_images_description": [
+"A quiet beach at sunset",
+"A mountain village among green peaks"
+]
+} 
+
+Each wrapped sentence is ~10–12 plain words, contains no colons or em-dashes, has a single space after each preceding period, and the marker numbers (1, 2) match the 2-item custom_images array.
+You can also use other image control parameters alongside the markers: keep_original_images (boolean array — skip AI processing and place the image untouched) and disable_image_animation (boolean array — render as a static frame instead of an animated drawing).
+Example 2 — Common mistakes and their fixes: 
+image-markers-missing-space.json Copy 
+// ❌ Mistake A: no space BEFORE [START] — IMAGE 2 won't appear
+{
+"custom_script": "...each region tells a unique story.[START][IMAGE 2] Rajasthan glows proudly with royal forts and deserts[END][IMAGE 2]."
+}
+
+// ✅ Fix A: add a single space between "story." and "[START][IMAGE 2]"
+{
+"custom_script": "...each region tells a unique story. [START][IMAGE 2] Rajasthan glows proudly with royal forts and deserts[END][IMAGE 2]."
+}
+
+// ❌ Mistake B: no space AFTER [END] — IMAGE 1 won't appear
+{
+"custom_script": "[START][IMAGE 1] A coastal town glows at sunset by the harbor. [END][IMAGE 1]The next morning brings calm waters and a quiet beach."
+}
+
+// ✅ Fix B: add a single space between "[END][IMAGE 1]" and "The"
+{
+"custom_script": "[START][IMAGE 1] A coastal town glows at sunset by the harbor. [END][IMAGE 1] The next morning brings calm waters and a quiet beach."
+} 
+
+Inserting Videos in Script
+How to place paired [START][VIDEO N]...[END][VIDEO N] markers inside custom_script so your uploaded custom_videos play for the right span of narration.
+
+When you supply your own script via custom_script and also upload custom_videos , wrap the narration that should play over video N with a paired [START][VIDEO N] ... [END][VIDEO N] block — the same shape used for image markers. [VIDEO 1] refers to the first video in custom_videos , [VIDEO 2] to the second, and so on (marker numbers start at 1, not 0). The narration text between the [START] and [END] markers determines the on-screen duration of the user video — the engine cuts to your clip at the START marker and returns to AI-generated visuals at the END marker.
+Follow these rules to make sure your video inserts are never silently skipped:
+Use 1 for your first uploaded video, 2 for the second, and so on. [VIDEO 1] → first item in custom_videos . If you write [VIDEO 3] but only uploaded 2 videos, that video won’t appear.
+Every video needs a matching [START] and [END] pair. Use the shape [START][VIDEO N] ... narration ... [END][VIDEO N] . Writing a bare [VIDEO N] without the wrappers causes the engine to start the video but never stop it — it will keep playing over all subsequent narration and block any later [VIDEO N] blocks from rendering.
+Spelling and casing must be exact. Use uppercase VIDEO with a single space before the number — typos like [VEIDO 1] or [VDIEO 1] are silently dropped.
+Always put whitespace around each marker. Write Welcome. [START][VIDEO 1] Here is the footage. [END][VIDEO 1] Up next. — never glue markers to surrounding words.
+Place markers at sentence boundaries, not mid-sentence. Put [START][VIDEO N] right before the first word of the sentence the video should cover, and [END][VIDEO N] right after the closing punctuation of the last sentence in that block.
+Match the narration length to the user video’s original duration. The engine treats the uploaded clip’s natural length as authoritative — [END][VIDEO N] does not force a hard cut. If the clip is longer than the narration wrapped inside the block, the video keeps playing past [END] and the next narration line is delayed until the clip finishes, producing a visible silent gap. Either pre-trim the clip before uploading, or expand the narration inside the block to cover the clip’s full runtime.
+Each [VIDEO N] appears exactly once. One [START] and one [END] per video — do not reuse the same N later in the script.
+Do not nest video blocks. [START][VIDEO 1] ... [START][VIDEO 2] ... [END][VIDEO 1] [END][VIDEO 2] is invalid; each block must fully close before the next one opens.
+NOTE: Video markers that violate any of these rules are silently dropped — no error, no warning. The position falls back to the engine's normal narration without your uploaded video. 
+NOTE: Heads up — clip duration vs. narration duration. The user video plays for its full uploaded length regardless of how much narration you wrap between [START][VIDEO N] and [END][VIDEO N] . If the clip is longer than the wrapped narration, the video keeps playing past [END] silently, and the next narration line is held back until the clip ends. To avoid this silent gap, either trim the clip to roughly the spoken duration of the wrapped sentences before uploading, or write enough narration inside the block to cover the clip’s full runtime. 
+Example — Good shape (use as a template): 
+video-markers-good-shape.json Copy 
+{
+"custom_script": "Welcome to today's nature tour. [START][VIDEO 1] Here is a stunning view of the mountain ridge captured from the air. [END][VIDEO 1] Now let us head down to the coast. [START][VIDEO 2] These calming waves close out our journey. [END][VIDEO 2] Thanks for watching.",
+"custom_videos": [
+"https://example.com/mountain-clip.mp4",
+"https://example.com/coastal-clip.mp4"
+],
+"custom_videos_description": [
+"Aerial view of a mountain ridge",
+"Coastal waves rolling onto a beach"
+]
+} 
+
+Each [VIDEO N] appears twice — once with [START] at the beginning of its sentence and once with [END] at the end. Video 1 plays only over “Here is a stunning view… from the air.” , then the engine returns to AI-generated visuals for “Now let us head down to the coast.” , then video 2 plays only over “These calming waves close out our journey.” Marker numbers (1, 2) match the 2-item custom_videos array. To control whether the video plays with its original audio or AI narration, see use_ai_audio_at .
+Language Support
+45+ languages supported via the narration_language and onscreen_text_language parameters.
+
+Language Accepted values Note 
+English english or en Default when omitted 
+Hindi hindi or hi — 
+Spanish spanish or es — 
+French french or fr — 
+German german or de — 
+Italian italian or it — 
+Portuguese portuguese or pt — 
+Russian russian or ru — 
+Japanese japanese or ja — 
+Korean korean or ko — 
+Chinese / Mandarin chinese, mandarin, or zh Both map to zh 
+Arabic arabic or ar — 
+Dutch dutch or nl — 
+Polish polish or pl — 
+Turkish turkish or tr — 
+Swedish swedish or sv — 
+Danish danish or da — 
+Norwegian norwegian or no — 
+Finnish finnish or fi — 
+Greek greek or el — 
+Czech czech or cs — 
+Hungarian hungarian or hu — 
+Romanian romanian or ro — 
+Thai thai or th — 
+Vietnamese vietnamese or vi — 
+Indonesian indonesian or id — 
+Malay malay or ms — 
+Tamil tamil or ta — 
+Telugu telugu or te — 
+Bengali bengali or bn — 
+Marathi marathi or mr — 
+Gujarati gujarati or gu — 
+Kannada kannada or kn — 
+Malayalam malayalam or ml — 
+Punjabi punjabi or pa — 
+Urdu urdu or ur — 
+
+HTTP Status Codes
+Standard HTTP codes returned by all endpoints.
+
+Code Meaning Recovery 
+200 Successful request (GET, POST, PATCH, or DELETE) Consume response payload 
+400 Bad request (invalid fields or file types) Check request body and field values 
+401 Missing or invalid authentication Verify the x-api-key header is set and valid 
+403 Plan does not allow requested action Upgrade plan or contact support 
+404 Video / job / custom style not found Verify identifiers belong to the account 
+413 Uploaded file is 10 MB or larger Compress or split the file before retrying 
+422 Validation failure (bad payload) Inspect detail field in response 
+429 Rate limit exceeded Back off and retry with exponential delay 
+500 Unexpected server error Retry later; contact support if persistent 
+
+Error Response Format
+All 4xx and 5xx responses return a JSON body with a detail field.
+
+String detail 
+Most errors return detail as a single human-readable string describing what went wrong. Surface it directly in your UI or logs.
+error-response-string.json Copy 
+{
+"detail": "'canvas_style_variant' is required when using 'golpo_canvas' engine."
+} 
+
+Array detail 
+When the request body fails validation, detail is an array of error objects — one per failing field. Each object includes the failing field path ( loc ) and a human-readable message ( msg ).
+error-response-array.json Copy 
+{
+"detail": [
+{
+"type": "value_error",
+"loc": ["body"],
+"msg": "Value error, 'custom_videos_description' is required when 'custom_videos' is provided. Provide one description per video (2 expected)."
+}
+]
+} 
+
+Usage-Based Plan API Only Tier
+Usage-based pricing with volume discounts
+
+Get API Access 
+
+About this plan
+This plan is for using Golpo within your program or application . You will not be able to use the Golpo platform to generate videos manually.
+This is a usage-based plan with a minimum cost of USD $200 to enter. Perfect for developers and businesses who need programmatic access to video generation.
+Pay only for what you use — volume-based pricing that gets better as you scale.
+
+Features you get
+No watermark + commercial use 
+45+ languages & multi-language variants 
+Voice instructions & Vertical video 
+Videos in color + new sketch styles 
+Pen-in-hand animation 
+Formal style 
+Own narration /input audio 
+Custom logo & Video instructions 
+User inserted videos & images 
+Audio-only podcast mode 
+Longer videos (up to 10 min, beta) 
+
+Platform access (manual video creation via the dashboard) is not included in this plan. If you need both platform + API access, please consider buying an enterprise plan or business plan with an API add-on.
+
+Pricing Rates
+Credit Conversion
+
+USD $1
+USD
+
+1 Credit
+Golpo credit
+
+Resource Cost 
+1 min video Video generation 2 Credits = USD $2.00 
+1 min Golpo Studio video golpo_video_engine = golpo_animate 4 Credits = USD $4.00 
+Volume discounts apply at higher usage tiers. Contact us for enterprise rates.
+
+Minimum entry: USD $200 (200 credits = ~100 minutes of video)
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

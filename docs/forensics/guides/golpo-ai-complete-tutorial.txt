@@ -1,0 +1,495 @@
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained (2026) About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • April 8, 2026 • 27 min read 
+
+Updated October 14, 2026.
+
+Feature deep dive: Picture in Picture
+
+Using Own Narration with a webcam or uploaded presenter video? The dedicated guide covers round overlays, split-screen layouts, positioning, framing, plan availability, and seven finished examples. Open the Picture-in-Picture guide → 
+
+Golpo AI turns text prompts, documents, audio recordings, and screen captures into animated explainer videos — the kind with hand-drawn whiteboard illustrations and professional narration that you see on YouTube education channels and in corporate training programs. You describe what you want, and Golpo writes the script, generates the visuals, adds narration and music, and delivers a finished video in ten to fifteen minutes.
+This tutorial walks through every part of the platform. Every button, toggle, dropdown, and input field on the video creation page is covered, along with which pricing plan unlocks each feature. By the end you will know exactly what every control does and how to use it.
+Watch the full video tutorial here:
+
+Last verified July 26, 2026 against the live Golpo AI product, current pricing page and official API documentation . Product controls, limits, and plan availability can change; current in-app and checkout values govern. This is a product-owned guide.
+
+What Golpo AI Does
+Golpo is an AI video generator focused on explainer and whiteboard-style videos. You give it a topic — either by typing a prompt, uploading a document, recording your voice, or providing an existing audio or video file — and it produces a narrated, animated video.
+The output is not a slideshow or a template you fill in. Golpo generates original hand-drawn illustrations, syncs them to narration, and animates them with a pen-drawing effect. The result looks like what a professional whiteboard animation studio would produce, but it takes minutes instead of weeks.
+Common use cases include:
+YouTube educational content and explainers
+Corporate training and employee onboarding videos
+Product demos and marketing videos
+Sales enablement and personalized prospect videos
+Course content for educators and coaches
+Social media content in vertical or horizontal formats
+Getting Started: Login
+Golpo supports Google or Microsoft login. Please go to https://video.golpoai.com and click on "Getting Started" on the top or "Start for Free" as shown in this screenshot.
+
+The Create Video Page
+When you log in to Golpo and click Create New Video , you land on the video creation page. This is where everything happens. The page is organized from top to bottom: input area at the top, video style selection in the middle, and detailed settings at the bottom.
+Let us go through every element on this page.
+
+The Top Bar
+Across the top of the page you will see:
+Credits — your remaining video credits, shown as a number (for example, 117.562). If you are on a team plan, it says "team credits" next to it. For video generation, 1 credit is 60 seconds of Golpo Canvas/Sketch videos and 30 seconds of Golpo Studio videos
+Plan — your current plan name (Free, Starter, Creator, Growth, Business, or Scale), displayed as a clickable link
+Voice Clone — a button that takes you to the voice cloning feature (Business and Scale plans)
+Library — opens your video library where all generated videos are stored
+Upgrade — takes you to the pricing page
+Profile icon — click to see your name, email, and a dropdown menu with Add-ons, Edit Video, Team, Manage Billing, and Sign Out
+On the left side of the top bar, there is an Instructions dropdown. This lets you save and load reusable instruction presets — handy if you frequently create videos with the same tone, style, or specific guidelines.
+Prompt Content: The Main Input Area
+The large text box labeled Prompt Content is where you describe your video. This is the primary way to tell Golpo what to make.
+You can type anything from a single sentence to a detailed multi-paragraph description. The placeholder text reads: "Describe your video/podcast topic, perspective, and instructions in any language..." 
+Good prompts include:
+The topic you want explained
+The perspective or audience (for example, "explain this to a five-year-old" or "this is for senior software engineers")
+Specific points you want covered
+The tone (professional, casual, humorous, academic)
+Avoid 
+Don't put special characters or emojis.
+You can write your prompt in any language, and Golpo will generate the video in that language (for creator and above plans). Language option is available from the creator plan and above. For Free and Starter plans, whatever language you provide the prompt in, it'll generate the video in English.
+The Attach Button
+Below the prompt text box, there is an Attach button. Click it to upload documents — PDFs, Word files, or other text documents. Golpo reads the document, extracts the content, and uses it as the basis for your video. This is powerful for turning existing company documents, research papers, product manuals, or lesson plans into videos without rewriting anything.
+You can combine a document attachment with a text prompt. For example, attach your product brochure and add a prompt like "Create a two-minute overview of this product focused on the pricing and key features, targeting small business owners."
+Available on: All plans
+The Two Toggles: Own Narration and Script Mode
+In the top-right corner of the input area, there are two toggles that fundamentally change how Golpo creates your video.
+Own Narration
+When Own Narration is OFF (the default), Golpo generates the narration for you using AI voices. You provide the topic, and Golpo writes the script and speaks it. A detailed tutorial is available here: https://video.golpoai.com/guide/golpo-ai-own-narration-guide 
+When Own Narration is ON , the prompt text box disappears and is replaced with audio and video input options:
+Upload Audio or Video — drag and drop or click to select a common audio or video format. For video uploads, choose Audio in Video to use only the audio track or Picture in Picture to keep the presenter visible beside the generated content.
+The uploaded video picture is removed only when Audio in Video is selected. Picture in Picture preserves the presenter video and displays it in the chosen overlay or split-screen layout.
+Record Audio — record narration directly from your microphone.
+Record Webcam — capture camera and audio, then choose Audio in Video or Picture in Picture for the final result.
+Golpo uses the supplied audio as the narration instead of generating an AI voice, transcribes the recording, and creates visuals that match it. The recording determines the duration and spoken language, so the normal duration, AI voice, and Voice Instructions controls do not apply in Own Narration mode.
+For an uploaded or webcam-recorded video, open the Picture-in-Picture guide to compare round-overlay and split-screen layouts. Before generation, certify that you own the recording or have explicit permission to use it.
+Use this when you want to use your own voice, a branded AI voice from ElevenLabs or similar services, an existing recording like a Zoom call or podcast, or when you want precise word-for-word control over the narration.
+Available on: Business, Scale, and Enterprise subscription plans. Confirm current availability on the live pricing page .
+Script Mode
+When Script Mode is ON , the text you supply becomes the narration. Instead of describing a topic and letting Golpo research and draft the script, paste only the words that should be spoken; put visual direction in Video Instructions.
+This is essential when:
+Compliance or legal requires specific approved language
+You have already written a script and want it read exactly
+You need total control over what is said without AI interpretation
+Access: Edit script before creating video is the separate checkbox that activates the pre-render review step. See the Prompt Mode vs Script Mode guide .
+Video Style: Golpo Canvas vs. Golpo Sketch
+Below the input area, you choose between two video generation engines:
+Golpo Canvas — Produces scene-based animations in 11 named visual styles. Ten established style families offer Compact and Expanded profiles. Compact combines more components within each scene so viewers can see more of the explanation together and retain the relationships between its ideas. Expanded distributes those components across more scenes, giving each component more visual space and revealing the explanation in smaller steps. The earlier profiles are now named Expanded. The new Notebook style is Compact-only. Open the all Canvas styles guide or watch every Compact/Expanded pair plus Notebook .
+Custom Style: Business plans and above can create a reusable Canvas style from an image, a video, or a written description. See the Custom Style guide .
+
+Golpo Sketch — Produces hand-drawn whiteboard illustrations with a refined, modern look. Sub-styles include Classic, Improved (Beta), Dry Erase, Professional Clean, Crayon, and Formal. Classic B&W is available on all plans; color videos are only available on the Growth plan and above. Formal style is only available for business plan and above.
+
+Each option has a Preview button next to it so you can see examples of what that style looks like before committing.
+Plan availability for styles: 
+Free, Starter, and Creator — Golpo Sketch: Classic (B&W) only. Golpo Canvas: Chalkboard B&W only
+Growth ($199.99/month) — Golpo Sketch: Classic and Improved (Beta), Dry Erase, Professional Clean, Crayon (Color). Golpo Canvas style access as listed on the current pricing page, with Compact and Expanded profiles where available and the new Compact-only Notebook style
+Business, Scale, and Enterprise — all included styles, including Formal and pen-in-hand options; Business and above also support Custom Style
+User Videos and Images
+Below the style selector, you will see a dashed-border area with two options:
+User created videos and images to be inserted in the video (Beta) — upload your own photos, product images, screenshots, or short video clips. Golpo weaves them into the generated video alongside its own illustrations. You can choose whether each image appears as a static still or as an animated illustration. A detailed tutorial is available here: https://video.golpoai.com/guide/how-to-insert-images-in-golpo-ai-videos-step-by-step 
+Record screen (with audio) (Beta) — capture a screen recording of your desktop. This is great for product walkthroughs and software demos. Golpo takes your recording and inserts it as clips in the final video
+There is also a How to Use? link that opens instructions for this feature.
+Available on: Business, Scale, and Enterprise subscription plans.
+Audio Only
+The Audio Only checkbox creates audio content without generating any video. This produces a podcast-style spoken narration based on your prompt — no visuals, just audio. It uses only 10% of your video credits, making it a very efficient way to produce spoken content.
+Use this for:
+Podcast episodes generated from your topic or document
+Audio summaries of written content
+Voiceover tracks you will use elsewhere
+Available on: Business, Scale, and Enterprise subscription plans.
+Voice Instructions
+The text field labeled "Optional: Add voice instructions (e.g., 'Talk in a french accent', 'use an enthusiastic tone', 'talk like a professor')..." lets you control how the AI narrator speaks.
+This does not change the words — it changes the delivery. You can request:
+A specific accent or speaking style
+An enthusiastic, calm, serious, or conversational tone
+A particular persona like a professor, news anchor, or storyteller
+Pacing preferences like speaking slowly or energetically
+Available on: Creator ($99.99/month) and above
+Screenshot to find the optional Voice Instructions box.
+
+Video Tutorial of Voice Instructions
+
+Video Instructions
+The text field labeled "Optional: Add video instructions (e.g., 'show more graphs and charts', 'include more stock footage', 'use cinematic transitions')..." guides how Golpo generates the visuals.
+This is separate from the prompt itself. While the prompt describes what the video is about, video instructions describe how it should look:
+"Use blue and orange colors only" — for branding
+Use "Times New Roman Font" - specify which fonts the texts appear in on visuals
+'Absolutely no text in the video" - to avoid texts showing up in the visuals
+"Use cinematic transitions" — for a more polished feel
+"Keep illustrations simple and minimal" — for a clean look
+"Show more people and faces" — for human-centric topics
+Available on: Business and above (appears as an add-on on Growth)
+A simple video tutorial of video instruction
+
+Edit Script Before Creating Video
+The Edit script before creating video checkbox tells Golpo to generate the script first and pause so you can review and edit it before any video is generated. The description reads: "Generate and review the script first, then create the video." 
+
+This is extremely useful when you want to:
+Review and adjust the AI-generated script before committing credits
+Fix specific wording, add details, or remove sections
+Ensure accuracy for technical or sensitive topics
+See exactly what the video will say before it is produced
+Without this checked, Golpo generates the script and video in one step. With it checked, you get a two-step process: script review first, then video generation.
+This checkbox is the review control, while Script Mode tells Golpo that the supplied text is the narration.
+Color
+The Color checkbox — "Enable color in the generated video" — controls whether your video is produced in full color or in black and white.
+Black and white gives a classic whiteboard look. Color adds fills, backgrounds, and chromatic detail to the illustrations. Both look professional — it is a stylistic choice. Color option is only available from the Growth and above packages.
+Available on: Growth and above 
+The Settings Row: Music, Duration, Voice, Orientation, Language, Style
+At the bottom of the page, there is a row of dropdown menus that control the technical details of your video. Here is what each one does.
+
+Music
+Adds background music to your video. Options include different moods and genres, or set it to None for narration only. There is a Listen link next to this dropdown so you can preview each music option before selecting. You can also upload your custom music as background music from the business plan onward.
+
+Available on: Basic music options vary by plan. Custom music upload is available on Business plans and above.
+Duration
+Sets the target length of your video. Options range from short clips to longer content:
+
+Free — 1 minute only
+Starter — 30 seconds to 2 minutes
+Creator — 15 seconds to 2 minutes
+Growth — up to 4 minutes; 8- and 10-minute videos are available as an add-on
+Business — up to 10 minutes (beta)
+Scale — up to 10 minutes (beta)
+Enterprise — up to 15 minutes (beta)
+For video generation, 1 credit is 60 seconds of Golpo Canvas/Sketch videos and 30 seconds of Golpo Studio videos. Selecting a 2-minute duration uses 2 credits for Golpo Canvas/Sketch videos or 4 credits for Golpo Studio videos. When using Own Narration, the credit cost is based on the actual length of your uploaded audio rather than a selected duration. This article describes the credit deduction rule in details: https://video.golpoai.com/guide/golpo-credit-deduction-guide 
+Voice
+Selects which AI voice narrates your video. The default is Female 1 . Golpo offers multiple voice options, and there is a Listen link to preview each voice before choosing.
+
+Available AI voices vary by plan. Voice Instructions are included from Creator upward, while Voice Cloning is available on Business plans and above. In Own Narration mode, Golpo uses the supplied recording, so AI voice selection and Voice Instructions do not apply.
+Orientation
+Controls the video aspect ratio:
+Horizontal — Ideal for YouTube, websites, and presentations.
+Vertical — Ideal for Instagram Reels, TikTok, YouTube Shorts, and mobile-first viewing
+Available on: Vertical orientation is available on Creator and above. Free and Starter are limited to Horizontal only.
+Language
+Sets the language for the AI-generated narration. The default is English . Golpo supports multiple languages — you can generate videos in different languages by changing this dropdown. Languages supported are: English, Spanish, French, German, German (Switzerland), Italian, Portuguese, Russian, Chinese, Chinese (Cantonese), Japanese, Korean, Arabic, Hindi, Dutch, Polish, Swedish, Norwegian, Danish, Finnish, Turkish, Greek, Hebrew, Thai, Vietnamese, Indonesian, Malay, Filipino, Czech, Hungarian, Romanian, Bulgarian, Croatian, Serbian, Slovak, Slovenian, Ukrainian, Bengali, Tamil, Telugu, Marathi, Gujarati, Urdu, Persian, Swahili, Afrikaans.
+Available on: Starter has multi-language as an add-on. Creator and above include it as a standard feature.
+Display Language
+A separate setting from the narration language, Display Language controls the language of any on-screen text that Golpo generates within the video — labels, titles, captions drawn on the whiteboard. This lets you create a video with English (or any) narration but display text in another language, or vice versa. Currently, this option is available for Golpo Canvas videos only.
+Available on: Starter has multi-language as an add-on ($40 per month). Creator and above include it as a standard feature.
+Style
+Selects the sub-style within your chosen video engine (Golpo Canvas or Golpo Sketch). The default is Classic . There is a Preview link to see examples of each style.
+For Golpo Sketch, the styles include:
+Classic — clean hand-drawn whiteboard look
+Classic with words — the Classic look with a few large key words and labels rendered into each scene
+Improved (Beta) — refined version of Classic with better illustration quality
+Dry Erase — mimics a dry-erase marker on a whiteboard
+Professional Clean — polished, corporate-ready illustrations
+Crayon — playful, hand-colored crayon look
+Formal — refined, serious tone for business and academic content
+Classic with words comparison: both players below use the same public Golpo source and the exact same front cover, so you can focus on the color treatment without a thumbnail or composition change.
+Color: 
+Your browser does not support embedded video. Black and white: 
+Your browser does not support embedded video. The color clip is a public Golpo Classic with words render. The black-and-white clip is a grayscale comparison made from the same master, preserving its narration, words, frames, and timing. 
+For Golpo Canvas, the 11 named styles are Chalkboard White on Black, Chalkboard Black on White, Chalkboard Color, Whiteboard, Modern Minimal, Playful, Technical, Editorial, Sharpie, Illustration, and Notebook. The ten pre-Notebook style families offer Compact and Expanded profiles. Compact combines more components within each scene so viewers can see more of the explanation together and retain the relationships between its ideas. Expanded distributes those components across more scenes, giving each component more visual space and revealing the explanation in smaller steps. Notebook is Compact-only. Check the current pricing page for plan access, and use the matched comparison guide to choose a profile.
+Plan availability: Free through Creator receive the entry styles; Growth adds color and additional Sketch styles; Business plans and above add Formal, pen-in-hand options, and Custom Style. Check the live pricing page for the current plan matrix.
+Pacing
+Controls how quickly visuals appear and transition on screen. The default is Fast for Sketch and Normal for Canvas. There is a Preview link to compare pacing options.
+Slower pacing gives the viewer more time to absorb each illustration. Faster pacing keeps energy high and is better for shorter, punchier videos. Choose based on your audience and content density.
+Logo
+The Logo section lets you add your own logo to the generated video. Click Add to upload a logo image. There is also a dropdown with TL (Top Left), BL (Bottom Left), TR (Top Right), and BR (Bottom Right) to ascertain where the logo needs to be placed in the video.
+Adding a logo to every video you create — useful for companies, agencies, and content creators who want consistent branding.
+Available on: Growth has a custom logo as an add-on. Business and Scale include it as a standard feature.
+The Generate Video Button
+At the bottom-right of the page is the Generate Video button. Once you have configured everything, click it to start generation.
+Before generation starts, you will see an estimated generation time — typically 10 to 15 minutes , though this varies based on your prompt, selected duration, and current server load.
+You'll be presented with this screen when you hit the Generate Video for you to opt in or opt out of showing the video on Golpo AI video gallery https://video.golpoai.com/gallery - you can change this visibility setting later in the library - just click on the eye in the top right corner of each video in library to toggle visibility in the public gallery.
+
+After clicking Generate Video, see the progress till about 2%, and you can close the page and come back later. An email notification will come to you when the video is ready. Your video will appear in the Library when it is ready.
+The Library: Finding, Playing, and Managing Your Videos
+Click Library in the top navigation bar to see all your generated videos. The Library page shows a grid of video thumbnails, each with key information and action buttons. When you start a new video, till it gets completed, it shows up as Generating (see the 1st video in the screenshot below). Once the video is completed, and if you refresh your library page, you'll
+Filtering and Searchin
+At the top of the Library, you have several ways to find specific videos:
+Videos from — filter by "Me only" or view videos from team members (on team plans)
+Organization — shows your team/organization name (visible on team plans)
+Filter tabs — All, Color, B&W, Podcast — quickly filter by video type
+Search bar — search in prompts, titles, and scripts to find specific videos
+Dropdown filters — filter by Golpo types, Golpo Styles, duration, languages, voices, and music
+Video Cards
+Each video in the Library appears as a card showing:
+
+Thumbnail — a preview frame from the video
+Title/Prompt — the beginning of your prompt or the video title. These are clickable, and you click to review the transcript. prompt and, if needed, change the title.
+Date and time — when the video was created
+Language — which language the video was generated in
+Duration — the video length (for example, 2 min, 2.54 min)
+Voice type — Male, Female, Auto, or Custom
+Aspect ratio tool — Converting the video to true 16:9 for horizontal, 9:16 for vertical (available for growth and above plans)
+Videos that use your own narration are labeled "User-provided audio narration" in red text, making them easy to identify. These titles are clickable and
+Videos still being generated show a "Generating" status with an estimated completion time. The Library auto-refreshes, or you can manually refresh the page to check progress.
+Version History
+If you have edited or regenerated a video, the card shows a Version indicator (for example, "Version 9/9") with arrow buttons to navigate between versions. This lets you compare different iterations and go back to earlier versions if needed.
+Action Buttons on Each Video Card
+Below the thumbnail, each card has a row of action buttons.
+Play (purple button) — plays the video directly in the Library
+Edit (pen icon) — opens the frame-by-frame editor where you can modify visuals, add or replace images, and adjust text on individual frames. Available on all paid plans.
+Download (down arrow icon) — downloads the video file to your computer
+Settings (gear icon) — opens video settings and metadata (see below)
+
+Delete (trash icon) — deletes the video from your Library
+Social Sharing
+Each card also has sharing icons for Twitter/X , Facebook , LinkedIn , and a copy link button — letting you share your video directly to social media or copy a shareable link.
+Downloading Your Video
+To download a video, find it in the Library and click the download icon (the downward arrow). The video downloads as an MP4 file that you can use anywhere — upload to YouTube, embed on your website, include in presentations, or send directly to clients.
+The downloaded file includes the full video with all visuals, narration, and music baked in. It is ready to publish as-is or import into a video editor for further customization.
+Editing Your Video
+Golpo offers frame-by-frame editing that lets you modify the generated video after creation. Click the edit icon (pen icon) on any video card in the Library to open the editor.
+In the editor, you can:
+Edit visuals frame by frame — change illustrations, adjust drawings, modify what appears on screen for any individual frame
+Add or replace images — insert your own images into specific frames or replace Golpo-generated illustrations with your own
+Upload reference images — provide a reference image and Golpo regenerates the frame to match it (Golpo Sketch only)
+Adjust text — modify any on-screen text within frames
+Note that audio cannot be edited through the frame editor. If you need to change the narration, you will need to regenerate the video.
+A detailed guide on how editing works is here: https://video.golpoai.com/guide/golpo-video-editing-guide 
+How Editing Credits Work
+The first edited version is free across sessions until finalized. Later edited versions cost credits equal to the video length (for example, 2 minutes costs 2 credits). Please note that from 22 April 2026 onward, there will be no credit deduction if you just adjust the bounding boxes for Golpo Canvas videos. However, within one edited version, across sessions, you can edit as many frames as you want without additional charges.
+
+"Edit" is Available on: 
+All paid plans — included
+The Profile Menu
+Click your profile picture in the top-right corner to access:
+Add-ons — purchase additional features or credit packs for your plan
+Edit Video — quick link to the editing feature
+Team — manage team members (on Business and Scale plans, which support 10 and 50 team members, respectively)
+Manage Billing — view and manage your subscription and payment details. Here you can change your credit card, download invoices, etc. Here you can cancel or pause subscription, buy add-ons, etc. Following is a sample modal when you click on "Manage Billing
+
+Sign Out — log out of your account
+Complete Plan Comparison
+Golpo offers subscription tiers and API-only options. The summary below was checked against the live pricing page on July 30, 2026. Prices and plan contents can change, so use the live pricing page as the source of truth. For dashboard video generation, 1 credit is 60 seconds of Golpo Canvas/Sketch videos and 30 seconds of Golpo Studio videos.
+
+Free — $0
+1 credit (one time, not recurring)
+1-minute videos only
+The free preview is watermarked and can be shared using Copy URL in the Library. Download it without a watermark for $9.99, or subscribe to download it at no extra charge.
+Golpo Sketch Classic (B&W) only
+Golpo Canvas Chalkboard (B&W) only
+English only, Horizontal only
+Starter — $39.99/month
+20 credits per month
+30 seconds to 2-minute videos
+No watermark, and you can download your video.
+Golpo Sketch Classic (B&W)
+Golpo Canvas Chalkboard (B&W)
+Multi-language as an add-on
+
+Frame-by-frame prompt editing (storyboarding)
+
+Creator — $99.99/month
+60 credits per month
+15 seconds to 2-minute videos
+No watermark
+Multi-language included
+Voice instructions included
+Vertical orientation
+Golpo Sketch Classic (B&W)
+Golpo Canvas Chalkboard (B&W)
+Edit script as an add-on
+
+Frame-by-frame prompt editing (storyboarding)
+
+Growth — $199.99/month
+150 credits per month
+15 seconds to 4-minute videos
+Color videos
+Golpo Sketch: Classic, Improved (Beta), Dry Erase, Professional Clean, Crayon
+Golpo Canvas style access as listed on the current pricing page, including Compact and Expanded profiles where available and the Compact-only Notebook style
+Custom logo as an add-on
+Video instructions as an add-on
+Frame-by-frame prompt editing (storyboarding)
+Business — $499.99/month
+390 credits per month
+15 seconds to 10 minutes (beta)
+All Golpo Sketch styles (B&W + Color) plus a new style "Formal"
+All Golpo Canvas styles including Advanced and Pen Animations (3 types)
+Custom logo, custom music, video instructions — all included
+Own Narration, Voice Cloning, Audio Only — all included
+User Videos/Images insertion
+Frame-by-frame prompt editing (storyboarding)
+Up to 10 team members
+API access as add-on
+Scale — $999.99/month
+800 credits per month
+Everything in Business, plus:
+Up to 50 team members
+API access included
+
+Frame-by-frame prompt editing (storyboarding)
+
+Enterprise — Custom pricing
+Everything in Scale, plus tailored credit volumes and agreements
+Videos up to 15 minutes (beta)
+White-glove onboarding and team training
+Unlimited team members
+Live support and API/automation support
+
+Frame-by-frame prompt editing (storyboarding)
+
+Usage Based (Pay As You Go) — No Subscription
+
+Buy credits only when you need them, with no recurring subscription.
+
+Minimum purchase: 5 credits.
+
+5–19 credits: $7.99 per credit.
+
+20–99 credits: $5.99 per credit.
+
+100+ credits: $3.99 per credit.
+
+1 credit is 60 seconds of Golpo Canvas/Sketch videos and 30 seconds of Golpo Studio videos.
+
+Includes a broad set of dashboard features, but API access is not included.
+
+Best for occasional users and one-off projects.
+
+Frame-by-frame prompt editing (storyboarding)
+
+--> API Only — Usage-Based Programmatic Access
+
+Minimum entry: $200.
+
+$1 equals 1 API credit.
+
+A 1-minute video uses 2 credits, so the base usage cost is $2 per generated minute.
+
+Designed for programmatic generation through the REST API, Python SDK, or Node.js SDK.
+
+Manual video generation through the Golpo dashboard is not included.
+
+Volume discounts are available at higher usage levels.
+
+For both dashboard and API access, use Business with the API add-on, Scale, or an Enterprise agreement.
+
+See the current pricing page or explore the API documentation .
+Quick Reference: Which Plan Do I Need?
+Here is a fast lookup for the most commonly asked features:
+Color videos — Growth and above
+Own Narration (upload audio/video/record) — Business and above
+Voice Cloning — Business and above
+Frame editing — all paid plans
+Vertical video — Creator and above
+Custom logo — Growth (add-on) or Business and above (included)
+Voice instructions — Creator and above
+Video instructions — Growth (add-on) or Business and above (included)
+User images/videos — Business and above
+Audio Only (podcast mode) — Business and above
+Multi-language — Starter (add-on), Creator and above (included)
+Team members — Business (up to 10), Scale (up to 50), Enterprise (unlimited)
+API access — Business (add-on), Scale and Enterprise (included)
+Videos longer than 4 minutes — Business and above or add-on to Growth
+Pen Animations — Business and above
+The Typical Workflow: Start to Finish
+To bring everything together, here is the standard workflow from start to finish:
+Start: click Create New Video.
+Choose the input workflow: write a prompt, enable Script Mode for an exact script, or enable Own Narration to upload or record audio/video.
+Choose the engine: Golpo Canvas or Golpo Sketch.
+Add optional media: attach source documents, insert your own images/videos, or record the screen when those controls apply.
+Add instructions: Voice Instructions apply to AI narration; Video Instructions can direct the visual treatment. Voice Instructions do not apply in Own Narration mode.
+Review the script: enable Edit script before creating video when you want approval before generation.
+Configure applicable settings: music, orientation, visual style, pacing, color, and logo. For AI narration, also choose duration, voice, and language. Own Narration derives duration and spoken language from the recording.
+For video narration: choose Audio in Video or Picture in Picture and configure its layout.
+Confirm rights: when using Own Narration, certify that you own the recording or have explicit permission to use it.
+Generate: click Generate Video and use the estimate displayed in the product; actual timing varies.
+Manage the result: open Library to play, download, edit, compare versions, or share the video.
+That is the entire platform. Every control on the page maps to a specific aspect of your video — what it says, how it sounds, how it looks, and what format it is delivered in. Start with a simple prompt and the default settings, watch the result, and then experiment with the controls one at a time to dial in exactly the output you want.
+If you have questions, please send to support@golpoai.com or book a live demo/meeting via Book a Demo link on our home page (top right).
+
+In this guide
+Feature deep dive: Picture in Picture 
+What Golpo AI Does 
+Getting Started: Login 
+The Create Video Page 
+The Top Bar 
+Prompt Content: The Main Input Area 
+The Attach Button 
+The Two Toggles: Own Narration and Script Mode 
+Own Narration 
+Script Mode 
+Video Style: Golpo Canvas vs. Golpo Sketch 
+User Videos and Images 
+Audio Only 
+Voice Instructions 
+Video Instructions 
+Edit Script Before Creating Video 
+Color 
+The Settings Row: Music, Duration, Voice, Orientation, Language, Style 
+Music 
+Duration 
+Voice 
+Orientation 
+Language 
+Display Language 
+Style 
+Pacing 
+Logo 
+The Generate Video Button 
+The Library: Finding, Playing, and Managing Your Videos 
+Filtering and Searchin 
+Video Cards 
+Version History 
+Action Buttons on Each Video Card 
+Social Sharing 
+Downloading Your Video 
+Editing Your Video 
+How Editing Credits Work 
+The Profile Menu 
+Complete Plan Comparison 
+Free — $0 
+Starter — $39.99/month 
+Creator — $99.99/month 
+Growth — $199.99/month 
+Business — $499.99/month 
+Scale — $999.99/month 
+Enterprise — Custom pricing 
+API Only — Usage-Based Programmatic Access 
+Quick Reference: Which Plan Do I Need? 
+The Typical Workflow: Start to Finish 
+Keep reading
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+The Golpo Prompt Cheatsheet: How to Write Prompts That Produce Great Videos
+Get Started · 19 min read 
+
+Keep reading
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+Get Started The Golpo Prompt Cheatsheet: How to Write Prompts That Produce Great Videos
+A field guide to writing prompts that produce great Golpo videos. Most of what you'd think to put in a prompt is actually a UI control — duration, visual style, voice, music, language. The main prompt is for content. This cheatsheet covers what goes where, the universal do's and don'ts, and ten category templates (K-12 to Sales to YouTube long-form), each with the recommended UI settings, a Voice Instructions snippet, a sharp main-prompt example, and a real demo video generated from those exact settings.
+Sudip Kar • 19 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

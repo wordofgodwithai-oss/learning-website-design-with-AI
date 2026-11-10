@@ -1,0 +1,371 @@
+Golpo MCP Server Launch: AI Video From Cursor, Claude &amp; VS Code About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+API & Developers Introducing the Golpo MCP Server: Make AI Videos from Cursor, Claude, and VS Code by Just Talking
+Golpo is now a plug-in for every modern AI tool. With the new Golpo MCP Server , you can generate a finished, narrated, animated video by chatting with Cursor, Claude Code, VS Code (with Copilot), Claude Desktop, or Visual Studio - no API code, no dashboards, no SDK. Just say "make a 30-second video about why the sky is blue" and an MP4 lands on your computer in minutes. Setup takes 2-5 minutes once you have an API key. Free, open-source, MIT licensed.
+Anika Sharma • May 23, 2026 • 10 min read 
+
+Today we're launching the Golpo MCP Server - the official plug-in that drops Golpo video generation straight into your favorite AI tool. If you live in Cursor, Claude Code, VS Code, Claude Desktop, or Visual Studio, you can now make a finished, narrated, animated explainer video by chatting . No API code. No dashboards. No SDK to import.
+
+Just say:
+
+"Make a 30-second Golpo video about why the sky is blue." 
+
+&hellip; and an MP4 lands on your computer a few minutes later. Setup takes 2-5 minutes the first time. The plug-in is free, MIT-licensed, and open-source on GitHub and PyPI .
+
+Watch a Claude Code animation workflow
+
+Danny Why's How I Use Claude Code to Create 2D Animations (Tutorial) is a practical creator walkthrough to watch alongside the MCP installation and usage instructions below.
+
+What is MCP - in plain English?
+
+Modern AI tools support something called MCP (Model Context Protocol). Don't worry about the acronym - all it means is that your AI assistant can plug into outside services. Golpo MCP Server is that plug-in for Golpo. Once installed, your AI tool can:
+
+generate Golpo videos from prompts, scripts, audio files, or documents,
+
+save the finished MP4 to your computer automatically,
+
+show you a shareable link,
+
+list and re-download your past videos.
+
+You won't run a separate program named mcp or golpo . After setup, you just chat normally - no terminal commands needed for everyday use.
+
+Step 0 - Get a Golpo API key
+
+API access is gated behind specific Golpo plans. There are three ways to get a key:
+
+Scale plan - $999.99/month, includes 800 credits and full platform + API access. Best if your team uses both the dashboard and code at meaningful volume.
+
+Business plan + API add-on - Business plan ($499.99/month) plus a $200/month API add-on. Best if you're already on Business and the API is secondary.
+
+API-Only plan - $200/month minimum, then pure usage-based. This is the plan we recommend for MCP / Cursor / Claude users. Cheapest entry, no commitment beyond the minimum, and you pay only for videos you generate.
+
+API-Only volume pricing drops as your monthly spend grows:
+
+$0 - $1,000/month: $2.00 per minute of video (~30 seconds of video for every $1)
+
+$1,001 - $5,000/month: $1.50 per minute (~40 seconds per $1)
+
+$5,001+/month: $1.20 per minute (~50 seconds per $1)
+
+API-Only also runs automatic top-up : when your balance drops below $25, your account refills automatically so generation never halts mid-pipeline. You can pause it any time from the API dashboard.
+
+Once you've picked a plan, grab the key:
+
+Scale or Business + API add-on: green Create API Key button in the top-right of the playground header at video.golpoai.com/playground .
+
+API-Only: blue + Create API Key button in the API Documentation section of the dedicated dashboard at video.golpoai.com/api-dashboard .
+
+Copy the key the moment it appears - Golpo shows it once. A password manager is the ideal home for it. Full plan + pricing detail: How to Get Golpo AI API Access .
+
+Step 1 - Install uv (one time, all tools)
+
+uv is a tiny tool that downloads and runs the Golpo plug-in for you. You only install it once.
+
+Mac / Linux - open Terminal and paste:
+
+curl -LsSf https://astral.sh/uv/install.sh | sh 
+
+Windows - open PowerShell and paste:
+
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex" 
+
+Close and reopen your shell, then run uv --version to confirm.
+
+Step 2 - Install Golpo in your AI tool
+
+Pick your tool. All paths replace YOUR_KEY with your real Golpo API key.
+
+Cursor - one click
+
+Click the deeplink, your browser will prompt "Open in Cursor?", paste your API key in the confirmation dialog, click Install, then quit and reopen Cursor.
+
+👉 Cursor one-click install link 
+
+Doesn't open? Cmd+Shift+P → "MCP" → "Settings: Open MCP Settings" → Add Server, then paste:
+
+{
+"command": "uvx",
+"args": ["golpo-mcp"],
+"env": { "GOLPO_API_KEY": "your-key-here" }
+} 
+
+Claude Code - one command
+
+claude mcp add --transport stdio --scope user \
+--env GOLPO_API_KEY=your-key-here \
+golpo -- uvx golpo-mcp 
+
+You'll see "Added stdio MCP server golpo." No restart needed. Verify with claude mcp list - you should see golpo with ✓ Connected .
+
+VS Code (with GitHub Copilot) - one command
+
+Requires GitHub Copilot installed and signed in:
+
+code --add-mcp '{"name":"golpo","command":"uvx","args":["golpo-mcp"],"env":{"GOLPO_API_KEY":"your-key-here"}}' 
+
+VS Code will open and ask you to confirm - click Install. Then open Copilot Chat, switch the mode dropdown to Agent , and click the 🔧 tools icon - you should see six Golpo tools.
+
+Claude Desktop (Mac) - one paste
+
+Open Terminal and paste this whole block (after substituting your key):
+
+GOLPO_API_KEY="your-key-here" python3 - <<'PY'
+import json, os, pathlib
+p = pathlib.Path.home() / "Library/Application Support/Claude/claude_desktop_config.json"
+p.parent.mkdir(parents=True, exist_ok=True)
+cfg = json.loads(p.read_text()) if p.exists() and p.stat().st_size else {}
+cfg.setdefault("mcpServers", {})["golpo"] = {
+"command": "uvx",
+"args": ["golpo-mcp"],
+"env": {"GOLPO_API_KEY": os.environ["GOLPO_API_KEY"]},
+}
+p.write_text(json.dumps(cfg, indent=2) + "\n")
+print(f"OK -> {p}")
+PY 
+
+Quit Claude Desktop (Cmd+Q) and reopen. Click the 🔌 plug icon near the chat input - Golpo should be listed with six tools.
+
+Claude Desktop (Windows) - one paste
+
+Open PowerShell and paste the equivalent script (full version in the official install guide ). It writes to %APPDATA%\Claude\claude_desktop_config.json . Quit Claude Desktop and reopen.
+
+No Python on Windows? Open the file in Notepad and paste:
+
+{
+"mcpServers": {
+"golpo": {
+"command": "uvx",
+"args": ["golpo-mcp"],
+"env": { "GOLPO_API_KEY": "your-key-here" }
+}
+}
+} 
+
+Visual Studio (Windows) - save a JSON file
+
+For Visual Studio 2022 17.14+ with the GitHub Copilot extension. Save the following as .mcp.json in your user folder (typically C:\Users\YourName\.mcp.json ), restart Visual Studio, and switch Copilot Chat to Agent mode:
+
+{
+"servers": {
+"golpo": {
+"type": "stdio",
+"command": "uvx",
+"args": ["golpo-mcp"],
+"env": { "GOLPO_API_KEY": "your-key-here" }
+}
+}
+} 
+
+How to actually use it
+
+After install, you don't run any commands. You just chat with your AI tool in Agent mode - the AI decides which Golpo tool to call.
+
+Important: in Cursor, VS Code, and Visual Studio, MCP tools only work when the chat is in Agent mode . Look for the mode toggle near the chat input. In Claude Code and Claude Desktop, this is automatic.
+
+Some prompts to try:
+
+Quick explainer: "Make a 30-second Golpo video about why the sky is blue." 
+
+Vertical short for social: "Make a vertical Golpo short about coffee, with the Sharpie style." 
+
+Your own script: "Here's a script. Make a Golpo video out of it: Plants are nature's solar panels&hellip;" 
+
+Document → video: "Summarize this PDF as a 1-minute Golpo video: /path/to/report.pdf" 
+
+Your own narration: "Use this audio file as narration for a Golpo video about machine learning: /path/to/voice.mp3" 
+
+Browse history: "List my last 5 Golpo videos and show their links." 
+
+Re-download: "Download Golpo video with ID 88db3281-&hellip;" 
+
+Where do the videos go?
+
+By default, finished MP4s are saved to:
+
+Mac / Linux: ~/Golpo/videos/ 
+
+Windows: C:\Users\YourName\Golpo\videos\ 
+
+Filenames sort by recency:
+
+20260522-142030_why-is-the-sky-blue_a1b2c3d4.mp4 
+
+Want them somewhere else? Just say "save it to my desktop instead" - the AI will use the right folder.
+
+Visual styles, languages, music
+
+You can mix and match by saying it in plain English. Common visual styles:
+
+Whiteboard / sketch: "make it a sketch" or "Sketch Classic"
+
+Cleaner polished sketch: "Professional Clean style"
+
+Crayon, kid-friendly: "Crayon style"
+
+Bold marker drawn: "Sharpie style"
+
+Whiteboard with images: "Canvas Whiteboard"
+
+Magazine illustration: "Editorial style"
+
+Chalkboard: "Chalkboard style" or "Chalkboard Color" for the neon version
+
+Modern minimal, Playful, Technical: just name the style
+
+Languages: Golpo speaks 44+ languages. Say "Make this video in Spanish" or "Hindi narration, English on-screen text." 
+
+Background music: "Add lofi music" or "Add documentary background music." Available beds: jazz, lofi, whimsical, dramatic, engaging, hyper, inspirational, documentary.
+
+🔒 Keep your API key safe
+
+Treat your Golpo API key like a password:
+
+Never paste it into a public chat, screenshot, support ticket, or shared document.
+
+Never commit it to a public repo. If you accidentally do, rotate it immediately at video.golpoai.com .
+
+Only install the Golpo MCP Server from the official GitHub repo or PyPI .
+
+When your AI tool asks to run a Golpo tool (especially generate_video ), glance at the parameters before approving. Most AI tools show a confirmation dialog the first time.
+
+The MCP server only sends your key to the official Golpo API at api.golpoai.com . It never phones home, logs your key, or shares it with third parties.
+
+Troubleshooting cheat-sheet
+
+"I don't see Golpo tools": you didn't fully restart the AI tool after install. Quit completely (Cmd+Q / Alt+F4) and reopen.
+
+Tools listed but nothing happens: you're not in Agent mode. Switch the chat mode dropdown to Agent.
+
+Red dot next to Golpo in MCP settings: API key wrong, or uv not installed. Re-check the key; if still red, restart your computer after installing uv .
+
+Error missing_credential : the GOLPO_API_KEY didn't make it through your config. Double-check the env block.
+
+Error http_401 : API key is invalid or revoked. Mint a fresh one from the playground or API dashboard.
+
+Error http_403 : your plan doesn't include API access. Upgrade to Scale, Business + API add-on, or API-Only.
+
+First request after install is slow: uv is one-time downloading the plug-in (~30 seconds). Note that video generation itself still takes normal render time - a 1-minute video still takes about 1 minute.
+
+cannot find executable &lsquo;uvx' : uv installed but your AI tool can't see it. Close the AI tool, restart your computer, reopen.
+
+What does it cost?
+
+The plug-in itself is free and open-source under the MIT license . You only pay Golpo for the videos you actually generate, against whichever plan owns your API key:
+
+Scale: $999.99/month flat, includes 800 credits.
+
+Business + API add-on: $499.99/month Business plus $200/month add-on, uses your included minutes.
+
+API-Only (recommended for MCP users): $200/month minimum, then $2.00/min for the first $1,000, $1.50/min up to $5,000, $1.20/min above that. Roughly $0.50 for a 15-second video and $2 for a 1-minute video at the entry tier.
+
+Track usage and billing at video.golpoai.com .
+
+Helpful articles
+
+How to Get Golpo AI API Access: Plans & Pricing - the three paths to a Golpo API key, where to find the Create API Key button on each, and the API-Only auto top-up details.
+
+How the Golpo API Works - the underlying API the MCP server speaks to, end-to-end.
+
+Golpo AI Video API in Python: 6 Working Payload Examples - for when you outgrow MCP and want to call the API directly.
+
+Generate AI Videos from Claude Code: The Golpo Skill Plugin - a parallel package specifically for Claude Code, a touch more conversational than the MCP server. Same API key.
+
+Where to find us
+
+Source & docs: github.com/Golpo-AI/golpo-mcp 
+
+PyPI: pypi.org/project/golpo-mcp 
+
+Bugs & feature requests: github.com/Golpo-AI/golpo-mcp/issues 
+
+Full Golpo API reference: video.golpoai.com/api-docs 
+
+Support: support@golpoai.com 
+
+FAQ
+
+What is the Golpo MCP Server? 
+
+The official Model Context Protocol plug-in for Golpo. It lets modern AI tools (Cursor, Claude Code, VS Code with Copilot, Claude Desktop, Visual Studio) call Golpo video-generation tools directly. You chat in plain English; the MP4 lands on your computer.
+
+Which AI tools support it? 
+
+Cursor, Claude Code, VS Code with GitHub Copilot, Claude Desktop on Mac and Windows, and Visual Studio 2022 17.14+ with the Copilot extension. MCP tools require Agent mode in Cursor, VS Code, and Visual Studio.
+
+Which Golpo plan should I buy for MCP use? 
+
+We recommend the API-Only plan. It's the cheapest entry ($200/month minimum, usage-based after that), no commitment beyond the minimum, auto top-up keeps your pipeline running, and you pay only for what you generate.
+
+Is the MCP server free? 
+
+Yes - free, open-source, MIT-licensed. You only pay Golpo for the videos you generate.
+
+Where are videos saved? 
+
+~/Golpo/videos/ on Mac/Linux and C:\Users\YourName\Golpo\videos\ on Windows by default. Tell the AI to save them elsewhere if you prefer.
+
+In this guide
+Watch a Claude Code animation workflow 
+What is MCP - in plain English? 
+Step 0 - Get a Golpo API key 
+Step 1 - Install uv (one time, all tools) 
+Step 2 - Install Golpo in your AI tool 
+Cursor - one click 
+Claude Code - one command 
+VS Code (with GitHub Copilot) - one command 
+Claude Desktop (Mac) - one paste 
+Claude Desktop (Windows) - one paste 
+Visual Studio (Windows) - save a JSON file 
+How to actually use it 
+Where do the videos go? 
+Visual styles, languages, music 
+🔒 Keep your API key safe 
+Troubleshooting cheat-sheet 
+What does it cost? 
+Helpful articles 
+Where to find us 
+FAQ 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

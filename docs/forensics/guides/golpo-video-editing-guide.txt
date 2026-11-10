@@ -1,0 +1,157 @@
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • March 20, 2026 • 4 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+
+Golpo doesn't just generate videos — it lets you edit them frame by frame after generation. This is one of the features that separates Golpo from most AI video tools, where what you get is what you get.
+
+In this guide, I'll cover how the editing feature works, what you can and can't change, how credits are handled, and which plans include it.
+
+Where to Find the Edit Button
+
+Once your video is generated, head to your Library page . Under each video, you'll see a small pen icon — that's the Edit button. Click it to open the frame-by-frame editor.
+
+What You Can Edit
+
+1. Edit Visuals Frame by Frame
+
+The editor lets you go through your video one frame at a time and make targeted changes to the visuals. You're not re-generating the whole video — you're surgically fixing individual frames.
+
+2. Add or Replace Images and Text
+
+You can add new images or words/letters to any frame, or replace existing ones . This is useful when:
+
+The AI got a visual wrong and you want to swap it out
+
+You want to insert your own branding or diagram
+
+A word or label in a frame needs correcting
+
+3. Upload Reference Images (Golpo Sketch Only)
+
+For Golpo Sketch videos specifically, you can upload a reference image and have it placed into a frame — either as an addition alongside existing visuals, or as a replacement for another image. This gives you precise control over the visual content without needing to regenerate.
+
+4. Edit Audio
+
+Audio editing is now available in Golpo, alongside frame-by-frame visual editing.
+
+How Credits Work for Editing
+
+This is important to understand before you start:
+
+The first edited version is free across sessions until finalized. Later versions deduct credits equal to the video length: 1 minute costs 1 credit; 2 minutes costs 2 credits.
+
+Finalizing that version does not cost any additional credits. You can tweak as many frames as you want within that version, across sessions, without extra charges.
+
+If you start another version after finalizing, credits are deducted when you begin the new version.
+
+Start the first edited version of a 1-min video: 0 credits
+
+Edit frames within that version, across sessions: No additional cost
+
+Finalize the version: No additional cost
+
+Start a new version after finalizing: 1 credit
+
+The first edited version is free; later versions cost the same credits as generating the video.
+
+Which Plans Include Editing?
+
+Editing is included on all paid plans :
+
+Starter and Creator: Included 
+
+Growth: Included
+
+Business and above: Included 
+
+See It in Action
+
+Frame-by-frame editing of Golpo Sketch videos: 
+
+Additional editing walkthrough: 
+
+Quick Summary
+
+What you can edit: Visuals, images, text — frame by frame
+
+Reference image upload: Yes, for Golpo Sketch videos only
+
+Audio editing: Available
+
+Credit cost: First edited version free; later versions charged by video length
+
+Additional cost to finalize: None
+
+Availability: All paid plans
+
+Related feature guides
+
+Video Instructions in Golpo — control scene structure and visual rules before generation.
+
+Insert your own images into Golpo videos — place reference images directly into scenes.
+
+How Golpo credits work — understand editing and version credit charges.
+
+Golpo pricing breakdown — compare editing availability across plans.
+
+Golpo's editing feature fills a real gap in AI video tools. Most platforms force you to regenerate entirely if something's off. Being able to go in and fix individual frames — especially with reference image uploads on Sketch — gives you a level of control that's hard to find elsewhere. Just keep the credit model in mind: plan your edits before you hit that pen icon.
+
+In this guide
+Where to Find the Edit Button 
+What You Can Edit 
+1. Edit Visuals Frame by Frame 
+2. Add or Replace Images and Text 
+3. Upload Reference Images (Golpo Sketch Only) 
+4. Edit Audio 
+How Credits Work for Editing 
+Which Plans Include Editing? 
+See It in Action 
+Quick Summary 
+Related feature guides 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+The Golpo Prompt Cheatsheet: How to Write Prompts That Produce Great Videos
+Get Started · 19 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Get Started The Golpo Prompt Cheatsheet: How to Write Prompts That Produce Great Videos
+A field guide to writing prompts that produce great Golpo videos. Most of what you'd think to put in a prompt is actually a UI control — duration, visual style, voice, music, language. The main prompt is for content. This cheatsheet covers what goes where, the universal do's and don'ts, and ten category templates (K-12 to Sales to YouTube long-form), each with the recommended UI settings, a Voice Instructions snippet, a sharp main-prompt example, and a real demo video generated from those exact settings.
+Sudip Kar • 19 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

@@ -1,0 +1,366 @@
+Golpo Video Instructions: 8 Categories, 17 Examples (2026 Guide) About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Features & Editing Video Instructions in Golpo: One Line in Your Payload, Seventeen Different Looks
+A single optional field — `video_instructions` — is the most powerful lever in the Golpo API. We tested it across 8 categories and 17 contextual prompts to show exactly how much a sentence or two can reshape your output.
+Sudip Kar • June 27, 2026 • 16 min read 
+
+Pair Video Instructions with Picture in Picture
+
+If the narration comes from a webcam recording or uploaded presenter video, Picture in Picture can keep the speaker visible while Golpo applies your visual instructions to the animated scenes. See the Picture-in-Picture layouts and examples → 
+
+Explore the broader explainer-video workflow: explainer video script guide · product explainer video guide · 12 AI explainer video examples . 
+
+The most powerful single field in the Golpo API isn't the prompt. It isn't the style. It's an optional one called video_instructions — and most users skip it.
+
+That's a mistake. video_instructions is where you tell Golpo how the video should look : aesthetic, character treatment, pacing, brand identity, era, and a dozen other visual axes that the prompt itself doesn't control. The right one- or two-sentence instruction can reshape an entire video from "default Golpo output" into something that looks bespoke.
+
+To show what we mean: we ran the same exercise as the styles gallery , but the other way around. Style stayed roughly constant within each pair; only video_instructions changed. Seventeen videos, eight categories, eight different control axes. Watch a few and you'll see how much leverage one sentence has.
+
+→ Aesthetic · 
+Character · 
+Pacing · 
+Brand tone · 
+Iconography · 
+Composition · 
+Era · 
+Brand identity 
+
+The setup
+
+We picked eight categories of visual control that video_instructions can plausibly influence, wrote one to three example instructions for each category, and gave each one a contextual prompt — one that fits the instruction's theme so the lever has something meaningful to act on. We held style and pipeline as constant as possible within each category, alternated voices (male / female) for variety, and matched length to the instruction (1 minute for sharp directives, 2 minutes for atmospheric ones).
+
+What you're about to see is seventeen explainer videos that all came out of the same engine — but look like seventeen completely different productions. The only thing doing that work is the contents of one string.
+
+1. Aesthetic — palette, treatment, visual identity
+
+The most obvious axis. Tell Golpo "pop-art," "MS Paint flat color," or any named aesthetic and it pulls the whole render in that direction. This category does most of the heavy lifting in practice.
+
+Pop-art doodles — comic outlines, halftone textures, ka-pow energy
+
+Prompt: Five reasons your customer support article should become a video — explained at TikTok speed. · Style: Sketch / Crayon · Pace: Fast.
+
+video_instructions: "Hand-drawn pop-art doodles on a clean white canvas — bold comic outlines, halftone dot textures, energetic motion lines and the occasional 'ka-pow' burst. Palette: Deep Pink #dc2b71, Bright Yellow #f7e348, Deep Navy #0a1e4a." 
+
+Golpo Sketch / Crayon 
+
+MS Paint flat color — bold black outlines, no white space, round-head stick figures
+
+Prompt: How to organize your team's documents in five simple steps. · Style: Sketch / Dry Erase · Pace: Fast.
+
+video_instructions: "Flat solid color fills everywhere like Microsoft Paint. Bold black outlines on every shape, fully colored backgrounds, no white space anywhere. Simple round-head stick figure people. Bold black hand-lettered labels across the top of every frame." 
+
+Golpo Sketch / Dry Erase 
+
+What we learned: Aesthetic instructions are the most honored category. Specific palette hex codes get respected most of the time; named-aesthetic references ("noir," "MS Paint," "pop-art") work better than abstract descriptions. The "no white space anywhere" rule in the MS Paint instruction is the kind of strict constraint Golpo tends to take seriously when written in absolute terms.
+
+2. Character treatment — who appears, and how
+
+The second most reliable lever. Tell Golpo to use stick figures only, or to follow a single recurring protagonist, and it'll honor those constraints in ways the prompt alone never could.
+
+Stick figures only — no caricatures, no cartoon faces
+
+Prompt: How a five-person team can produce fifty onboarding videos in a single quarter. · Style: Sketch / Classic · Pace: Fast.
+
+video_instructions: "Every human figure in every frame is a simple black stick figure. Thin single-line body, arms, and legs. Medium circular head. No caricatures, no cartoon faces, no illustrated characters." 
+
+Golpo Sketch / Classic 
+
+Single recurring protagonist — Maya appears in every scene
+
+Prompt: A day in the life of Maya, a customer success manager who turned fifty at-risk accounts into renewals. · Style: Canvas / Editorial · Length: 2 minutes.
+
+video_instructions: "Follow a single recurring protagonist named Maya throughout the video — mid-30s, warm and curious, modern-casual clothing. Every scene shows Maya in a different situation related to the narration. Other characters appear briefly but only Maya recurs." 
+
+Golpo Canvas / Editorial 
+
+What we learned: Strict negative constraints ("no caricatures, no cartoon faces, no illustrated characters") get honored more reliably than positive specifications alone. The stick-figure instruction works because it tells Golpo what NOT to do at the same time as what to do. For the single-protagonist case, character consistency across scenes is one of the harder problems in AI video generation — you'll see how close Golpo gets.
+
+3. Scene density and pacing — how much, how fast, how busy
+
+This category controls the rhythm of the video. Same length, same prompt — but feels completely different depending on whether Golpo is jumping between scenes every 6 seconds or holding one image for 10.
+
+Maximize variety — 10+ scene transitions, never sit on one image
+
+Prompt: Twenty surprising ways AI is changing internal company communication right now. · Style: Canvas / Modern Minimal · Length: 2 minutes.
+
+video_instructions: "Maximize visual variety. Create a new distinct illustration for each sentence. Never stay on one image for more than 6 seconds. Target 10+ scene transitions. Rich, layered, frequently-changing compositions." 
+
+Golpo Canvas / Modern Minimal 
+
+Strip down — plain background, marker headlines, hold each beat
+
+Prompt: The one rule that prevents nine out of ten compliance failures. · Style: Sketch / Dry Erase · Pace: Fast.
+
+video_instructions: "Strip the visuals down. Plain off-white background, nothing else on screen: no grid, no icons, no characters, no decorations. One hand-written marker headline per beat, drawn stroke by stroke, then held for 8–10 seconds before the next." 
+
+Golpo Sketch / Dry Erase 
+
+What we learned: Scene counts and timing are harder to nail than aesthetic; Golpo defaults to its own rhythm. But "strip down" instructions — telling Golpo what to remove — work surprisingly well. Want a minimalist video? Be explicit about everything that shouldn't be on screen.
+
+4. Brand tone — how the video feels 
+
+Different from aesthetic. Aesthetic is the look; tone is the personality. The same Canvas Editorial style can feel boardroom-serious or app-launch-playful depending on what you write.
+
+Premium B2B — executive-grade polish
+
+Prompt: How enterprise teams reduce internal training costs by 60% with AI-generated video. · Style: Canvas / Editorial · Length: 2 minutes.
+
+video_instructions: "Polished professional B2B explainer for senior internal-communication leaders. Concise on-screen labels, clean diagrams, process flows, document-to-video visual metaphors, crisp scene transitions. No cartoons, no playful flourishes — executive-grade polish." 
+
+Golpo Canvas / Editorial 
+
+Playful viral — TikTok product-demo energy
+
+Prompt: Five ridiculous documents AI can now turn into watchable videos. · Style: Sketch / Crayon · Pace: Fast.
+
+video_instructions: "Playful viral explainer for a consumer-app launch. Bright saturated colors, emoji accents, motion lines, 'ka-pow' burst panels, hand-drawn captions that emphasize key words. Energy of a TikTok product demo." 
+
+Golpo Sketch / Crayon 
+
+What we learned: Tone instructions are best written by analogy ("like a TikTok demo," "executive-grade polish," "future-of-work campaign"). Golpo seems to read the reference and pull adjacent visual cues — saturated palettes for "viral," muted palettes for "executive." Lists of "no" rules ("no cartoons, no playful flourishes") work as guardrails inside a tone directive.
+
+5. Industry and topical iconography — specific props and motifs
+
+If you want Golpo to repeatedly draw the same kind of object — file cabinets, lightbulbs, news tickers — this is the category for that. Less about overall look, more about the things in the frame.
+
+Document and knowledge iconography
+
+Prompt: How Golpo turns a 100-page operations manual into a five-minute video. · Style: Sketch / Professional Clean · Pace: Fast.
+
+video_instructions: "Use document-and-knowledge iconography throughout: stacks of paper, file cabinets, PDF icons, sticky notes, a glowing brain hovering above documents as ideas are extracted from them." 
+
+Golpo Sketch / Professional Clean 
+
+Cinematic newsroom iconography
+
+Prompt: The biggest shifts in AI-generated internal communications in 2026. · Style: Canvas / Technical · Length: 1 minute.
+
+video_instructions: "Use cinematic-newsroom iconography: news ticker bars, monitor walls, breaking-news lower thirds, an anchor desk, microphones, and a press-conference podium." 
+
+Golpo Canvas / Technical 
+
+AI-hallucination iconography in a vertical social short
+
+Prompt: Why does an artificial intelligence confidently invent facts? · Format: Vertical 9:16 · Length: 1 minute.
+
+video_instructions: "Polished corporate-tech visuals showing token prediction, branching probabilities, fabricated citations, retrieval from trusted documents, and verification checks. Indigo, cyan, white, vertical social explainer." 
+
+Watch the vertical AI-hallucination example 
+
+Vertical 9:16 
+
+What this controls: Every motif on the list gets a stand-in — a falling row of dominoes for token prediction, stacked paper for the training corpus, a file drawer for retrieval from trusted documents, a magnifying glass beside a microphone for verification against eloquence. The palette is the part that didn't survive: the render held its own sage-and-black editorial treatment rather than the indigo and cyan the instruction asked for. Motifs and format landed; color named in words did not.
+
+What we learned: Iconography instructions reward specificity. Listing 5–7 concrete objects ("ticker bars, monitor walls, lower thirds, anchor desk, microphones, podium") works much better than generic framing ("make it look like a newsroom"). Golpo will visibly repeat objects from your list across scenes. Abstract ideas get translated into concrete stand-ins rather than diagrams - "token prediction" came back as a line of dominoes - so name the concept and let Golpo choose the object unless you care which one it picks.
+
+6. Composition and background rules — fixed layouts and what shouldn't be on screen
+
+This category is about discipline. Tell Golpo to never break a layout, to always keep the background pure white, and it'll honor those structural rules across the whole video.
+
+Fixed layout — headline top, illustration center, caption bottom
+
+Prompt: The four documents every new hire should watch on their first day. · Style: Canvas / Modern Minimal · Length: 1 minute.
+
+video_instructions: "Every frame uses the same fixed composition: large headline at top in Inter font, a single central illustration in the middle, one-line caption at the bottom. Don't break this layout for any scene." 
+
+Golpo Canvas / Modern Minimal 
+
+Full voice script above every scene — black text with yellow highlights
+
+Prompt: Why is the sky blue? · Style: Formal · Length: 1 minute.
+
+video_instructions: "Display the voice script above each scene in black text, highlighting key words in yellow" 
+
+Watch the voice-script overlay example 
+
+Formal style 
+
+What this controls: The complete narration remains readable above the illustration in every scene, while important terms are emphasized in yellow. This is useful for training, accessibility, silent viewing, and any video where viewers should be able to follow the spoken script visually.
+
+Pure whiteboard diagram — no characters, only diagrams and arrows
+
+Prompt: How a Jira ticket becomes a Confluence-ready explainer video in four steps. · Style: Sketch / Dry Erase · Pace: Fast.
+
+video_instructions: "Every frame is a clean whiteboard diagram on a pure white background. No environments, no characters, no photography, no 3D renders. Only diagrams, arrows, labels, and lightweight icons." 
+
+Golpo Sketch / Dry Erase 
+
+What we learned: Structural constraints honor better when they're phrased as absolutes ("don't break this layout for any scene," "no characters anywhere"). The strictness of the phrasing matters — soft suggestions ("try to keep things clean") get diluted across the render. For on-screen narration, specify the placement, text color, and highlight treatment explicitly.
+
+7. Era and time-period theming — the era is the visual identity
+
+One example here. Era instructions bundle palette, costuming, props, and atmosphere into a single coherent period anchor — and when they land, they land hard.
+
+Edison-era lightbulbs — incandescent bulbs as the recurring motif
+
+Prompt: Three inventions that lit up the early industrial age — and one Edison gave up on. · Style: Sketch / Formal · Pace: Fast · Length: 2 minutes.
+
+video_instructions: "Use an Edison-era theme with Edison incandescent lightbulbs as the recurring motif. Warm tungsten glow, brass fixtures, wire filaments visible inside bulbs, workshop blueprints, exposed wood and copper textures. Every concept 'lights up' via a hanging Edison bulb." 
+
+Golpo Sketch / Formal 
+
+What we learned: This was the strongest single instruction in the entire set. The hero image at the top of this post is a single frame from this video. Every concept genuinely "lights up" via a hanging bulb, the warm-tungsten / brass / copper palette is honored throughout, and the recurring motif gives the video a stronger visual identity than the prompt alone could ever produce. Note: we also tried a "photo-realistic mid-19th-century" instruction — Golpo doesn't render photorealism yet, so we dropped that one. Stylized era framing works; photographic realism doesn't.
+
+8. Corporate brand and visual identity — literal brand specs
+
+Hex codes, fonts, logo placement, taglines. This is the most prescriptive category — and the test of how literally Golpo will honor a brand kit.
+
+Golpo brand colors + Inter typography
+
+Prompt: How Golpo turns your internal documents into shareable explainer videos. · Style: Sketch / Professional Clean · Pace: Fast.
+
+video_instructions: "Use the Golpo brand identity throughout: primary color #FF2D6F (Golpo pink), secondary deep purple #1A0B33, neutral background #F8F9FA (warm off-white). Use Inter font for every on-screen label — bold for headlines, regular for body text. No other colors anywhere. No other fonts." 
+
+Golpo Sketch / Professional Clean 
+
+Golpo product-branded — palette plus opening and closing tagline
+
+Prompt: Golpo Canvas — eight ways to make your explainer video look like a magazine spread. · Style: Canvas / Modern Minimal · Length: 1 minute.
+
+video_instructions: "This is a brand video for Golpo AI. Use Golpo's brand palette: Golpo pink #FF2D6F and deep purple #1A0B33, on a clean white background. Open and close with the tagline 'Turn documents into video' rendered in bold Inter font." 
+
+Golpo Canvas / Modern Minimal 
+
+What we learned: Hex codes get read. The Golpo pink and deep purple show up consistently across the brand examples. Fonts are harder — Golpo's rendering pipeline picks fonts that look like the named one rather than embedding the literal font. Specific tagline text (the "Turn documents into video" line) sometimes appears verbatim and sometimes gets paraphrased. If brand consistency matters, write the brand directive as a hard absolute ("no other colors anywhere"), expect color and palette to land, and verify text content frame-by-frame.
+
+What we learned across all 17
+
+Eight observations from running the same experiment 17 times:
+
+1. Length doesn't matter — strictness does. A 12-word instruction with absolute language ("noir style") often outperforms a 200-word soft-suggestion instruction. Phrase rules as non-negotiables.
+
+2. Hex codes are honored. If brand color matters, write the exact hex. Don't say "use our brand pink" — say "use #FF2D6F." The vertical example asked for "indigo, cyan, white" by name and got none of the three; the brand examples asked in hex and got all of them.
+
+3. Negative constraints beat positive ones. Telling Golpo what NOT to do ("no caricatures, no cartoon faces") is more effective than just describing what to do.
+
+4. Named aesthetics are shortcuts. "Noir," "pop-art," "MS Paint flat color" all pull a wide bundle of visual choices. Use cultural references when you can.
+
+5. Iconography rewards specificity. Lists of 5–7 concrete objects work better than abstract category names. "News ticker bars, monitor walls, breaking-news lower thirds, an anchor desk, microphones, and a podium" beats "make it look like a newsroom."
+
+6. Strip-down instructions work surprisingly well. "No grid, no icons, no characters, no decorations" actually produces a clean canvas. If you want minimalism, be explicit about absence.
+
+7. Era anchors are powerful. "Edison-era" pulls palette, props, costuming, and atmosphere into one coherent identity. The hero image of this post is proof.
+
+8. Photo-realism doesn't render today. Both Sketch and Canvas are stylized engines. Asking for "photographs" produces stylized output that misses the spec. Use stylized era framings (etching, mid-century-modern, retro VHS) instead.
+
+How to write your own
+
+If you only take one paragraph from this post, take this one. The pattern that worked most consistently across all 17 generations:
+
+Start with a named aesthetic or era — one or two words ("noir style," "Edison-era theme," "pop-art doodles," "premium B2B explainer").
+
+Add 3–5 concrete visual ingredients — palette hex codes, specific props, character treatments. Be literal.
+
+Add 1–2 absolute negative constraints — what NOT to do, phrased as non-negotiables ("no other colors anywhere," "no characters in any frame").
+
+Stop there. 80–200 character instructions tend to outperform 500+ character ones because the model gets less conflicting signal.
+
+Two-line template:
+
+"[Named aesthetic / era]. [3 concrete visual ingredients with specifics — hex codes, props, character rules]." 
+
+"[1 absolute negative constraint phrased as non-negotiable.]" 
+
+Where the field lives
+
+In the Golpo dashboard, video_instructions is the text area labeled Video Instructions on the create-video screen, available on the Business plan and above ( see pricing ). Type your instruction string there before hitting generate.
+
+If you're calling the Golpo API, pass video_instructions as a string field in the request payload. See the API payload examples guide and the API access guide for the full request shape.
+
+Related guides
+
+Picture in Picture in Golpo — combine a webcam or uploaded presenter video with the animated explanation.
+
+Voice Instructions in Golpo — control accent, tone, pacing, pronunciation, and delivery.
+
+Create a Custom Style in Golpo Canvas — save reusable art direction from an image, video, or description.
+
+Frame-by-frame video editing guide — refine individual scenes after generation.
+
+Every Golpo Video Style (2026 Guide) — same exercise but flipped: instructions held constant, style varied across all 8 Sketch + 10 Canvas options.
+
+Golpo prompt cheatsheet — companion patterns for the prompt itself.
+
+Golpo Canvas styles guide — deeper notes on each Canvas style.
+
+Generate Golpo videos from Codex — the workflow we used to produce all 17 of these.
+
+Golpo AI complete tutorial — full walkthrough of the dashboard.
+
+Have a use case where you want a custom instruction tuned for your brand? Book a 15-minute call and we'll help you write one.
+
+In this guide
+Pair Video Instructions with Picture in Picture 
+The setup 
+1. Aesthetic — palette, treatment, visual identity 
+Pop-art doodles — comic outlines, halftone textures, ka-pow energy 
+MS Paint flat color — bold black outlines, no white space, round-head stick figures 
+2. Character treatment — who appears, and how 
+Stick figures only — no caricatures, no cartoon faces 
+Single recurring protagonist — Maya appears in every scene 
+3. Scene density and pacing — how much, how fast, how busy 
+Maximize variety — 10+ scene transitions, never sit on one image 
+Strip down — plain background, marker headlines, hold each beat 
+4. Brand tone — how the video feels 
+Premium B2B — executive-grade polish 
+Playful viral — TikTok product-demo energy 
+5. Industry and topical iconography — specific props and motifs 
+Document and knowledge iconography 
+Cinematic newsroom iconography 
+AI-hallucination iconography in a vertical social short 
+6. Composition and background rules — fixed layouts and what shouldn't be on screen 
+Fixed layout — headline top, illustration center, caption bottom 
+Full voice script above every scene — black text with yellow highlights 
+Pure whiteboard diagram — no characters, only diagrams and arrows 
+7. Era and time-period theming — the era is the visual identity 
+Edison-era lightbulbs — incandescent bulbs as the recurring motif 
+8. Corporate brand and visual identity — literal brand specs 
+Golpo brand colors + Inter typography 
+Golpo product-branded — palette plus opening and closing tagline 
+What we learned across all 17 
+How to write your own 
+Where the field lives 
+Related guides 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

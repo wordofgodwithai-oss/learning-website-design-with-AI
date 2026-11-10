@@ -1,0 +1,128 @@
+How Credits Work on Golpo AI: Deduction Rules Explained About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Pricing & Credits How Credits Work on Golpo AI: Deduction Rules Explained
+Understand exactly how Golpo AI deducts credits — whether you're generating from a prompt, uploading your own narration, or editing a video. For video generation, 1 credit covers 60 seconds of Golpo Sketch or Golpo Canvas video, or 30 seconds of Golpo Studio video, but when and how the charge happens depends on the mode.
+Maya Okonkwo • March 21, 2026 • 3 min read 
+
+How Credits Work on Golpo AI: Deduction Rules Explained
+
+Golpo AI uses a credit system, and the core rule is simple: 1 credit = 60 seconds of Golpo Sketch or Golpo Canvas video, or 30 seconds of Golpo Studio video . Everything else is just how that time is measured and when the charge happens.
+
+Golpo Avatar videos use 3 credits per minute of finished video, while Own Avatar videos (using an avatar you create from an image) use 5 credits per minute of finished video.
+
+Explore the broader explainer-video workflow: explainer video cost guide · best AI explainer video generators . There are four scenarios where credits are deducted — prompt/script generation, pre-render script review, own narration uploads, and editing. Each one works a little differently. Here's exactly how.
+
+1. Prompt or Script Mode
+
+When you generate a video using a prompt or a script, you choose a target duration before generating . Golpo deducts credits based on that chosen duration — not the exact final runtime.
+
+You select 4 minutes → 4 credits for Golpo Sketch or Golpo Canvas, or 8 credits for Golpo Studio
+
+Final video is 3:56 or 4:03 → doesn't matter, you were charged for the 4-minute target
+
+The benefit here is predictability . You know the cost upfront before the video is even generated.
+
+2. “Edit Script Before Creating Video”
+
+When Edit script before creating video is checked, Golpo deducts the selected duration’s credits in two stages:
+
+10% is deducted after the script is created 
+
+The remaining 90% is deducted after the video is created 
+
+For a 4-minute Golpo Sketch or Golpo Canvas video, 0.4 credits are deducted after the script is created , then 3.6 credits after the video is created : 4 credits total.
+
+3. Own Narration Mode
+
+This works differently because you're uploading your own audio or video file. In this case, credits are deducted based on the actual length of what you upload .
+
+Your narration is 2 minutes 10 seconds → the generated video will be that same length
+
+Credits are deducted based on that real duration 
+
+There's no target duration selector here. The length of your upload determines both the video length and the credit cost.
+
+4. Editing — The One That Causes Confusion
+
+This applies to all paid plans :
+
+The first edited version is free across sessions until finalized.
+
+Later edited versions cost credits equal to the full video length 
+
+You can edit as many frames as you want in that same version, across sessions — no extra credits
+
+If you finalize a new version later, the full-length credit cost applies again
+
+So if you have a 4-minute video, its first edited version is free. Edit ten more frames in that same version — still free. After finalizing, a second edited version costs 4 credits.
+
+Quick Summary
+
+Prompt/Script mode: Credits based on the duration you select before generating
+
+Edit script before creating video: 10% is deducted after script creation and the remaining 90% after video creation; the total stays equal to the selected duration
+
+Own Narration mode: Credits based on the actual length of your uploaded audio/video
+
+Editing (all paid plans): First edited version free until finalized, across sessions; later versions charged at full video length
+
+Related feature guides
+
+Golpo pricing breakdown — compare monthly credits, add-ons, and feature availability across plans.
+
+Frame-by-frame video editing guide — see when editing credits are charged in the workflow.
+
+Own Narration guide — understand the upload workflow whose credit cost follows the source duration.
+
+The bottom line: think in minutes, finalize carefully, and batch your edits within a single version to avoid unnecessary credit charges.
+
+In this guide
+1. Prompt or Script Mode 
+2. “Edit Script Before Creating Video” 
+3. Own Narration Mode 
+4. Editing — The One That Causes Confusion 
+Quick Summary 
+Related feature guides 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

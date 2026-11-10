@@ -1,0 +1,83 @@
+Connect Golpo in ChatGPT, Claude, Gemini, or Grok | Golpo AI 
+
+About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+ChatGPT Claude Gemini Grok 
+Generate videos in ChatGPT with Golpo MCP 
+Add Golpo in ChatGPT How to connect? 
+https://mcp.golpoai.com/mcp 
+
+Tools Everything ChatGPT can do with Golpo 
+Once connected, ChatGPT can use these 6 tools on your Golpo account.
+
+Generate video
+generate_video
+Turn a prompt, script, or uploaded file into a Golpo video or podcast. Pick the length, style, language, voice, and pacing.
+
+Upload file
+upload_file
+Upload a public HTTPS file, such as a voice clip, logo, or reference image, and use it in a video.
+
+List videos
+list_videos
+Browse your most recent Golpo videos with a share link for each one.
+
+Get video
+get_video
+Open a single video by ID to get its share page, and optionally its script.
+
+Check status
+check_status
+Check whether a video that is still generating has finished.
+
+Connector status
+status
+Confirm the connector is signed in and which server version you are connected to.
+
+Prompts Try these prompts in ChatGPT 
+Click a prompt to open a new ChatGPT chat with it already filled in.
+
+01 / Generate video generate_video 
+Open in ChatGPT 
+Create a 30 second explainer video about how photosynthesis works with Golpo . I want a friendly whiteboard style and a female voice. 
+
+02 / Upload file upload_file 
+Open in ChatGPT 
+Upload my logo from https://example.com/brand-logo.png to Golpo , then make a 1 minute product intro video that shows it. 
+
+03 / List videos list_videos 
+Open in ChatGPT 
+Show me my 5 most recent videos from Golpo with their titles and share links. 
+
+04 / Get video get_video 
+Open in ChatGPT 
+Open my latest video in Golpo and give me its share link and the full script. 
+
+05 / Check status check_status 
+Open in ChatGPT 
+Is the video I just made in Golpo finished yet? If it is, share the link. 
+
+06 / Connector status status 
+Open in ChatGPT 
+Am I signed in to Golpo ? Check the connector status. 
+
+Haven't connected Golpo to ChatGPT yet?
+Connect Golpo in ChatGPT 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

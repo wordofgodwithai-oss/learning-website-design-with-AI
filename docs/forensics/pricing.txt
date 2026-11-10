@@ -1,0 +1,172 @@
+Pricing | AI Video Plans & API — Golpo AI About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+Plans Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Compare every Golpo plan, including credits, features, video lengths, and add-ons. See full guide 
+
+Pick the plan that fits
+Every plan unlocks more credits and capabilities.
+Upgrade or cancel any time.
+Monthly Annual Up to 50% off 
+
+Free Just exploring? Use Golpo free. Make one 1-minute video to get a feel, no credit card required.
+Free video includes a watermark and can't be downloaded.
+
+Get started 
+Pricing Details Golpo Pricing Explained
+Compare plans, features, and add-ons.
+
+What’s included in each plan
+Add-ons explained
+View full guide 
+
+Starter
+USD $39.99 /month 
+billed monthly
+20 credits / month 40 % off annual Check offer 
+
+Subscribe Everything in Free , plus 
+Video length: 30 sec–2 min 
+No watermark + commercial use 
+Black & White Videos only (no color) 
+Edit video frame by frame using prompt. One edit free — chargeable from the second edit 
+Available add-ons
+20 credits USD $40 Multilingual USD $40 
+
+Creator
+USD $99.99 /month 
+billed monthly
+60 credits / month 40 % off annual Check offer 
+
+Subscribe Everything in Starter , plus 
+Video length: 15 sec–2 min 
+Multilingual support (Over 45 languages ) and Multi-Language Video Creation — generate up to 10 language variants from a single submission 
+Voice instructions - customize audio (eg. british accent, speak like a professor etc.) 
+AI Presenter (Avatar) — Turn any selfie or photo into a presenter for your whiteboard video ( 5 credits/min ), or use a Golpo Avatar ( 3 credits/min ). 
+Vertical video - great for FB ads and shorts 
+Available add-ons
+30 credits USD $50 
+
+Growth
+USD $199.99 /month 
+billed monthly
+150 credits / month 40 % off annual Check offer 
+
+Subscribe Everything in Creator , plus 
+Golpo Studio — studio quality videos 
+Video length: 15 sec–4 min 
+Custom Scene Selection - set sentence-level scene boundaries before generation 
+Generate videos with color 
+New sketch styles : Improved (Beta), Dry Erase, Professional Clean, Crayon, Infographics, Creative 
+AI Presenter (Avatar) 
+Available add-ons
+75 credits USD $100 Upload Logo USD $100 Video Instruction USD $100 8 & 10 Min Videos USD $200 
+
+Most Popular Business
+USD $499.99 /month 
+billed monthly
+390 credits / month 50 % off annual Check offer 
+
+Subscribe Everything in Growth , plus 
+Video length: 15 sec–10 min 
+Add own Logo 
+Video instructions 
+User Videos and Images - Insert videos and images, or record your screen from the application to include in generated content. 
+Voice cloning - create and use your own AI voices from audio clips 
+Bring your own voice - use your own audio narration in videos 
+New Video Style: Formal (Golpo Sketch) and Pen in Hand styles (Golpo Canvas) 
+Custom Canvas Video Styles 
+Audio only podcast (only for 10% of video credits are required) 
+Custom background music 
+Up to 10 team members 
+AI Presenter (Avatar) 
+Available add-ons
+195 credits USD $250 API USD $200 
+
+Scale
+USD $999.99 /month 
+billed monthly
+800 credits / month 50 % off annual Check offer 
+
+Subscribe Everything in Business , plus 
+Video length: 15 sec–10 min 
+Character consistency (Beta) 
+API Access 
+Priority support 
+Up to 50 team members 
+AI Presenter (Avatar) 
+Available add-ons
+400 credits USD $500 15 Min Videos USD $200 
+
+Enterprise
+Custom pricing Built for large organizations that need scale — with tailored credit volumes, custom agreements, and a dedicated success manager.
+Customized credits 
+
+Contact Us Everything in Scale , plus 
+Create longer videos (15 mins, 30mins, 60mins in beta versions) 
+White-Glove Onboarding 
+Team Training 
+Unlimited Team Members 
+Live Support (Zoom) 
+API & Automation Support 
+Done-For-You Videos (Optional) 
+AI Presenter (Avatar) 
+
+Subscriptions renew automatically, and renewal charges are non-refundable if not canceled before the billing date.
+
+See full plan & feature comparison 
+
+API Only Tier
+Usage-based pricing with volume discounts.
+
+Get API access Explore docs 
+
+This plan is for using Golpo within your program or application. You won't be able to generate videos manually via the Golpo dashboard.
+Usage-based, with a minimum commitment of USD $200 . Built for developers and businesses that need programmatic access at scale.
+Features you get:
+No watermark + commercial use 
+45+ languages & multi-language variants 
+Voice instructions & Vertical video 
+Videos in color + new sketch styles 
+Pen-in-hand animation 
+Formal style 
+Own narration /input audio 
+Custom logo & Video instructions 
+User inserted videos & images 
+Audio-only podcast mode 
+Longer videos (up to 10 min, beta) 
+
+Platform access isn't included. For both platform and API access, consider an enterprise plan or a business plan with the API add-on.
+
+Credit USD $1 = 1 credit 
+Video generation 2 credits · USD $2.00 
+Minimum entry USD $200 
+Volume discounts at higher tiers. Contact us for enterprise rates.
+
+import Golpo from "@golpoai/sdk" ; 
+
+const golpo = new Golpo ( "YOUR_API_KEY" ); 
+
+const result = await golpo . createVideo ( "summarize this research paper for a clinical audience" , { 
+uploads : [ "./glp1-trial-2024.pdf" ], 
+use2Style : true , 
+style : "solo-female-3" , 
+timing : 6 , 
+} ); 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

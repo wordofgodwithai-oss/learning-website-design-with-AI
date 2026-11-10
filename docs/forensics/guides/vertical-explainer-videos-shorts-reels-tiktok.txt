@@ -1,0 +1,185 @@
+Vertical Explainer Videos for Shorts, Reels & TikTok About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Features & Editing How to Make Vertical Explainer Videos for Shorts, Reels, and TikTok with Golpo
+Golpo can compose a 9:16 explainer for the phone before it renders. Choose Vertical in Orientation, turn a wide diagram into sequential screens with Custom Scenes, and add a top-and-bottom or circle presenter only when a face helps.
+Maya Okonkwo • August 30, 2026 • 9 min read 
+
+The short answer: Create the explanation for the phone from the start. Golpo is the workflow: start from a question, a short note, or an approved script, choose Vertical, review the narration, and let Golpo plan the scenes, draw them, and narrate. Choosing Vertical shapes that generation before the render. It does not crop a landscape video afterward.
+
+One question, one visual spine, readable labels, and a fast opening matter more than fitting a desktop diagram into a narrow frame. The finance video below is a finished vertical explainer. The steps after it are how you turn a wide comparison into sequential phone screens, and when a presenter belongs in the frame.
+
+What Vertical changes: Golpo composes the scenes for the orientation you select. Creator and higher plans include vertical video . An existing long video stays landscape until you generate a new one. 
+Where to select Vertical in Golpo
+
+Start creating the video. Enter a prompt, paste an approved script, or add the note you want Golpo to explain. In Prompt Mode, Golpo drafts the narration. Use Script Mode when the spoken words must match what you wrote. Turn on Edit script before creating video and approve the draft before the render.
+Open Orientation in the generation settings. The row also includes Music, Duration, Voice, Languages, and Style. Orientation sits between Voice and Languages.
+Select Vertical. Confirm that the field displays Vertical before you generate.
+Generate only after that check. Golpo uses the vertical frame while it plans the scenes. Exporting a 16:9 file and cropping it later is a different video.
+
+Golpo control path: Create video → generation settings → Orientation → Vertical . Choose it before Generate Video or Generate Video from Script .
+
+Watch a vertical Golpo explainer
+
+That video is the vertical finance and markets explainer. It shows a phone-shaped result. It does not show the landscape original, a scene-by-scene rebuild, or a presenter. Use the same question-first structure for the next one you make.
+
+The vertical explainer structure
+
+Open with the exact question or consequence. Do not spend the first screen introducing the channel.
+Explain one mechanism. A Short is not a compressed webinar.
+Use one concrete example. Give the drawings something specific to show.
+Recap in one sentence. 
+End with one next action. 
+
+Turn a wide diagram into sequential phone screens
+
+A three-column comparison is the usual failure on a phone. Fee, return, and risk beside each other become type that no one can read. Keep the approved sentences, then give each column its own screen in order: the fee, the return it is measured against, then the risk that changes the comparison. That sequence is a new generation with Vertical selected, not a crop of the wide cut.
+
+Custom Scenes is the control. Golpo proposes a scene map. You move sentence boundaries, split or combine scenes, and change the count within the engine limit before generation. Put the fee sentence in one scene, the return sentence in the next, and the risk sentence in the third. The saved map can be inspected later. It does not rewrite the narration, and it does not check that the figures are right. Custom Scenes are on Growth and higher .
+
+If the number has to be a real chart rather than a drawn one, Own Media can insert an image or clip you are allowed to use. Business and higher include it. A generated chart is not proof of a market. The image insert guide covers the control, and the API documents custom image and video fields.
+
+Labels the viewer can read
+
+On-screen text from script only , on Canvas and Sketch, restricts generated labels to the script. Golpo may show a subset of those words. It is not a caption track, and it does not verify the source. Name the few labels the phone screen can hold, then read the frames. In the API, set onscreen_text_from_script_only explicitly.
+
+When the channel should look the same next week, save a Custom Style from an image, a short video, or a written description. It lives in My Styles and can be reused in Canvas or Sketch. Business and higher are required. API reuse also needs API access. A saved style is a repeating look. It is not pixel-exact typography. Review it on a phone.
+
+Compose for 9:16
+
+Prefer vertical stacks, single focal objects, and progressive reveals.
+Avoid dense left-versus-right layouts unless each side remains readable. Use the sequential screens above when it is not.
+Keep important text, faces, drawings, and the closing line out of the bands where Shorts, Reels, and TikTok place interface chrome.
+Assume the viewer may begin without sound. Add captions in your publishing step. Do not duplicate every spoken word as scene text.
+Review the exported video on a real phone before publishing. Check that captions and overlays do not cover the drawing.
+
+A presenter, only when the face helps
+
+The finance video is the explainer without a presenter. Add AI Presenter when a person should introduce the question and the drawing should stay visible. For a 9:16 frame, Top and bottom puts the presenter in one band and the explanation in the other. A circle layout (Round overlay) keeps the drawing large and the face in a corner. Full screen is for a direct line with no diagram. Auto can choose among the layouts you approved and may step the presenter aside when the drawing needs the frame.
+
+Use a stock presenter, or a custom presenter from a photo you are allowed to use. Creator and higher include AI Presenter. The photo and the voice are separate choices. A synthetic presenter is not a recording of you. Presenter API support is coming soon, so create presenter episodes in the dashboard. Skip the presenter when the diagram is the whole point.
+
+One correction, then the next question
+
+If a label is clipped, wrong, or still sitting in a side-by-side layout, fix that frame rather than accepting the export. Frame editing can change a visual label in plain language. All paid plans include it. The first edited version is free across sessions until finalized. A charged version is billed on the selected duration. The edit does not change narration or audio. If the narration itself is wrong, edit the script and generate again. Frame editing will not repair the soundtrack.
+
+The reuse is the next question your audience asked, generated again in Vertical with the same saved style and the same one-idea structure. That is a new video. Orientation on the first file does not rewrite it into the second.
+
+Plan, duration, and credits
+
+Creator currently supports vertical videos from 15 seconds through 2 minutes, 45+ languages, multi-language variants, and Voice Instructions. Growth adds color, more styles, and videos through about 4 minutes. Custom Scenes start at Growth . A standard video is 1 credit per selected minute. 
+
+You can download Golpo's free 1-minute video without a watermark for $9.99, or subscribe to download it at no extra charge. Dollar amounts are on Golpo's pricing page . This page does not record a credit receipt for the finance video.
+
+Stock Avatar videos use 3 credits per minute. Custom avatar videos use 5.
+
+Frequently asked questions
+
+Does Golpo support vertical video?
+
+Yes. Creator and higher plans include vertical video . Choosing Vertical tells Golpo to compose 9:16 scenes before the render. It does not crop a landscape file you already exported.
+
+Where do I select Vertical in Golpo?
+
+On the video creation screen, open Orientation in the generation settings and select Vertical before you generate. Confirm the field reads Vertical. The full path is in the section Where to select Vertical in Golpo.
+
+How long should a vertical explainer be?
+
+Use the shortest duration that answers one question clearly. Creator currently supports 15-second through 2-minute videos. Growth lists videos through about 4 minutes and adds color. A standard vertical render is 1 credit per selected minute. Confirm the duration menu on your plan.
+
+Should I repurpose a horizontal explainer?
+
+Reuse the idea or the approved script, then generate a new vertical video. Selecting Vertical does not crop or rewrite a landscape file you already have. A three-column diagram usually needs Custom Scenes so each column becomes its own phone screen.
+
+Do vertical explainers need captions?
+
+Plan for sound-off viewing and accessibility. Keep captions concise, test them against platform overlays, and keep them off the main drawing. On-screen text limited to the script is not a caption track.
+
+What is the best structure for a short explainer?
+
+Open with the exact question or surprising consequence, explain one mechanism with one concrete example, then close with one takeaway or next action.
+
+How do Custom Scenes help a vertical explainer?
+
+Custom Scenes let you move sentence boundaries so a wide, multi-column idea becomes sequential phone screens before generation. The map does not rewrite the narration. Custom Scenes are on Growth and higher .
+
+When should I add a presenter to a vertical explainer?
+
+Add one when a face helps the question. For 9:16, Top and bottom splits the presenter and the drawing. A circle layout, Round overlay, keeps the drawing large. AI Presenter is on Creator and higher . The finance video on this page does not include a presenter.
+
+Related Golpo guides
+
+AI video generators for faceless YouTube 
+One Instagram Reel in eight Golpo styles 
+Start a faceless YouTube channel 
+AI explainer video examples 
+AI Presenter layouts 
+
+Answer the question your audience asked this week 
+Make one self-contained vertical explainer from that question. Start at video.golpoai.com , select Vertical, and review the script before you generate.
+
+Tags
+# Vertical Video # YouTube Shorts # Instagram Reels # TikTok Video 
+
+In this guide
+Where to select Vertical in Golpo 
+Watch a vertical Golpo explainer 
+The vertical explainer structure 
+Turn a wide diagram into sequential phone screens 
+Labels the viewer can read 
+Compose for 9:16 
+A presenter, only when the face helps 
+One correction, then the next question 
+Plan, duration, and credits 
+Frequently asked questions 
+Does Golpo support vertical video? 
+Where do I select Vertical in Golpo? 
+How long should a vertical explainer be? 
+Should I repurpose a horizontal explainer? 
+Do vertical explainers need captions? 
+What is the best structure for a short explainer? 
+How do Custom Scenes help a vertical explainer? 
+When should I add a presenter to a vertical explainer? 
+Related Golpo guides 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

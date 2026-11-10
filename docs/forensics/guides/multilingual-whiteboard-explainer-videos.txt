@@ -1,0 +1,225 @@
+Multilingual Whiteboard Explainer Videos (45+ languages, AI Workflow) About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Features & Editing How to Create Multilingual Whiteboard Explainer Videos with AI (45+ languages, One Source)
+Multilingual explainer video used to be the line-item that quietly killed projects — every language meant a new production cycle. With AI, the same source video re-renders in 45+ languages with one dropdown switch. This guide is the practical workflow — what the language dropdown actually does, the 5-step process from one source to a global video library, common mistakes, and how to scale via the API.
+Sophie Müller • May 31, 2026 • 11 min read 
+
+Multilingual explainer video used to be the line-item that quietly killed projects. Every language meant a new script translation, a new voice actor, a new recording session, a new edit pass — all multiplied by the number of languages. A single 2-minute training video shipped in 10 languages was a six-figure six-month project.
+
+Create this workflow with Golpo: Use Golpo's AI whiteboard animation maker to turn a prompt, script, PDF, or other source into a generated whiteboard video. 
+
+With AI, the same source video ships in 45+ languages from a single multi-language dropdown — pick up to 10 languages at once and Golpo generates all renders in one shot. Same visuals, localized narration on each. A 10-language rollout costs roughly 10× the credits of the original video, usually well under $100, and the finished package ships in a single afternoon. This guide is the practical workflow.
+
+→ Try It On Your Best-Performing Video · Book a 15-Minute Demo 
+
+What "45+ languages, One Source" Actually Means
+
+Golpo's Language dropdown exposes 46 narration languages with a multi-select picker. Check the boxes for up to 10 target languages in one go and Golpo generates a separate finished MP4 (plus SRT) for each — same visuals, native narration in each language. No re-uploading the source, no re-recording, no re-editing. Each render's duration may shift slightly because spoken word counts vary between languages — but the structure stays the same.
+
+The current supported language list: English, Spanish, French, German, German (Switzerland), Italian, Portuguese, Russian, Chinese, Chinese (Cantonese), Japanese, Korean, Arabic, Hindi, Dutch, Polish, Swedish, Norwegian, Danish, Finnish, Turkish, Greek, Hebrew, Thai, Vietnamese, Indonesian, Malay, Filipino, Czech, Hungarian, Romanian, Bulgarian, Croatian, Serbian, Slovak, Slovenian, Ukrainian, Bengali, Tamil, Telugu, Marathi, Gujarati, Urdu, Persian, Swahili, Afrikaans.
+
+Multi-language access is included from the Creator plan ($99.99/mo) onward. On the Starter plan it's available as a $40/mo add-on.
+
+Narration Language vs Display Language (Two Different Dropdowns)
+
+Golpo separates spoken language from on-screen text language. These are two different dropdowns:
+
+Language dropdown — sets the narrator's spoken language. The voice you hear.
+
+Display Language dropdown — sets the language of any on-screen text the AI draws on the whiteboard (labels, titles, captions inside the video). Currently available for Golpo Canvas videos.
+
+This split is more useful than it sounds. Common combinations teams actually ship:
+
+Narration in Hindi, on-screen text in English. Often the right call for Indian audiences in English-medium professional contexts.
+
+Narration in Spanish, on-screen text in Spanish. Pure single-language localization.
+
+Narration in English, on-screen text in Arabic. When the audience reads Arabic but the brand voice is English (or vice versa).
+
+Narration in Mandarin, on-screen text in English. For mainland China audiences who prefer Mandarin audio but recognize English technical terms.
+
+The 2-Step Workflow: One Source → Multilingual Library
+
+Step 1 — Generate the source video in your primary language. Use Golpo's standard workflow — paste a prompt, paste a script, or upload a PDF. Pick the visual style (Canvas styles for technical content; Sketch styles for warmer content). Set duration. Generate.
+
+Step 2 — Open the Languages dropdown and add the languages you want. English is checked by default. Under the "ADD LANGUAGES" section, search or scroll the list and check the boxes for up to 10 target languages (Spanish, French, Portuguese, Hindi, Arabic, Mandarin, etc.). The running counter at the bottom of the dropdown ("N video") shows how many renders you're about to generate. Click Done , then Generate , and Golpo produces one finished MP4 + SRT per selected language in a single batch. Optionally set the Display Language separately for on-screen text.
+
+End state: one source video, N localized renders, each as a standard MP4 with a matching SRT file. Upload them to your LMS / YouTube / help center by language.
+
+Two Big Reasons to Localize That Most Teams Underestimate
+
+Comprehension. The same compliance training in someone's native language lands at a different fidelity than a translated subtitle on an English video. For training, regulatory, and onboarding content, the localized narration is the difference between "watched" and "absorbed."
+
+SEO and AI-search reach. A localized video uploaded to YouTube with a localized title, description, and metadata is treated as native-language content by Google and YouTube — it appears in language-specific search results that an English video with subtitles does not. AI search overviews increasingly source from language-native content.
+
+Common Mistakes
+
+Translating idioms literally. "Move the needle" in Spanish is not "mover la aguja." Let the AI rephrase for the language; do not paste a literal translation into Script Mode.
+
+Forgetting on-screen text language. If you want labels and titles in the target language, switch the Display Language dropdown separately. A video with Hindi narration and English on-screen labels reads bilingual; sometimes that's what you want, sometimes not.
+
+Generating once and assuming the visuals localize. Visuals do not change with language. If your source video contains a hand-drawn label that reads "Step 1" in English (because Display Language was English), it will read "Step 1" in the Spanish version too — unless you regenerate the source with the Display Language already switched, or replace the relevant frame in the editor.
+
+Skipping the source-language polish. Whatever edits you make to the source (swap an illustration, upload a brand image) only persist if you make them before regenerating in other languages. Get the source perfect first; then localize.
+
+Voice mismatch. Some voices feel more natural in some languages. Run a quick 15-second test with a few candidate voices for each language before committing.
+
+Two Patterns Teams Use Most Often
+
+Pattern 1: Train Once, Localize for the Workforce
+
+L&D teams running multilingual workforces (manufacturing, retail, hospitality, logistics) build the source training video in the company's primary language, then regenerate in every workforce language. A single compliance video shipped in 5 languages reaches every employee in their first language — and the total work is one source recording plus five regenerations.
+
+Generate the language versions in one submission by selecting all five languages in the Language dropdown.
+
+Pattern 2: Spin Up Regional YouTube/Marketing Versions
+
+Marketing teams and faceless YouTube creators use multilingual to spin up regional channels. The same product explainer, the same news analysis, the same finance breakdown shipped in 5–10 languages reaches 5–10 distinct regional audiences. Each language gets its own YouTube channel and its own local SEO footprint.
+
+Scaling to a Whole Video Library
+
+For a single multilingual video, the UI is the right tool. For a backlog of 20, 50, or 500 existing videos that need localized renders, the Golpo API (Business with the $200 API add-on, with API included on Scale; API Only is also available) lets you submit batch localization requests:
+
+One row per (video, language) pair. If you have 20 videos and want them in 5 languages, that's 100 API requests.
+
+One API call per row. See API Payload Examples for the exact shape.
+
+Poll for completion. Each video is ready in 10–15 minutes. Renders happen in parallel — a 100-video batch finishes in hours, not weeks.
+
+Auto-distribute. Hook the API output into your YouTube upload pipeline (one channel per language) or your LMS (one course version per language).
+
+Teams running this end up shipping multilingual rollouts that were previously six-month projects in a single sprint. See How to Get API Access .
+
+Bring Your Own Voice for Brand-Consistent Narration
+
+If your brand has a specific voice (a founder voice, a brand spokesperson voice), Golpo's voice cloning (Business and Scale plans) lets you clone it once and have it narrate every video — in every language the clone supports. This is the highest-fidelity option for brand-consistent multilingual content.
+
+For per-video voice control without cloning, Voice Instructions (Creator+) lets you specify tone and register: "Calm, neutral, no hype, like a finance journalist explaining to a friend" . Voice Instructions work in every language.
+
+For full control over exactly what is said, Script Mode lets you paste narration-only copy in the target language. Keep visual directions outside the narration so they are not spoken. See the Prompt Mode vs Script Mode guide .
+
+How to Pick Which Languages to Localize First
+
+Default heuristic: localize for the languages your audience already exists in, not the languages you wish you reached.
+
+For L&D: Run a workforce-language audit. If 30% of your floor workers speak Spanish at home, Spanish is non-negotiable.
+
+For customer education: Check Google Analytics or your help-center analytics by user locale. Localize the top 3 non-English locales first.
+
+For marketing: Check the language distribution of your top organic-traffic countries.
+
+For faceless YouTube: Hindi, Spanish, Portuguese, and Indonesian have outsized growth opportunity for explainer content because of underserved regional markets and high YouTube penetration. English saturation in popular niches is real; regional languages are still wide open.
+
+FAQ
+
+How many languages does Golpo support?
+
+46 narration languages listed in the dropdown. Display Language (on-screen text inside the video) is currently available for Canvas videos. See the full list above.
+
+Does the video length change between languages?
+
+Slightly. Spoken-word density varies between languages — German tends to be longer, Mandarin tends to be shorter. The visual frame count stays the same; the timing per frame adjusts. Most videos vary by less than 10% across languages.
+
+Can I generate multiple languages at once?
+
+Yes. The Language dropdown is a multi-select picker — check up to 10 target languages and Golpo generates one finished MP4 per language in a single batch (no need to repeat the create flow). Each render is delivered as its own file. If you specifically want one video that switches between languages internally (English first, then Spanish, etc.), concatenate the individual renders in a standalone editor.
+
+What about subtitles?
+
+Golpo outputs both the MP4 and a matching SRT subtitle file — you can download both directly. For YouTube specifically, the platform auto-generates and translates captions; you can edit them in YouTube Studio if you want to override Golpo's SRT.
+
+What about voice cloning across languages?
+
+Golpo's voice cloning (Business+) supports cross-language cloning for the major languages — clone your voice once in English and Golpo can use that cloned voice in Spanish, French, Hindi, etc. Lip-sync quality varies by language; the highest fidelity is in the languages with the largest training data (English, Spanish, French, German, Portuguese, Hindi, Mandarin).
+
+What does this cost vs traditional localization?
+
+A traditional 2-minute video localized to 10 languages via human translators and voice actors typically runs $5,000–$15,000 (translation + per-language voice work + per-language editing). Golpo’s credit cost depends on video style, duration, and the number of language versions.
+
+Will AI-generated multilingual narration sound authentic to native speakers?
+
+For the major languages (English, Spanish, French, German, Italian, Portuguese, Mandarin, Hindi, Arabic, Japanese), the AI voices are increasingly indistinguishable from human voice actors in casual listening. For less-resourced languages, native speakers can sometimes detect AI cadence — usually still acceptable for training and support content, sometimes worth a human voice-over pass for hero marketing content.
+
+Further Reading
+
+25 Whiteboard Explainer Video Examples — see real multilingual examples.
+
+Use Your Own Narration — upload your voice for localization.
+
+Corporate Training Videos with Golpo .
+
+How to Get Golpo API Access .
+
+Golpo AI for Education .
+
+Best AI Video Generators for Corporate Training .
+
+Localize One Video This Week
+
+Pick your highest-impact existing video — the onboarding video new hires watch, the product demo on your pricing page, the help-center top-traffic article video. Open it in video.golpoai.com , open the Languages multi-select dropdown and check your target languages (up to 10 at a time) to your second-largest audience language, regenerate. By tomorrow you have a multilingual rollout in motion — and a clear ROI signal for the next 49 languages.
+
+In this guide
+What "45+ languages, One Source" Actually Means 
+Narration Language vs Display Language (Two Different Dropdowns) 
+The 2-Step Workflow: One Source → Multilingual Library 
+Two Big Reasons to Localize That Most Teams Underestimate 
+Common Mistakes 
+Two Patterns Teams Use Most Often 
+Pattern 1: Train Once, Localize for the Workforce 
+Pattern 2: Spin Up Regional YouTube/Marketing Versions 
+Scaling to a Whole Video Library 
+Bring Your Own Voice for Brand-Consistent Narration 
+How to Pick Which Languages to Localize First 
+FAQ 
+How many languages does Golpo support? 
+Does the video length change between languages? 
+Can I generate multiple languages at once? 
+What about subtitles? 
+What about voice cloning across languages? 
+What does this cost vs traditional localization? 
+Will AI-generated multilingual narration sound authentic to native speakers? 
+Further Reading 
+Localize One Video This Week 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

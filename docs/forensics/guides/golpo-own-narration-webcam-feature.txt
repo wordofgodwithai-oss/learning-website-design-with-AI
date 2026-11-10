@@ -1,0 +1,94 @@
+Introducing Golpo Own Narration: Turn Your Webcam Recording Into Animated Videos About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Features & Editing Introducing Golpo Own Narration: Turn Your Webcam Recording Into Animated Videos
+Golpo AI now lets you record yourself speaking on camera and automatically turns your narration into a beautifully animated video — with your webcam inset in any corner. Available on Business plan and above.
+Sophie Müller • March 17, 2026 • 4 min read 
+
+Picture in Picture with Own Narration
+
+Want the current layout controls and real examples? Learn how to keep a webcam recording or uploaded presenter video visible in a round overlay or split screen on the left, right, top, or bottom. Open the complete Picture-in-Picture guide → 
+
+What if you could just talk to your camera — and get a fully animated video back? That's exactly what Golpo's new Own Narration feature does.
+What is Own Narration?
+Golpo's Own Narration (also called the Webcam feature) lets you record yourself speaking directly on the Golpo platform — and automatically transforms your speech into a beautifully animated video. Your webcam recording appears as an inset within the final video, so your audience sees both the animated visuals and you presenting.
+No separate recording software. No editing. No syncing audio to visuals. Just hit record, speak your content, and Golpo handles the rest.
+Watch it in action:
+
+How It Works
+Step 1: Enable Own Narration 
+On the video creation page, toggle on Own Narration . This switches the input mode from text prompt to webcam recording.
+Step 2: Record Your Video 
+Click the video recording button and start speaking. Record yourself explaining a topic, narrating a lesson, walking through a concept — whatever you'd normally say to your audience. This is all done directly within the Golpo platform, no external tools needed.
+Step 3: Choose Your Inset Position 
+Pick where your webcam video appears in the final output — Top Left , Top Right , Bottom Left , or Bottom Right .
+Step 4: Get Your Animated Video 
+Golpo takes your speech, converts it into animated visuals, and composites your webcam recording as an inset — giving you a polished, professional video with both your face and dynamic animations.
+Why This Matters
+Until now, creating a video with both a presenter and supporting visuals meant juggling screen recording software, a camera, an editor, and hours of post-production. Own Narration collapses all of that into a single step.
+This is especially powerful for:
+
+Teachers and professors Record a lecture naturally and get animated visuals generated automatically to support your explanation. Students see your face and the content. Course creators Build polished lesson videos without a production team. Just talk through the material and let Golpo animate it. Corporate trainers Create onboarding or training videos where the presenter is visible alongside illustrated concepts. Content creators Add a personal touch to explainer videos. Your audience connects with your face while the animations keep them engaged. Sales and marketing teams Record product walkthroughs or pitch videos with professional animated visuals backing you up. What Makes It Different
+Other tools ask you to record a video, then separately create animations, then manually edit them together. Golpo does it all in one flow:
+✅ Speech → Animation: Your spoken words are automatically converted into matching animated visuals
+✅ Built-in recording: No need to leave the platform or use external webcam software
+✅ Flexible inset placement: Choose which corner your webcam feed appears in
+✅ One output: You get a single, ready-to-share video with everything composited together
+Availability
+Own Narration is available on the Business plan and above . If you're already on a Business or Enterprise plan, you can start using it right now — just head to the video creation page and toggle on Own Narration.
+Not on a Business plan yet? Upgrade your plan to unlock this feature along with everything else Golpo Business offers.
+For all current round-overlay and split-screen controls—plus seven embedded examples—see the complete Picture-in-Picture guide .
+Try It Now
+Head to video.golpoai.com , open the video creation page, toggle on Own Narration, and record your first video. It takes minutes — and the result looks like it took hours.
+Start Creating With Own Narration 
+
+In this guide
+Picture in Picture with Own Narration 
+What is Own Narration? 
+How It Works 
+Why This Matters 
+What Makes It Different 
+Availability 
+Try It Now 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

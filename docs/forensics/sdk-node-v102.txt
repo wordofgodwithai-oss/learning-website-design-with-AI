@@ -1,0 +1,679 @@
+Golpo AI API Documentation — Programmatic Video Generation About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+API Docs Node SDK v1.0.2 v1.0.2 · Latest 
+
+Node SDK
+v1.0.2 Reference
+
+Getting Started
+Overview Installation Authentication 
+Methods
+Create Video Create Podcast Get Frame Animations Edit Video Combine Video 
+Examples
+Display Language 
+Parameter Reference
+Timing Video Type Style & Voices Background Music Voice Instructions Video Instructions Golpo Sketch Styles Golpo Canvas Styles Image Style 
+Reference
+Error Handling 
+Need Help?
+Questions about the SDK?
+support@golpoai.com → 
+
+Golpo Node SDK
+
+v1.0.2 — Stable TypeScript / JavaScript 
+Complete API reference for the Golpo AI TypeScript/JavaScript SDK for generating AI-powered videos. Covers installation, authentication, all methods, type definitions, error handling, and usage examples.
+Installation
+
+Terminal Copy 
+npm install @golpoai/sdk 
+
+Requires Node.js ≥ 18.17.
+Authentication
+
+Initialize the SDK with your API key.
+
+auth.ts Copy 
+import Golpo from '@golpoai/sdk';
+
+const golpo = new Golpo("api-key"); // Replace with your actual API key 
+
+Parameter Type Default Required Description 
+apiKey string — Required Your Golpo AI API key.
+
+Method: createVideo
+Stable 
+Creates a video, polls until completion, and returns a GenerationResult.
+
+Signature
+createVideo.d.ts Copy 
+async createVideo(
+prompt: string,
+options?: CreateVideoOptions
+): Promise<GenerationResult> // { url, script, videoId } 
+
+Parameters
+Parameter Type Default Required Description 
+prompt string — Required The prompt describing what video to generate.
+
+options CreateVideoOptions — Optional Configuration options (see table below).
+
+Options (CreateVideoOptions)
+Parameter Type Default Required Description 
+uploads string | string[] — Optional File paths or URLs (local, HTTP/HTTPS, S3). Documents, audio, video, images.
+
+audioClip string | string[] — Optional Audio clip URL(s) or local file path(s). Backend uses the first URL.
+
+newScript string — Optional Provide a custom script directly instead of generating from prompt.
+
+inputImages string | string[] — Optional Input image URL(s) or local file path(s) for the video.
+
+style string 'solo-female-3' Optional Voice style. Options: 'solo-female-3', 'solo-female-4', 'solo-male-3', 'solo-male-4'.
+
+voiceInstructions string — Optional Custom instructions for voice characteristics (accent, tone, pace).
+
+language string — Optional Language code (e.g. 'en', 'es', 'hindi'). 45+ languages supported.
+
+bgMusic string | null 'engaging' Optional Background music. Options: 'jazz', 'lofi', 'dramatic', 'engaging', 'hyper', 'inspirational', 'documentary', or null.
+
+userAudioInVideo number[] | string — Optional List of video numbers that should use AI-generated narration audio instead of their original audio (e.g., [1, 3] means videos 1 and 3 get AI narration; unlisted user videos keep their original audio). Defaults to '[]' when userVideos is provided.
+
+useColor boolean true Optional true = color video, false = black and white video.
+
+useLineart2Style string — Optional Golpo Sketch style. 'false' = classic, 'true' = improved, 'advanced' = formal.
+
+use2Style boolean — Optional Enable Golpo Canvas mode (use_2_0_style).
+
+imageStyle string — Optional Canvas style machine name. Bare style names select Expanded; append '_compact' for Compact. 'notebook_infographic' is Compact-only. Deprecated '_legacy' aliases remain accepted as Expanded.
+
+userImages string | string[] — Optional User image URL(s) or local file path(s) to embed in the video.
+
+userImagesDescriptions string | string[] — Optional Descriptions for each user image (strongly recommended).
+
+useAsIs string | boolean[] — Optional JSON string or boolean array — use images as-is without modification.
+
+skipAnimation string | boolean[] — Optional JSON string or boolean array — skip animation for specific frames.
+
+penStyle string — Optional Pen cursor style for Canvas. Options: 'stylus', 'marker', 'pen'.
+
+showPencilCursor boolean false Optional Show pencil cursor. Auto-enabled when penStyle is set.
+
+userVideos string | string[] — Optional User video URL(s) or local file path(s) to embed in the video.
+
+userVideosDescription string | string[] — Optional Descriptions for each user video.
+
+timing number 1 Optional Duration in minutes. Options: 0.25, 0.5, 1, 2, 4, 8, 10, 15.
+
+videoType 'short' | 'long' 'long' Optional 'short' = vertical, 'long' = horizontal.
+
+pacing 'normal' | 'fast' — Optional Animation pacing. 'normal' = 15s/frame, 'fast' = 10s/frame.
+
+includeWatermark boolean false Optional Include Golpo watermark in the video.
+
+logo string — Optional Logo file path or URL. Uploaded and added to the video.
+
+logoPlacement string — Optional Logo placement position in the video.
+
+displayLanguage string — Optional Language for on-screen text in the video (e.g., 'English', 'Hindi', 'French'). Useful when the displayed text should differ from the narration language. Defaults to the value of language if omitted.
+Example: language: "Hindi", displayLanguage: "English" — the narrator speaks in Hindi while all on-screen text, titles, and labels are shown in English. 
+
+videoInstructions string — Optional Instructions for video visual generation (scene composition, imagery style).
+
+justReturnScript boolean — Optional If true, only generate the script without creating the video.
+NOTE: This parameter will not work with audioClip (own-narration mode). Requests will follow the standard own_narration workflow regardless of the parameter value. 
+
+isPublic boolean — Optional Whether the generated video is publicly accessible.
+
+pollIntervalMs number 2000 Optional Polling interval in milliseconds.
+
+Returns
+returns.ts Copy 
+interface GenerationResult {
+url: string; // URL to download/stream the generated video
+script: string; // Full transcript/script of the video
+videoId: string; // Job ID for getFrameAnimations / editVideo
+} 
+
+CreateVideoOptions type
+types.ts Copy 
+interface CreateVideoOptions {
+uploads?: string | Iterable<string>;
+voiceInstructions?: string;
+language?: string;
+style?: 'solo-male-3' | 'solo-female-3' | 'solo-male-4' | 'solo-female-4';
+bgMusic?: 'jazz' | 'lofi' | 'dramatic' | 'engaging' | 'hyper' | 'inspirational' | 'documentary' | null;
+videoType?: 'short' | 'long';
+includeWatermark?: boolean;
+logo?: string;
+timing?: 0.25 | 0.5 | 1 | 2 | 4 | 8 | 10 | 15;
+pollIntervalMs?: number;
+
+// Color / background
+useColor?: boolean;
+
+// Script
+newScript?: string;
+
+// Visual styles
+useLineart2Style?: string;
+use2Style?: boolean;
+// Published v1.0.2 declaration. See the Canvas compatibility note below.
+imageStyle?: 'neon' | 'whiteboard' | 'modern_minimal' | 'playful' | 'technical' | 'editorial';
+penStyle?: 'stylus' | 'marker' | 'pen';
+showPencilCursor?: boolean;
+pacing?: 'normal' | 'fast';
+
+// Branding
+logoPlacement?: string;
+videoInstructions?: string;
+
+// Audio
+audioClip?: string | string[];
+userAudioInVideo?: number[] | string;
+
+// User assets
+userImages?: string | string[];
+userImagesDescriptions?: string | string[];
+userVideos?: string | string[];
+userVideosDescription?: string | string[];
+inputImages?: string | string[];
+useAsIs?: string | boolean[];
+skipAnimation?: string | boolean[];
+
+// Workflow
+isPublic?: boolean;
+justReturnScript?: boolean;
+} 
+
+Usage Examples
+Basic prompt-only video
+Basic 
+basic.ts Copy 
+import Golpo from '@golpoai/sdk';
+
+const golpo = new Golpo("api-key");
+
+const result = await golpo.createVideo('Explain recent AI advances');
+console.log(result.url);
+console.log(result.script);
+console.log(result.videoId); 
+
+Video with custom script
+Script 
+custom_script.ts Copy 
+const result = await golpo.createVideo('Product overview', {
+newScript: `Welcome to our product overview. Today we'll explore
+the three key features that make our platform unique...
+
+First, our AI-powered analytics engine processes data in real-time.
+Second, our intuitive dashboard makes insights accessible to everyone.
+Third, our API lets you integrate seamlessly with your existing tools.`,
+style: 'solo-male-3',
+bgMusic: 'engaging',
+timing: 2,
+}); 
+
+Golpo Sketch (whiteboard animation)
+Sketch 
+golpo_sketch.ts Copy 
+const result = await golpo.createVideo('How photosynthesis works', {
+useLineart2Style: 'true', // 'false' = classic, 'true' = improved, 'advanced' = formal
+pacing: 'normal', // 'normal' = 15s/frame, 'fast' = 10s/frame
+style: 'solo-female-3',
+timing: 2,
+bgMusic: 'lofi',
+}); 
+
+Golpo Canvas (rich visual styles)
+Canvas 
+golpo_canvas.ts Copy 
+import type { CreateVideoOptions } from '@golpoai/sdk';
+
+const result = await golpo.createVideo('Solar energy explained', {
+use2Style: true,
+// v1.0.2 runtime forwards this value; the cast bridges its older declaration.
+imageStyle: 'modern_minimal_compact' as unknown as NonNullable<CreateVideoOptions['imageStyle']>,
+penStyle: 'stylus', // 'stylus' | 'marker' | 'pen'
+timing: 2,
+bgMusic: 'inspirational',
+}); 
+
+Video with user images and videos
+Assets 
+user_assets.ts Copy 
+const result = await golpo.createVideo('Company quarterly review', {
+userImages: [
+'https://example.com/chart1.png',
+'./local-photo.jpg',
+],
+userImagesDescriptions: [
+'Q3 revenue growth chart showing 25% increase',
+'Team photo from the annual retreat',
+],
+userVideos: ['https://example.com/demo-clip.mp4'],
+userVideosDescription: ['Product demo walkthrough'],
+videoInstructions: 'Use clean corporate visuals with blue color palette',
+style: 'solo-female-4',
+bgMusic: 'engaging',
+}); 
+
+Hindi narration with English on-screen text (displayLanguage)
+Advanced 
+display_language.ts Copy 
+const result = await golpo.createVideo(
+'Flower Structure for Reproduction',
+{
+language: 'Hindi', // narrator speaks in Hindi
+displayLanguage: 'English', // on-screen text, titles, and labels appear in English
+style: 'solo-female-4',
+useColor: true,
+videoType: 'long',
+}
+);
+console.log('Video URL:', result.videoUrl); 
+
+Comprehensive example
+Complete 
+comprehensive.ts Copy 
+const result = await golpo.createVideo(
+'Create an educational video about quantum computing',
+{
+// Content
+uploads: ['./research-paper.pdf'],
+inputImages: ['./diagram.png'],
+
+// Voice
+style: 'solo-female-3',
+voiceInstructions: 'Professional educator, clear and engaging, moderate pace',
+language: 'en',
+
+// Audio
+bgMusic: 'documentary',
+
+// Visual
+useColor: true,
+videoInstructions: 'Use futuristic visuals with circuit-board aesthetics',
+
+// Video
+videoType: 'long',
+timing: 4,
+pacing: 'normal',
+
+// Branding
+includeWatermark: false,
+logo: './company-logo.png',
+logoPlacement: 'bottom-right',
+
+// Workflow
+isPublic: false,
+pollIntervalMs: 3000,
+}
+); 
+
+Method: createPodcast
+Stable 
+Creates a podcast (audio-only), polls until completion, and returns a GenerationResult.
+
+Signature
+createPodcast.d.ts Copy 
+async createPodcast(
+prompt: string,
+options?: CreatePodcastOptions
+): Promise<GenerationResult> // { url, script, videoId } 
+
+Parameters
+Parameter Type Default Required Description 
+prompt string — Required The prompt describing what podcast to generate.
+
+options CreatePodcastOptions — Optional Configuration options (see table below).
+
+Options (CreatePodcastOptions)
+Parameter Type Default Required Description 
+uploads string | string[] — Optional File paths or URLs for reference documents.
+
+voiceInstructions string — Optional Custom instructions for voice characteristics.
+
+language string — Optional Language code (e.g. 'en', 'es').
+
+style string 'solo-female-3' Optional Voice style. Options: 'solo-male-4', 'solo-female-4', 'solo-male-3', 'solo-female-3'.
+
+bgMusic string | null — Optional Background music genre.
+
+newScript string — Optional Provide a custom script directly.
+
+timing number 1 Optional Duration in minutes. Options: 0.25, 0.5, 1, 2, 4, 8, 10, 15.
+
+pollIntervalMs number 2000 Optional Polling interval in milliseconds.
+
+Returns
+Same GenerationResult as createVideo — url (podcast audio URL), script (transcript), videoId (job ID).
+CreatePodcastOptions type
+podcast_types.ts Copy 
+interface CreatePodcastOptions {
+uploads?: string | Iterable<string>;
+voiceInstructions?: string;
+language?: string;
+style?: 'solo-male-4' | 'solo-female-4' | 'solo-male-3' | 'solo-female-3';
+bgMusic?: 'jazz' | 'lofi' | 'dramatic' | 'engaging' | 'hyper' | 'inspirational' | 'documentary' | null;
+pollIntervalMs?: number;
+
+newScript?: string;
+timing?: 0.25 | 0.5 | 1 | 2 | 4 | 8 | 10 | 15;
+} 
+
+Podcast Examples
+Basic podcast
+Basic 
+basic_podcast.ts Copy 
+import Golpo from '@golpoai/sdk';
+
+const golpo = new Golpo("api-key");
+
+const result = await golpo.createPodcast('Explain the latest AI breakthroughs');
+console.log(result.url); // podcast audio URL
+console.log(result.script); // full transcript 
+
+Podcast from documents
+Files 
+podcast_docs.ts Copy 
+const result = await golpo.createPodcast('Summarize this research', {
+uploads: ['./paper.pdf', 'https://example.com/article.html'],
+style: 'solo-male-4',
+language: 'en',
+bgMusic: 'jazz',
+timing: 2,
+}); 
+
+Podcast with custom script
+Script 
+podcast_script.ts Copy 
+const result = await golpo.createPodcast('Weekly tech digest', {
+newScript: `Welcome to this week's tech digest. Let's dive into
+the top three stories shaping the industry...
+
+Story one: The rise of edge computing...
+Story two: New breakthroughs in quantum error correction...
+Story three: The debate around AI regulation in the EU...`,
+voiceInstructions: 'Conversational and upbeat, like a morning radio host',
+style: 'solo-female-4',
+bgMusic: 'engaging',
+timing: 4,
+}); 
+
+Method: getFrameAnimations
+
+Returns a map of frame IDs to MP4 animation URLs for a generated video.
+
+Signature
+getFrameAnimations.d.ts Copy 
+async getFrameAnimations(videoId: string): Promise<Record<string, string>> 
+
+Parameters
+Parameter Type Default Required Description 
+videoId string — Required The video/job ID returned from createVideo .
+
+Returns
+An object mapping frame IDs (e.g. "0" , "1" ) to MP4 animation URLs.
+Example
+example_get_frame_animations.ts Copy 
+const result = await golpo.createVideo('Explain AI in 2 minutes');
+const animations = await golpo.getFrameAnimations(result.videoId);
+
+for (const [frameId, url] of Object.entries(animations)
+.sort(([a], [b]) => parseInt(a) - parseInt(b))) {
+console.log(`Frame ${frameId}: ${url}`);
+} 
+
+Method: editVideo
+
+Edits specific frames of a video using text prompts, then optionally combines them.
+
+Signature
+editVideo.d.ts Copy 
+async editVideo(
+videoId: string,
+opts: EditVideoOptions
+): Promise<VideoEditResult> // { videoUrl, jobId } 
+
+EditVideoOptions
+Parameter Type Default Required Description 
+frameIds string[] — Required Frame indices to edit (e.g. ["0", "2"] ).
+
+editPrompts string[] — Required One prompt per frame (same length as frameIds).
+
+videoUrl string — Required URL of the original video ( result.url from createVideo).
+
+referenceImages string[] — Optional Reference image URLs for the edit.
+
+userId string — Optional User ID for the edit job.
+
+autoCombine boolean false Optional If true, combine edited frames into a final video with audio.
+
+pollIntervalMs number 2000 Optional Polling interval in ms.
+
+Returns
+VideoEditResult — videoUrl (string), jobId (string).
+Example
+example_edit_video.ts Copy 
+const videoResult = await golpo.createVideo('Product demo in 3 scenes');
+const editResult = await golpo.editVideo(videoResult.videoId, {
+frameIds: ['1'],
+editPrompts: ['Replace the background with a beach sunset'],
+videoUrl: videoResult.url,
+autoCombine: true,
+});
+console.log('Edited video URL:', editResult.videoUrl); 
+
+Method: combineVideos
+
+Merges multiple MP4 URLs into a single video with optional audio.
+
+Signature
+combineVideos.d.ts Copy 
+async combineVideos(opts: CombineVideosOptions): Promise<CombinedVideoResult> // { url } 
+
+CombineVideosOptions
+Parameter Type Default Required Description 
+mp4Urls string[] — Required At least one MP4 URL (e.g. from getFrameAnimations ).
+
+videoUrl string — Optional Optional original video URL to use for audio.
+
+pollIntervalMs number 2000 Optional Polling interval in ms.
+
+Returns
+CombinedVideoResult — url (string), the URL of the combined video.
+Example
+example_combine_videos.ts Copy 
+const animations = await golpo.getFrameAnimations(videoId);
+const mp4Urls = Object.entries(animations)
+.sort(([a], [b]) => parseInt(a) - parseInt(b))
+.map(([, url]) => url);
+
+const combined = await golpo.combineVideos({ mp4Urls, videoUrl: originalVideoUrl });
+console.log('Combined video:', combined.url); 
+
+Timing
+
+Timing parameter reference — provide duration in minutes as a number.
+
+Value Duration 
+0.25 15 seconds 
+0.5 30 seconds 
+1 1 minute 
+2 2 minutes 
+4 4 minutes 
+8 8 minutes Beta 
+10 10 minutes Beta 
+
+Supported values: 0.25 , 0.5 , 1 , 2 , 4 , 8 , 10 , 15 . 
+Video Type
+
+Controls the video aspect ratio and orientation.
+
+Value Format Use Cases 
+"short" Vertical / Portrait TikTok, Instagram Reels, YouTube Shorts 
+"long" Horizontal / Landscape (Default) YouTube, standard video content 
+
+9:16 
+short
+
+16:9 
+long (default) 
+
+Style & Voices
+
+The style parameter controls voice selection for narration.
+
+Value Voice Type Description 
+"solo-female-3" Female 1 Female narrator voice (Default) 
+"solo-female-4" Female 2 Alternative female narrator voice 
+"solo-male-3" Male 1 Male narrator voice 
+"solo-male-4" Male 2 Alternative male narrator voice 
+
+Background Music
+
+Set the bgMusic option using one of the following keys.
+
+bgMusic key Mood / Usage 
+" jazz " Warm, neutral bed 
+" lofi " Calm, study vibes 
+" dramatic " Cinematic tension 
+" engaging " Subtle corporate pulse 
+" hyper " High-energy electronic 
+" inspirational " Uplifting orchestral 
+" documentary " Serious factual tone 
+
+Voice Instructions
+
+Describe how the voice should sound — accent, tone, or pronunciation style.
+
+Pass instructions in the voiceInstructions option to guide voice generation. The AI will adjust accent, tone, pace, and delivery accordingly.
+voice-instructions-example.ts Copy 
+const result = await golpo.createVideo('Explain quantum computing basics', {
+voiceInstructions: 'Speak in a warm British accent with a calm, professorial tone. Pause slightly between key concepts for emphasis.',
+style: 'solo-male-3',
+}); 
+
+More examples
+• “ Talk in a French accent ” 
+• “ Use an enthusiastic, energetic tone ” 
+• “ Talk like a professor — measured and articulate ” 
+• “ Speak slowly and clearly, like a meditation guide ” 
+• “ Fast-paced sports commentator style ” 
+• “ Friendly and casual, like chatting with a friend ” 
+
+Video Instructions
+
+Describe how the video should look — visuals, style, and scene direction.
+
+Pass instructions in the videoInstructions option to guide visual generation. The AI will adjust scene composition, imagery, and visual style accordingly.
+video-instructions-example.ts Copy 
+const result = await golpo.createVideo('Company quarterly results overview', {
+videoInstructions: 'Use clean corporate visuals with data charts and graphs. Include stock footage of modern office environments. Prefer blue and white color palette.',
+style: 'solo-female-3',
+}); 
+
+More examples
+• “ Show more graphs and charts ” 
+• “ Include more stock footage ” 
+• “ Use cinematic transitions ” 
+• “ Female presenter in an office setting ” 
+• “ Urban background with modern architecture ” 
+• “ Dark moody aesthetic with neon accents ” 
+
+Golpo Sketch Styles
+
+The useLineart2Style option controls the whiteboard sketch animation style.
+
+Value Style Name Description 
+"false" Classic (Default) Original Golpo Sketch — classic whiteboard line-art animation 
+"true" Improved Beta Improved line-art with cleaner strokes and a more polished look 
+"advanced" Formal Advanced sketch generation with higher detail and refined aesthetics 
+
+NOTE: Do not combine useLineart2Style with use2Style . Use one or the other. 
+Golpo Canvas Styles
+
+Enable Golpo Canvas with use2Style and configure imageStyle and penStyle.
+
+Set use2Style: true to enable Golpo Canvas. Then use imageStyle to set the visual look and optionally penStyle to add a drawing cursor effect.
+For styles that support both modes, use the bare machine name (for example, editorial ) for Expanded and append _compact (for example, editorial_compact ) for Compact. notebook_infographic is Compact-only and remains unsuffixed. 
+NOTE: Node SDK 1.0.2 forwards imageStyle strings unchanged at runtime, but its TypeScript declaration predates _compact and the newer Canvas families. Until an updated SDK package is published, TypeScript users should call the REST API directly or use the explicit compatibility cast shown in the examples below. JavaScript users do not need a cast. 
+Pen Style
+Value Description 
+"none" No pen cursor (Default) 
+"stylus" Thin stylus pen cursor 
+"marker" Thick marker cursor 
+"pen" Classic pen cursor 
+
+NOTE: penStyle and imageStyle are only applicable for Golpo Canvas ( use2Style: true ). Do not use with Golpo Sketch. 
+Image Style
+
+Controls the visual style of Golpo Canvas videos. Only applicable when use2Style is true.
+
+Expanded Compact Style Description 
+"chalkboard_white" "chalkboard_white_compact" Chalkboard (White on Black) White chalk on a black background 
+"chalkboard_black_on_white" "chalkboard_black_on_white_compact" Chalkboard (Black on White) Black ink on a white background 
+"neon" "neon_compact" Chalkboard Color Colorful neon chalkboard style 
+"whiteboard" "whiteboard_compact" Whiteboard Clean whiteboard illustrations 
+"modern_minimal" "modern_minimal_compact" Modern Minimal Sleek, minimal modern aesthetic 
+"playful" "playful_compact" Playful Fun, colorful playful illustrations 
+"technical" "technical_compact" Technical Technical diagram style 
+"editorial" "editorial_compact" Editorial Magazine/editorial illustration style 
+"marker" "marker_compact" Sharpie Bold marker/sharpie drawn style 
+"vox" "vox_compact" Illustrations Paper-textured editorial infographic style 
+— "notebook_infographic" Notebook Compact-only notebook infographic style 
+
+NOTE: Machine names ending in _legacy remain accepted as deprecated aliases for Expanded (for example, editorial_legacy ). Use the canonical bare name in new integrations. Notebook does not have an _legacy or _compact alias. 
+golpo-canvas-example.ts Copy 
+import type { CreateVideoOptions } from '@golpoai/sdk';
+
+const result = await golpo.createVideo('How solar panels convert sunlight to electricity', {
+use2Style: true,
+imageStyle: 'modern_minimal_compact' as unknown as NonNullable<CreateVideoOptions['imageStyle']>,
+penStyle: 'stylus',
+timing: 2,
+}); 
+
+Error Handling
+
+Wrap all SDK calls in try/catch blocks to handle failures gracefully.
+
+error-handling.ts Copy 
+try {
+const result = await golpo.createVideo('My prompt', options);
+console.log(result.url);
+} catch (error: any) {
+if (error.response?.data?.detail) {
+// API validation error
+console.error('API Error:', error.response.data.detail);
+} else {
+// Network, file not found, etc.
+console.error('Error:', error.message);
+}
+} 
+
+Common error scenarios
+
+Invalid API Key Status 401 Unauthorized. Verify the constructor key. 
+File Not Found Local uploads missing. Confirm file paths exist. 
+Invalid Parameters API validation errors. Ensure option values are supported. 
+Network Errors Connection failures/timeouts. SDK automatically retries status checks. 
+Job Failed Generation failed on backend. Check error message for details. 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

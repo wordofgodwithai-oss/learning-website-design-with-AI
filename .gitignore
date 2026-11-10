@@ -9,3 +9,8 @@ next-env.d.ts
 .env*.local
 .DS_Store
 Thumbs.db
+
+# Forensic evidence: keep the text extracts, frame sheets and notes in git,
+# but not the multi-megabyte raw HTML or the vendor sample videos.
+docs/forensics/**/*.html
+docs/forensics/samples/*.mp4

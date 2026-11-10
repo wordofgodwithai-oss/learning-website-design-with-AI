@@ -1,0 +1,575 @@
+Golpo Stock Avatars: All 20 Presenters + Video Examples About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Features & Editing Golpo Stock Avatars: 20 Ready-to-Use Presenters and Video Examples
+Choose a ready-to-use Golpo presenter without uploading a selfie. Follow the Stock Avatar workflow, explore all 20 presenters, and play their video examples inside the guide.
+Mira Chen • October 1, 2026 • 18 min read 
+
+A presenter can make an explanation feel personal. With Golpo Stock Avatars , you can add that presenter without uploading a selfie or creating a custom avatar. Choose one of Golpo's 20 ready-to-use presenters, select a narration voice, and combine the avatar with the visuals that explain your idea.
+
+Each example below pairs a named stock presenter with a distinct video, voice, and visual style. You can play the videos inside this guide and use the player's full-screen button to expand them.
+
+Combine a ready-to-use presenter with Golpo, the world's best AI explainer video maker, for a winning combination: a face that guides the audience and animated visuals that make the explanation easier to follow.
+
+In this guide 
+
+Meet the stock Avatar library 
+
+Use a Stock Avatar step by step 
+
+Recreate an example's settings 
+
+Find a presenter and their video 
+
+Watch all 20 examples 
+
+Frequently asked questions 
+
+Meet Golpo's ready-to-use presenters
+
+Open Talking AI Avatars → Golpo Avatars to browse the stock library. Each card displays a presenter name and a short description, such as Maya — warm educator , Arjun — confident business presenter , Sofia — friendly product guide , or Daniel — calm technical host .
+
+The library screenshot shows 20 avatars ready for video generation. You can choose a stock presenter directly; you do not need to upload an image or go through the custom-avatar creation workflow.
+
+Start in the Golpo Avatars tab to choose a ready-to-use presenter. 
+
+Browse more presenters and choose a tone that suits your lesson, update, or explanation. 
+
+How to use a Stock Avatar, step by step
+
+1. Start with the idea or script
+
+Open Golpo and begin your video. Add a prompt describing what you want to explain, or supply your own script when you want control over the narration.
+
+For a first attempt, choose one clear idea. The gallery gives you practical starting points: Maya introduces an empathy story, Daniel explains how an internet click travels, and Mateo explains why Earth has seasons.
+
+2. Choose the video orientation
+
+The 20 stock examples in this guide use Horizontal . Choose that orientation to follow these examples. If you are making a vertical video, choose the portrait format and review how the presenter and visuals share that frame.
+
+3. Enable Talking AI Avatar
+
+In the video settings, turn on Talking AI Avatar . Open the avatar chooser using Golpo / Golpo Avatars .
+
+4. Select your stock presenter by name
+
+Browse the ready-to-use avatars and choose a presenter. Use the name in the gallery to find the same avatar in Golpo: select Maya for The Invisible Backpack We All Carry , Sofia for The Button Nobody Wanted to Click , or Lukas for Which Decisions Deserve More Analysis .
+
+Check that the selected card shows the presenter you intended to use.
+
+5. Choose the narration voice
+
+Select the voice separately from the avatar. The examples below use built-in voices , with no voice cloning. Each video card lists the voice used, such as Female 3 , Female 4 , Male 3 , or Male 4 .
+
+For example, Maya's video uses Female 3 , while Arjun's uses Male 4 . Choose those voices to follow the example setup, or choose a different voice for your own narration.
+
+6. Choose how the presenter appears
+
+Choose Side by side , Round overlay , Full screen , or Auto , depending on your video and orientation. Check the live preview to see the balance between the presenter and the supporting content.
+
+All 20 stock videos in this gallery use Auto . Auto chooses among compatible approved layouts for each scene. It can change the presentation and may briefly hide the presenter to keep important content unobstructed.
+
+7. Select the visual engine and style
+
+Choose Golpo Canvas or Golpo Sketch , then choose a visual style. The presenter stays part of the explanation while the surrounding visuals take on that treatment.
+
+Maya's empathy story uses Canvas · Illustration · Expanded . Daniel's internet explainer uses Sketch · Infographics . Minh's startup story uses Canvas · Notebook · Compact . For Canvas, choose the Compact or Expanded variant shown beside the video. Sketch examples show N/A for Variant. Every configuration panel lists the corresponding engine, style, and variant so you can try the same combination.
+
+8. Set optional background music
+
+Choose music that suits the explanation. The examples use options such as Inspirational, Engaging, Documentary, Jazz, Lo-fi, Hyper, and Dramatic. Each card lists its music choice; use it as a starting point when recreating that example's setup.
+
+9. Review the settings
+
+Confirm the presenter name, voice, orientation, layout, style, and video duration.
+
+10. Generate and review the video
+
+Continue with video generation. Review the finished video in your Library and check the narration, presenter, visual clarity, and pacing. Use the examples below to compare how the same Stock Avatar feature works across different subjects and styles.
+
+Three combinations to try first
+
+Starting point
+
+Presenter
+
+Voice
+
+Visual treatment
+
+Variant
+
+Avatar config
+
+Music
+
+An empathy story 
+
+Maya
+
+Female 3
+
+Canvas · Illustration
+
+Expanded
+
+Auto · Horizontal
+
+Inspirational
+
+A technical explainer 
+
+Daniel
+
+Male 3
+
+Sketch · Infographics
+
+N/A
+
+Auto · Horizontal
+
+Documentary
+
+A startup lesson 
+
+Minh
+
+Male 4
+
+Canvas · Notebook
+
+Compact
+
+Auto · Horizontal
+
+Engaging
+
+To recreate one of these setups, follow the steps above and copy its presenter, voice, engine, style, variant, layout, orientation, and music selections. Supply your own prompt or script for the story you want to tell.
+
+Find a Stock Avatar and the corresponding example
+
+Presenter
+Presenter description
+Video example
+
+Maya 
+warm educator
+The Invisible Backpack We All Carry 
+
+Arjun 
+confident business presenter
+The Two Clocks Behind Every Decision 
+
+Sofia 
+friendly product guide
+The Button Nobody Wanted to Click 
+
+Daniel 
+calm technical host
+How the Internet Delivers a Single Click 
+
+Amina 
+composed analyst
+The Average That Hid the Truth 
+
+Mei 
+science guide
+What If You Could Enter an Atom 
+
+Sari 
+upbeat trainer
+Practice the Moment That Usually Breaks 
+
+Layla 
+trusted advisor
+A Five-Minute Meeting With Future You 
+
+Elena 
+experienced executive
+Why Great Meetings Need an Empty Chair 
+
+Camila 
+creative product host
+The Creative Power of One Bad Rule 
+
+Leilani 
+warm community leader
+The Favor That Travels Past You 
+
+Naya 
+thoughtful knowledge guide
+Forgetting Is Part of Learning 
+
+Kofi 
+growth strategist
+Build a Flywheel Not a Funnel 
+
+Hiro 
+senior technical expert
+Why GPS Needs Einstein's Physics 
+
+Minh 
+startup explainer
+Test a Startup Before Building It 
+
+Omar 
+confident business host
+The Most Powerful Sound in Negotiation 
+
+Mateo 
+approachable educator
+The Real Reason Earth Has Seasons 
+
+Tane 
+grounded team lead
+Run the Failure Before It Happens 
+
+Noah 
+calm senior mentor
+How Do You Warn the Distant Future 
+
+Lukas 
+clear consultant
+Which Decisions Deserve More Analysis 
+
+Watch all 20 Stock Avatar videos
+
+Each video has its configuration beside it: Avatar , Voice , Avatar config , Engine and style , Variant , and BG music . On a phone, the configuration appears below the player. Press Play to watch here. Use the YouTube player's full-screen button to expand a video, then press Esc to return to the guide.
+
+These examples use synthetic stock presenters, AI-generated visuals, and built-in narration voices. They show completed Golpo videos across different topics and styles.
+
+1. Maya — warm educator
+
+The Invisible Backpack We All Carry
+
+Watch Maya's example on YouTube → 
+
+Video configuration
+
+Avatar Maya — Warm educator Voice Female 3 Avatar config Auto, Horizontal Engine and style Canvas — Illustration Variant Expanded BG music Inspirational 
+
+2. Arjun — confident business presenter
+
+The Two Clocks Behind Every Decision
+
+Watch Arjun's example on YouTube → 
+
+Video configuration
+
+Avatar Arjun — Confident business presenter Voice Male 4 Avatar config Auto, Horizontal Engine and style Sketch — Formal Variant N/A BG music Engaging 
+
+3. Sofia — friendly product guide
+
+The Button Nobody Wanted to Click
+
+Watch Sofia's example on YouTube → 
+
+Video configuration
+
+Avatar Sofia — Friendly product guide Voice Female 4 Avatar config Auto, Horizontal Engine and style Canvas — Playful Variant Expanded BG music Engaging 
+
+4. Daniel — calm technical host
+
+How the Internet Delivers a Single Click
+
+Watch Daniel's example on YouTube → 
+
+Video configuration
+
+Avatar Daniel — Calm technical host Voice Male 3 Avatar config Auto, Horizontal Engine and style Sketch — Infographics Variant N/A BG music Documentary 
+
+5. Amina — composed analyst
+
+The Average That Hid the Truth
+
+Watch Amina's example on YouTube → 
+
+Video configuration
+
+Avatar Amina — Composed analyst Voice Female 3 Avatar config Auto, Horizontal Engine and style Canvas — Editorial Variant Compact BG music Jazz 
+
+6. Mei — science guide
+
+What If You Could Enter an Atom
+
+Watch Mei's example on YouTube → 
+
+Video configuration
+
+Avatar Mei — Science guide Voice Female 4 Avatar config Auto, Horizontal Engine and style Sketch — Creative Variant N/A BG music Dramatic 
+
+7. Sari — upbeat trainer
+
+Practice the Moment That Usually Breaks
+
+Watch Sari's example on YouTube → 
+
+Video configuration
+
+Avatar Sari — Upbeat trainer Voice Female 4 Avatar config Auto, Horizontal Engine and style Canvas — Sharpie Variant Expanded BG music Hyper 
+
+8. Layla — trusted advisor
+
+A Five-Minute Meeting With Future You
+
+Watch Layla's example on YouTube → 
+
+Video configuration
+
+Avatar Layla — Trusted advisor Voice Female 3 Avatar config Auto, Horizontal Engine and style Sketch — Professional Clean Variant N/A BG music Lo-fi 
+
+9. Elena — experienced executive
+
+Why Great Meetings Need an Empty Chair
+
+Watch Elena's example on YouTube → 
+
+Video configuration
+
+Avatar Elena — Experienced executive Voice Female 3 Avatar config Auto, Horizontal Engine and style Canvas — Modern Minimal Variant Expanded BG music Inspirational 
+
+10. Camila — creative product host
+
+The Creative Power of One Bad Rule
+
+Watch Camila's example on YouTube → 
+
+Video configuration
+
+Avatar Camila — Creative product host Voice Female 4 Avatar config Auto, Horizontal Engine and style Sketch — Crayon Variant N/A BG music Engaging 
+
+11. Leilani — warm community leader
+
+The Favor That Travels Past You
+
+Watch Leilani's example on YouTube → 
+
+Video configuration
+
+Avatar Leilani — Warm community leader Voice Female 3 Avatar config Auto, Horizontal Engine and style Canvas — Whiteboard Variant Expanded BG music Engaging 
+
+12. Naya — thoughtful knowledge guide
+
+Forgetting Is Part of Learning
+
+Watch Naya's example on YouTube → 
+
+Video configuration
+
+Avatar Naya — Thoughtful knowledge guide Voice Female 3 Avatar config Auto, Horizontal Engine and style Sketch — Chalkboard (Black on White) Variant N/A BG music Documentary 
+
+13. Kofi — growth strategist
+
+Build a Flywheel Not a Funnel
+
+Watch Kofi's example on YouTube → 
+
+Video configuration
+
+Avatar Kofi — Growth strategist Voice Male 4 Avatar config Auto, Horizontal Engine and style Canvas — Technical Variant Expanded BG music Hyper 
+
+14. Hiro — senior technical expert
+
+Why GPS Needs Einstein's Physics
+
+Watch Hiro's example on YouTube → 
+
+Video configuration
+
+Avatar Hiro — Senior technical expert Voice Male 3 Avatar config Auto, Horizontal Engine and style Sketch — Dry Erase Variant N/A BG music Documentary 
+
+15. Minh — startup explainer
+
+Test a Startup Before Building It
+
+Watch Minh's example on YouTube → 
+
+Video configuration
+
+Avatar Minh — Startup explainer Voice Male 4 Avatar config Auto, Horizontal Engine and style Canvas — Notebook Variant Compact BG music Engaging 
+
+16. Omar — confident business host
+
+The Most Powerful Sound in Negotiation
+
+Watch Omar's example on YouTube → 
+
+Video configuration
+
+Avatar Omar — Confident business host Voice Male 4 Avatar config Auto, Horizontal Engine and style Sketch — Classic (with words) Variant N/A BG music Jazz 
+
+17. Mateo — approachable educator
+
+The Real Reason Earth Has Seasons
+
+Watch Mateo's example on YouTube → 
+
+Video configuration
+
+Avatar Mateo — Approachable educator Voice Male 3 Avatar config Auto, Horizontal Engine and style Sketch — Improved (Beta) Variant N/A BG music Inspirational 
+
+18. Tane — grounded team lead
+
+Run the Failure Before It Happens
+
+Watch Tane's example on YouTube → 
+
+Video configuration
+
+Avatar Tane — Grounded team lead Voice Male 4 Avatar config Auto, Horizontal Engine and style Canvas — Chalkboard Color Variant Expanded BG music Dramatic 
+
+19. Noah — calm senior mentor
+
+How Do You Warn the Distant Future
+
+Watch Noah's example on YouTube → 
+
+Video configuration
+
+Avatar Noah — Calm senior mentor Voice Male 3 Avatar config Auto, Horizontal Engine and style Sketch — Classic Variant N/A BG music Documentary 
+
+20. Lukas — clear consultant
+
+Which Decisions Deserve More Analysis
+
+Watch Lukas's example on YouTube → 
+
+Video configuration
+
+Avatar Lukas — Clear consultant Voice Male 3 Avatar config Auto, Horizontal Engine and style Canvas — Chalkboard (White on Black) Variant Expanded BG music Lo-fi 
+
+Stock Avatar videos use 3 credits per minute. Custom avatar videos use 5.
+
+Frequently asked questions
+
+Do I need a selfie to use a Stock Avatar?
+
+No. Open Golpo Avatars and select a ready-to-use presenter from the library.
+
+How many Stock Avatars can I choose from?
+
+The library shown here contains 20 stock presenters. This guide includes a corresponding example for each of them.
+
+Does choosing a Stock Avatar automatically choose a voice?
+
+Choose and review the narration voice separately. Each example lists the built-in voice used so you can follow its setup. These videos do not use a cloned voice.
+
+Can I combine a Stock Avatar with Canvas or Sketch?
+
+Yes. The gallery includes ten Canvas examples and ten Sketch examples, with a different visual treatment for each presenter.
+
+Can I change the presentation layout?
+
+Yes. Choose a compatible presentation option and inspect the live preview. The examples here use Auto, Horizontal ; the custom Avatar guide also demonstrates split, round overlay, and vertical layouts.
+
+Can I watch and expand the examples without leaving this guide?
+
+Yes. Each example has an embedded YouTube player. Press Play, then use the full-screen button to expand the video.
+
+Choose a presenter and make your next explanation
+
+Start with a voice, a presenter, and one clear idea. Choose the visual style that supports the story, preview your layout, and let Golpo turn the combination into a video.
+
+Create a Stock Avatar video in Golpo → 
+
+Related guides
+
+Create a custom Avatar from a selfie and explore layouts 
+
+Explore every Golpo video style 
+
+Compare Golpo Canvas styles 
+
+Follow the complete Golpo tutorial 
+
+Tags
+# Golpo Avatar # Stock Avatars 
+
+In this guide
+Meet Golpo's ready-to-use presenters 
+How to use a Stock Avatar, step by step 
+1. Start with the idea or script 
+2. Choose the video orientation 
+3. Enable Talking AI Avatar 
+4. Select your stock presenter by name 
+5. Choose the narration voice 
+6. Choose how the presenter appears 
+7. Select the visual engine and style 
+8. Set optional background music 
+9. Review the settings 
+10. Generate and review the video 
+Three combinations to try first 
+Find a Stock Avatar and the corresponding example 
+Watch all 20 Stock Avatar videos 
+1. Maya — warm educator 
+2. Arjun — confident business presenter 
+3. Sofia — friendly product guide 
+4. Daniel — calm technical host 
+5. Amina — composed analyst 
+6. Mei — science guide 
+7. Sari — upbeat trainer 
+8. Layla — trusted advisor 
+9. Elena — experienced executive 
+10. Camila — creative product host 
+11. Leilani — warm community leader 
+12. Naya — thoughtful knowledge guide 
+13. Kofi — growth strategist 
+14. Hiro — senior technical expert 
+15. Minh — startup explainer 
+16. Omar — confident business host 
+17. Mateo — approachable educator 
+18. Tane — grounded team lead 
+19. Noah — calm senior mentor 
+20. Lukas — clear consultant 
+Frequently asked questions 
+Do I need a selfie to use a Stock Avatar? 
+How many Stock Avatars can I choose from? 
+Does choosing a Stock Avatar automatically choose a voice? 
+Can I combine a Stock Avatar with Canvas or Sketch? 
+Can I change the presentation layout? 
+Can I watch and expand the examples without leaving this guide? 
+Choose a presenter and make your next explanation 
+Related guides 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

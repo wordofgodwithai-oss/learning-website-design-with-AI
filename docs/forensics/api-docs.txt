@@ -1,0 +1,229 @@
+Golpo AI API Documentation — Programmatic Video Generation About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+Golpo / API Reference 
+API Documentation
+Everything you need to integrate Golpo's AI video generation into your application — REST endpoints, Python SDK, and Node.js SDK.
+
+Buy API Plans 
+
+Explore REST API Python SDK Node SDK API Only Tier Buy API Plans 
+
+Choose your integration
+
+v2 v1 
+
+REST API
+HTTP endpoints for video generation and status polling. Language-agnostic — use any HTTP client.
+Quick links
+Generate Video 
+Poll Job Status 
+Golpo Canvas 
+Golpo Sketch 
+
+v2.0 v1.0.2 
+
+Python SDK
+Official Python client for Golpo API. Synchronous and async support. Works with Python 3.8+.
+Quick links
+Installation 
+Quick Start 
+create_video() 
+create_podcast() 
+
+v1.0.2 v1.0.0 
+
+Node SDK
+Official TypeScript/JavaScript client for Golpo API. First-class types, Promise-based, ESM + CJS.
+Quick links
+Installation 
+Quick Start 
+createVideo() 
+createPodcast() 
+
+Jira Confluence 
+
+Jira & Confluence
+No-code integration. Generate narrated videos right inside Jira and Confluence via our Atlassian Marketplace apps.
+Quick links
+Overview 
+Documentation 
+Jira getting started 
+Confluence getting started 
+
+Latest release REST API v1 & v2 Nov 2026 
+10 new narration voices — Female 3–7 and Male 3–7 — are now available in style (v1) and narration_voice (v2). Existing voices and defaults are unchanged.
+
+View docs → 
+Changelog
+Release history for all SDKs and the REST API.
+
+All REST API Python SDK Node SDK 
+
+REST API v1, v2 Nov 2026 
+New Narration Voices
+10 new narration voices are now available in API v1 and v2: Female 3–7 and Male 3–7.
+
+Python SDK v2.0 Oct 2026 
+Python SDK v2.0
+create_video and create_podcast now follow a job-based flow: submit first, then check status with get_video_status.
+Newly added parameters include language_variants, variant_visuals_mode, onscreen_text_from_script_only, visual_animation_style, own_narration_video_layout, own_narration_video_position, own_narration_split_size, own_narration_video_fit, and own_narration_focus_position.
+
+REST API v1, v2 Sep 2026 
+Custom Style — render videos in your own visual style
+Save a reusable style from an image URL, a direct video URL, or a free-text description with POST /api/v1/custom-styles or POST /api/v2/custom-styles (body: style_name, source, optional kind: auto | image | video | text).
+
+REST API v1, v2 Sep 2026 
+Golpo Canvas Compact and Expanded style profiles
+Golpo Canvas keeps the public labels Compact and Expanded while aligning REST API request values with the portal.
+Unsuffixed image_style (v1) and canvas_style_variant (v2) values select Expanded by default. Add _compact for Compact on the ten dual-profile style families.
+Notebook (notebook_infographic) remains Compact-only and unsuffixed.
+Migration note: _legacy remains accepted as a deprecated Expanded alias for existing integrations; use the unsuffixed value for new requests.
+
+REST API v1, v2 Aug 2026 
+On-Screen Text From Script Sources — Expanded Support
+onscreen_text_from_script_only now works for normal prompt-based generation, script-only workflows, and own-narration workflows.
+When enabled, on-screen text is constrained to script-source content only: generated script for prompt flow, provided script for custom-script flow, and transcription as source for own narration.
+This support is now available across both Golpo Canvas and Golpo Sketch engines.
+
+REST API v1, v2 July 2026 
+On-Screen Text From Provided Scripts
+API v1 and v2 now support onscreen_text_from_script_only. When enabled, only text from the provided script content is used for on-screen text; no extra labels, captions, titles, or other words are added.
+This was the initial rollout of strict script-sourced on-screen text behavior in the REST APIs.
+
+REST API v1, v2 June 2026 
+Golpo Sketch Video Editing APIs
+API v1 and v2 now support Golpo Sketch Video Editing — edit sketch videos programmatically through existing API workflows.
+Frame editing is only supported for Golpo Sketch videos; the source video must finish rendering before its frames can be edited or combined.
+
+REST API v1, v2 June 2026 
+Multi-Language Feature & new Chalkboard (Black on White) style
+Generate multiple language versions of the same video from a single prompt — set the primary narration language and list additional languages in language_variants (e.g. ["spanish", "french", "hi"]).
+v1: primary language + language_variants; v2: primary narration_language + language_variants. A separate video is rendered for each language.
+Golpo Canvas and Golpo Sketch now support the Chalkboard (Black on White) style — black ink on a white background.
+Golpo Canvas: select it with image_style: 'chalkboard_black_on_white' (v1) or canvas_style_variant: 'chalkboard_black_on_white' (v2).
+Golpo Sketch: select it with use_lineart_2_style: 'chalkboard_black_on_white' (v1) or sketch_style_variant: 'chalkboard_black_on_white' (v2).
+
+REST API v1, v2 May 2026 
+New style support — Creative, Infographics, Illustrations
+Golpo Canvas engine now supports the Illustrations style — image_style: 'vox' (v1) or canvas_style_variant: 'illustrations' (v2).
+Golpo Sketch engine now supports Creative and Infographics styles — use_lineart_2_style: 'creative' / 'vox' (v1) or sketch_style_variant: 'creative' / 'infographics' (v2).
+
+REST API v2 May 2026 
+REST API v2 — Now Available
+POST /api/v2/videos/generate — JSON body, x-api-key required
+Renamed parameters for clarity: prompt, reference_source, narration_voice, narration_language, enable_color, enable_podcast_engine, enable_script_only_mode, custom_script, custom_logo, logo_position, watermark, background_track, video_orientation, own_narration_source, custom_images / custom_images_description, custom_videos / custom_videos_description, visibility, onscreen_text_language
+New: golpo_video_engine selects 'golpo_canvas' or 'golpo_sketch'; canvas_style_variant and sketch_style_variant expose user-friendly preset names
+New: own_narration_video_mode + own_narration_video_position for picture-in-picture narration overlays
+New: scene_pacing ('normal' | 'fast'), pen_animation_style ('stylus' | 'marker' | 'pen')
+PATCH /api/v2/videos/{video_id} restricted to title and visibility
+use_ai_audio_at semantics inverted vs v1: list 1-indexed custom_videos positions whose original audio should be replaced with AI narration
+/upload-file enforces a 15 MB max and is gated to Plus and above plans
+
+Python SDK v1.0.2 Apr 2026 
+Python SDK v1.0.2
+user_audio_in_video now accepts List[int] — specify which user videos should be replaced with AI-generated narration audio (e.g., [1, 3] replaces audio on videos 1 and 3; unlisted user videos keep their original audio). Previously only accepted str. Note: use List[int] (e.g., [1, 2]) — do not use List[bool].
+
+Node SDK v1.0.2 Apr 2026 
+Node SDK v1.0.2
+userAudioInVideo now accepts number[] — specify which user videos should be replaced with AI-generated narration audio (e.g., [1, 3] replaces audio on videos 1 and 3; unlisted user videos keep their original audio). Defaults to [] when userVideos is provided.
+
+Python SDK v1.0.0 Mar 2026 
+Python SDK v1.0.0 — Major Release
+New update_video() method — update video metadata (prompt, context, scenes, frame animations)
+Golpo Canvas support — use_2_style with 8 image styles: chalkboard_white, neon, whiteboard, modern_minimal, playful, technical, editorial, marker
+Golpo Sketch modes — use_lineart_2_style with classic, improved (beta), and advanced styles plus pacing control
+Pen styles — pen_style (stylus, marker, pen)
+User media — user_images and user_videos with descriptions for custom content
+display_language — independently control the language used for on-screen text, separate from the narration language
+The following parameters are now deprecated and no longer supported: personality_1, personality_2, do_research, tts_model, bg_volume, output_volume, add_music, no_voice_chunking, max_workers
+
+Node SDK v1.0.0 Mar 2026 
+Node SDK v1.0.0 — Major Release
+New parameter support added in createPodcast() — generate audio-only podcasts from prompts or documents
+21 new createVideo options: Golpo Sketch (useLineart2Style), Golpo Canvas (use2Style, imageStyle, penStyle), user assets (userImages, userVideos), videoInstructions, newScript, audioClip, pacing, and more
+Updated voice styles: solo-female-3, solo-female-4, solo-male-3, solo-male-4
+Expanded timing options: 0.25, 0.5, 1, 2, 4, 8, 10, 15 minutes
+Background music expanded to 7 genres: jazz, lofi, dramatic, engaging, hyper, inspirational, documentary
+Logo now supports both file paths and URLs
+displayLanguage — independently control the language used for on-screen text, separate from the narration language
+The following parameters are now deprecated and no longer supported: personality1, doResearch, ttsModel, bgVolume, outputVolume, concurrency
+
+REST API v1 Mar 2026 
+Deprecated Parameters, Upload Limit & Auto Timing
+The following parameters are now deprecated and no longer supported: personality_1, personality_2, do_research, length, white_bg, flat_background_color, tts_model, add_music, bg_volume, output_volume, no_voice_chunking
+Upload file (/api/v1/videos/upload-file) now enforces a maximum file size of 15 MB
+timing parameter now supports "auto" — the engine determines optimal video duration based on content complexity (ideal for problem-solving)
+
+REST API v1 Mar 2026 
+Voice Style Options Updated
+Removed "conversational" style — multi-speaker podcast format is no longer available via the API
+New voice options: solo-female-3 (Female 1), solo-female-4 (Female 2), solo-male-3 (Male 1), solo-male-4 (Male 2)
+Deprecated old voices: solo-male, solo-male-2, solo-female, solo-female-2
+Default style is now "solo-female-3"
+
+Python SDK v0.9.9 Feb 2026 
+Python SDK v0.9.9 — Stable Release
+Stable release with full API coverage
+New parameters: use_color, video_instructions, output_volume
+combine_videos() method added
+create_video, get_frame_animations, edit_video, combine_videos
+Async-first design with full sync wrappers
+
+REST API v1 Jan 2026 
+REST API v1 — Generally Available
+POST /api/v1/videos/generate — generate a new video job
+POST /api/v1/videos/upload-file — upload a file (audio, video, or document) and get its URL
+GET /api/v1/videos — retrieve videos for the authenticated user
+GET /api/v1/videos/{video_id} — retrieve a specific video
+PATCH /api/v1/videos/{video_id} — update video metadata (title, is_public)
+DELETE /api/v1/videos/{video_id} — soft delete a video
+GET /api/v1/videos/status/{job_id} — check status of a generation job
+x-api-key header authentication for all endpoints
+
+API Only Tier
+Usage-based pricing with volume discounts.
+
+Get API access 
+This plan is for using Golpo within your program or application. You won't be able to generate videos manually via the Golpo dashboard.
+Usage-based, with a minimum commitment of USD $200 . Built for developers and businesses that need programmatic access at scale.
+Features you get:
+No watermark + commercial use 
+45+ languages & multi-language variants 
+Voice instructions & Vertical video 
+Videos in color + new sketch styles 
+Pen-in-hand animation 
+Formal style 
+Own narration /input audio 
+Custom logo & Video instructions 
+User inserted videos & images 
+Audio-only podcast mode 
+Longer videos (up to 10 min, beta) 
+
+Platform access isn't included. For both platform and API access, consider an enterprise plan or a business plan with the API add-on.
+
+Credit USD $1 = 1 credit 
+1 min video 2 credits · USD $2.00 
+1 min Golpo Studio video 4 credits · USD $4.00 
+Minimum entry USD $200 · ~100 min 
+Volume discounts at higher tiers. Contact us for enterprise rates.
+
+Questions? Reach out at support@golpoai.com 
+REST API v2 Python SDK Node SDK 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

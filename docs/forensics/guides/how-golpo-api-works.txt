@@ -1,0 +1,106 @@
+How Golpo API Works: Integrate AI Video Generation Into Your App About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+API & Developers How Golpo API Works: Integrate AI Video Generation Into Your App
+Learn how to use the Golpo API to generate AI-powered videos programmatically. This guide covers authentication, endpoints, SDKs for Python and Node.js, and how to get started with API access.
+Daniel Rivera • March 14, 2026 • 4 min read 
+
+Compare the production models first: the AI video API selection guide separates visual-explainer, avatar-presenter, and deterministic-composition workflows. 
+
+What is Golpo API?
+Golpo API lets you integrate AI video generation directly into your applications. Whether you're building an internal tool, a SaaS product, or automating content creation — Golpo's REST API and SDKs let you generate videos from text, documents, and more, all programmatically.
+Watch this walkthrough to see it in action:
+How to Get API Access
+There are two ways to purchase Golpo API access:
+1. Via a Regular Plan
+Subscribe to the Enterprise plan and get your API key directly on the Golpo platform after logging in. Alternatively, if you're on the Business tier , you can add the API tier as an add-on.
+2. Via the API-Only Tier
+If you only need API access without the full platform, you can purchase the API-Only tier directly from the API Docs page . This is usage-based with a minimum $200 entry (200 credits). The pricing is simple: $1 = 1 credit , and a 1-minute video costs 2 credits — so 200 credits gets you approximately 100 minutes of generated video.
+Authentication
+All API requests require an API key passed via the x-api-key header. Once you have your plan set up, grab your key from your dashboard and include it in every request.
+Available Endpoints
+Golpo API (v1) provides the following REST endpoints:
+POST /api/v1/videos/generate — Create a new video generation job
+POST /api/v1/videos/upload-file — Upload audio, video, or document files
+GET /api/v1/videos — Retrieve all your videos
+GET /api/v1/videos/{video_id} — Retrieve a specific video
+PATCH /api/v1/videos/{video_id} — Update video metadata (title, visibility)
+DELETE /api/v1/videos/{video_id} — Delete a video
+GET /api/v1/videos/status/{job_id} — Check the status of a generation job
+The typical workflow is: call the generate endpoint, receive a job ID, then poll the status endpoint until your video is ready.
+SDK Support
+Golpo provides official SDKs so you don't have to work with raw HTTP requests:
+Python SDK (v0.9.9) — Supports Python 3.8+, with both synchronous and async interfaces. Key methods include create_video() and combine_videos() for merging clips.
+Node.js SDK (v0.1.9) — TypeScript and JavaScript support with a Promise-based interface. Use createVideo() to kick off generation.
+What Can You Build With It?
+The Golpo API opens up powerful possibilities for any platform that could benefit from automated video creation. Here are some real-world use cases:
+Tutorial & E-Learning Platforms
+If you run a tutorial or course platform, plug in the Golpo API to automatically turn your written lessons into video format. Students get video explanations alongside text — without you manually recording a single thing.
+School & College Applications
+Educational institutions can integrate Golpo into their existing student portals or LMS. Think auto-generated video summaries of lecture notes, multilingual explainers for international students, or video-based assignment feedback — all powered by API calls behind the scenes.
+Automatic Video Newsletters
+Turn your weekly or daily newsletter content into short video digests. Feed your newsletter text into the API and send subscribers a video version alongside the written one. Perfect for media companies, internal corporate comms, or creator-led newsletters.
+PDF & Report Explainers
+Got dense PDFs, financial reports, or research documents on your site? Use the Golpo API to auto-generate explainer videos on top of them. Upload the document, let the API create a visual walkthrough, and embed the video right next to the download link. Your users get a quick video summary before diving into the full report.
+SaaS Product Add-Ons
+If you're building a SaaS product — whether it's a CMS, a project management tool, or a knowledge base — offer video generation as a built-in feature for your users, all powered by Golpo behind the scenes.
+Get Started
+Head to the full API documentation to explore the endpoints, try them out, and grab your API key. Whether you choose the platform plan or the API-only tier, you can start generating videos in minutes.
+
+In this guide
+What is Golpo API? 
+How to Get API Access 
+1. Via a Regular Plan 
+2. Via the API-Only Tier 
+Authentication 
+Available Endpoints 
+SDK Support 
+What Can You Build With It? 
+Tutorial & E-Learning Platforms 
+School & College Applications 
+Automatic Video Newsletters 
+PDF & Report Explainers 
+SaaS Product Add-Ons 
+Get Started 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

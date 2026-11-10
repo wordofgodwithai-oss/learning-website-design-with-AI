@@ -37,6 +37,7 @@
 - [Troubleshooting](#troubleshooting)
 - [Known limitations](#known-limitations)
 - [Parity audit](docs/PARITY.md)
+- [Forensic comparison with the live product](docs/FORENSIC-COMPARISON.md)
 - [Contributing](#contributing)
 - [Security](#security)
 - [License](#license)

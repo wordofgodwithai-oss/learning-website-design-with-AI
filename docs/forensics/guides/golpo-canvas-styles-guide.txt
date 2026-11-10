@@ -1,0 +1,195 @@
+Every Golpo Canvas Style in 2026: Compact, Expanded + Notebook About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Get Started Every Visual Style Available on Golpo Canvas (2026 Guide)
+See all 11 named Golpo Canvas styles: ten with Compact and Expanded profiles, plus the Compact-only Notebook style and playable Pen, Marker, and Stylus in Hand examples.
+Daniel Rivera • March 10, 2026 • 4 min read 
+
+Golpo Canvas now includes 11 named visual styles . Ten established style families offer both Compact and Expanded profiles. Compact combines more components within each scene so viewers can see more of the explanation together and retain the relationships between its ideas. Expanded distributes those components across more scenes, giving each component more visual space and revealing the explanation in smaller steps. The earlier, original profiles are now named Expanded. Notebook is the newest style and is Compact-only.
+
+Matched examples throughout: this page now uses the same ten Compact/Expanded pairs as the dedicated comparison guide . Each pair keeps the subject fixed so you can compare the profiles directly. 
+The 11 Golpo Canvas visual styles
+
+1. Chalkboard White on Black
+
+High-contrast white drawing on a dark chalkboard. Both examples explain Galileo and Falling Objects , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+2. Chalkboard Black on White
+
+Dark chalk-style drawing on a light background. Both examples explain Life in the Indus Valley , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+3. Chalkboard Color
+
+Chalkboard drawing with color accents. Both examples explain How Cities Build Public Budgets , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+4. Whiteboard
+
+A clean, familiar whiteboard treatment. Both examples explain The Monty Hall Probability Puzzle , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+5. Modern Minimal
+
+A restrained, modern composition with generous white space. Both examples explain How Compound Growth Works , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+6. Playful
+
+A brighter, more expressive visual treatment. Both examples explain The Octopus That Vanished , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+7. Technical
+
+A schematic treatment for processes and technical ideas. Both examples explain How GPS Calculates Your Location , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+8. Editorial
+
+A designed, magazine-like illustration style. Both examples explain How Vaccines Train the Immune System , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+9. Sharpie
+
+Bold marker-like strokes and an intentionally direct feel. Both examples explain The Shared Meadow Problem , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+10. Illustration
+
+A fuller scene-led illustration treatment. Both examples explain A Raindrop's Water Cycle Journey , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+Compact-only Canvas style
+
+11. Notebook
+
+Notebook gives structured visual explanations a notebook-like treatment. This example explains Mean, Median, and Mode . Notebook is Compact-only, so there is no Expanded counterpart.
+
+Compact and Expanded profiles
+
+Compact: combines more components within each scene to retain the explanation and the relationships between its ideas.
+Expanded: distributes those components across more scenes, giving each component more visual space and revealing the explanation in smaller steps. It is the public name for the earlier, original profile.
+Notebook: Compact-only.
+
+Compact/Expanded is separate from the visual style itself, and separate from duration and Horizontal/Vertical orientation. For REST integrations, see the official API documentation : unsuffixed v1 image_style and v2 canvas_style_variant values select Compact; the ten pre-Notebook styles accept _legacy for Expanded; Notebook uses notebook_infographic .
+
+Pen-in-Hand animation options
+
+Pen-in-Hand controls how the Canvas artwork is revealed. It is separate from the visual style and from the Compact or Expanded profile: choose the Canvas style and profile first, then choose Pen, Marker, or Stylus for the drawing-tool effect.
+
+Pen in Hand
+A fine-tipped pen creates a precise, polished drawing effect. Watch How to be a good person :
+
+Marker in Hand
+A marker creates a bolder, more energetic drawing effect. Watch Secret for success of a startup :
+
+Stylus in Hand
+A digital stylus creates a modern, tablet-like drawing effect. Watch How to Ace an Exam? :
+
+Feature availability can vary by plan. Check the current Golpo pricing page before generating.
+
+Need a look that is not in the named list? Custom Style lets Canvas follow an image, video, or written description. The same feature now works in Golpo Sketch too. See the Custom Style guide for six real examples.
+
+Which style should you pick?
+
+Classroom and concept explanations: either Chalkboard treatment, Whiteboard, or Notebook.
+Product, business, and finance: Modern Minimal, Editorial, or Technical.
+Friendly storytelling: Playful or Illustration.
+Direct marker energy: Sharpie.
+
+Use the examples as a shortlist, then generate a short test with your own script. Keep the script, voice, pacing, and orientation fixed when comparing two profiles.
+
+Open Golpo AI and try a Canvas style .
+
+In this guide
+The 11 Golpo Canvas visual styles 
+1. Chalkboard White on Black 
+2. Chalkboard Black on White 
+3. Chalkboard Color 
+4. Whiteboard 
+5. Modern Minimal 
+6. Playful 
+7. Technical 
+8. Editorial 
+9. Sharpie 
+10. Illustration 
+11. Notebook 
+Compact and Expanded profiles 
+Pen-in-Hand animation options 
+Pen in Hand 
+Marker in Hand 
+Stylus in Hand 
+Which style should you pick? 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

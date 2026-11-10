@@ -1,0 +1,1035 @@
+Golpo AI API Documentation — Programmatic Video Generation About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+API Docs Python SDK v2.0 v2.0 · Latest 
+
+Python SDK
+v2.0 Reference
+
+Getting Started
+Overview Installation Quick Start Migration Guide 
+Methods
+create_video create_podcast get_video_status get_frame_animations edit_video combine_videos update_video 
+Examples
+Video Generation Podcast Generation Document Reference Canvas Style Sketch Style Multi-Lingual Own Narration Display Language User Inserted Image User Inserted Videos 
+Preview Gallery
+Golpo Canvas Pen in Hand Golpo Sketch Background Music 
+Parameter Reference
+Style Values Background Music Video Type Timing Logo Placement Golpo Sketch Style Golpo Canvas Styles Pen Style Pacing Visual Animation Style Variant Visuals Mode Own Narration Layout Own Narration Position Own Narration Split Size Own Narration Video Fit Own Narration Focus Position Language Support 
+Reference
+Error Handling 
+
+Golpo Python SDK
+
+v2.0 - Latest Python 3.8+ 
+The Golpo Python SDK helps you create whiteboard animation explainer videos and podcasts from text prompts and documents. Features include uploading any document, choosing timing, voice instructions, background music, and more.
+What's new in v2.0
+New generation flow: create_video and create_podcast first create a job and return video_id with status. Then use get_video_status with that video_id to check progress and get the final result.
+language_variants and variant_visuals_mode to generate multi-language versions in one request.
+own_narration_video_layout , own_narration_video_position , own_narration_split_size , own_narration_video_fit , and own_narration_focus_position for advanced own-narration video placement.
+visual_animation_style and onscreen_text_from_script_only for tighter animation and on-screen text control.
+
+Installation
+
+Terminal Copy 
+pip install golpo==2.0.0 
+
+Quick Start
+Create a client and submit a job.
+
+quickstart.py Copy 
+from golpo import Golpo
+
+golpo_client = Golpo(api_key="your-api-key")
+
+job = golpo_client.create_video(
+prompt="Explain supply and demand",
+style="solo-female-3",
+timing="1",
+)
+print(job.video_id)
+print(job.status) 
+
+v1 to v2 Migration
+What changed in v2 and how to update your v1 integration.
+
+NOTE: In v1, create_video flow works like a direct final output flow (URL/script returned in the same step). In v2, create_video now works as a job submission step and returns video_id + status first. After that, call get_video_status using the returned video_id to track progress and fetch final URL/script when completed. 
+Migration Example
+migration_create_video_flow.py Copy 
+import time
+from golpo import Golpo
+
+client = Golpo(api_key="your-api-key")
+
+# v1-style expectation (older docs)
+# result = client.create_video(prompt="Explain gravity")
+# print(result.url)
+# print(result.script)
+
+# v2.0 flow: submit job first
+job = client.create_video(prompt="Explain gravity")
+print(f"Submitted job: {job.video_id} ({job.status})")
+
+# then poll status until terminal state
+while True:
+status = client.get_video_status(job.video_id)
+print(f"Current status: {status.status}")
+
+if status.status == "completed":
+print(f"Video URL: {status.url}")
+print(f"Script: {status.script}")
+break
+
+if status.status == "failed":
+raise RuntimeError(status.error or "Video generation failed")
+
+time.sleep(2) 
+
+create_video
+
+Submit a video generation job and return immediately with job metadata.
+
+Method Signature
+method_signature.py Copy 
+job = golpo_client.create_video(
+prompt: str,
+uploads: Optional[Union[str, Path, Iterable[Union[str, Path]]]] = None,
+*,
+voice_instructions: Optional[str] = None,
+language: Optional[str] = None,
+style: Optional[str] = "solo-female-3",
+bg_music: Optional[str] = "engaging",
+video_type: Optional[str] = "long",
+include_watermark: bool = False,
+new_script: Optional[str] = None,
+just_return_script: bool = False,
+video_id: Optional[str] = None,
+logo: Optional[Union[str, Path]] = None,
+timing: Union[str, float] = "1",
+video_instructions: Optional[str] = None,
+use_color: bool = True,
+logo_placement: Optional[str] = None,
+use_lineart_2_style: Optional[str] = None,
+audio_clip: Optional[Union[str, Path]] = None,
+is_public: Optional[bool] = None,
+use_as_is: Optional[Union[str, List[bool]]] = None,
+skip_animation: Optional[Union[str, List[bool]]] = None,
+user_images: Optional[Union[str, Path, List[Union[str, Path]]]] = None,
+user_images_descriptions: Optional[Union[str, List[str]]] = None,
+user_videos: Optional[Union[str, Path, List[Union[str, Path]]]] = None,
+user_videos_description: Optional[Union[str, List[str]]] = None,
+user_audio_in_video: Optional[Union[str, List[int]]] = None,
+use_2_style: bool = False,
+image_style: Optional[str] = None,
+input_images: Optional[Union[str, Path, List[Union[str, Path]]]] = None,
+pen_style: Optional[str] = None,
+show_pencil_cursor: bool = False,
+pacing: str = "normal",
+display_language: Optional[str] = None,
+# ── New in v2.0 ──
+onscreen_text_from_script_only: bool = False,
+visual_animation_style: Optional[str] = None,
+language_variants: Optional[List[str]] = None,
+variant_visuals_mode: Optional[str] = None,
+own_narration_video_layout: Optional[str] = None,
+own_narration_video_position: Optional[str] = None,
+own_narration_split_size: Optional[str] = None,
+own_narration_video_fit: Optional[str] = None,
+own_narration_focus_position: Optional[float] = None,
+) -> VideoJobResult
+
+# returns VideoJobResult
+# job.video_id, job.status, job.variant_job_ids (optional) 
+
+Returns
+VideoJobResult with:
+video_id ( str ) Job ID for status tracking 
+status ( str ) Initial job state (usually processing) 
+variant_job_ids ( Optional[List[str]] ) Variant job IDs when language_variants are requested 
+
+Parameters
+Parameter Type Default Required Description 
+prompt str — Required What you want the video to explain.
+
+uploads Optional[str | Path | Iterable[str | Path]] None Optional Files or links you want Golpo to use as source material.
+
+voice_instructions Optional[str] None Optional Voice style instructions, e.g. "calm female".
+Describes how the voice should sound - accent, tone, pace. Example: "Speak in a warm British accent with a calm, professorial tone." 
+
+language Optional[str] None Optional Any supported language string ("en", "English", "Hindi", etc.).
+
+style Optional[str] "solo-female-3" Optional Voice option to use for narration. Accepted values: "solo-female-3", "solo-female-4", "solo-male-3", "solo-male-4".
+
+bg_music Optional[str] "engaging" Optional Background music mood for the video.
+
+video_type Optional[str] "long" Optional Video format: long (landscape) or short (vertical).
+
+include_watermark bool False Optional Adds a watermark to the video.
+
+new_script Optional[str] None Optional Use your own full script instead of auto-generated script.
+
+just_return_script bool False Optional If True, then Golpo only generates the script. If False (default), then it generates the video.
+
+video_id Optional[str] None Optional Required only if you want to pass a custom video_id.
+
+logo Optional[str | Path] None Optional Logo file or URL to show on video.
+
+timing str | float "1" Optional Requested video length in minutes.
+Supported values: 0.25, 0.5, 1, 2, 4, 8, 10, 15. Values 8, 10 and 15 are in Beta. 
+
+video_instructions Optional[str] None Optional Custom instructions for video generation and visual style.
+Describes how the video should look - visuals, style, and scene direction. Example: "Use clean corporate visuals with data charts." 
+
+use_color bool True Optional If you want a colored video, set this to True.
+
+logo_placement Optional[str] None Optional Where the logo should appear on screen. Accepted values: "tl" (top-left), "tr" (top-right), "bl" (bottom-left), "br" (bottom-right).
+
+use_lineart_2_style Optional[str] None Optional Choose a Golpo Sketch style variant.
+NOTE: Do not combine with use_2_style (Golpo Canvas). Use one or the other. 
+
+audio_clip Optional[str | Path] None Optional Your own narration audio/video file or URL.
+
+is_public Optional[bool] None Optional If True, video will appear on Golpo gallery. If False, then it will be private.
+
+use_as_is Optional[str | List[bool]] None Optional Per-frame flags to use generated images as-is without animation. Pass as JSON array string or Python list.
+One boolean per frame. Example: [True, False, True] - frames 0 and 2 will use images as-is. 
+
+skip_animation Optional[str | List[bool]] None Optional Per-frame flags to skip the drawing animation. Pass as JSON array string or Python list.
+One boolean per frame. Example: [False, True, False] - frame 1 will skip animation. 
+
+user_images Optional[str | Path | List[str | Path]] None Optional User-provided images (file paths or URLs). Local files are auto-uploaded to S3.
+
+user_images_descriptions Optional[str | List[str]] None Optional Descriptions for each user image. Strongly recommended for best visual results.
+NOTE: Provide one description per image for best results. Descriptions help the AI understand and position images correctly. 
+
+user_videos Optional[str | Path | List[str | Path]] None Optional User-provided video clips (file paths or URLs). Local files are auto-uploaded to S3.
+
+user_videos_description Optional[str | List[str]] None Optional Descriptions for each user video.
+NOTE: Provide one description per video for best results. 
+
+user_audio_in_video Optional[str | List[int]] None Optional List of video numbers that should use AI-generated narration audio instead of their original audio (e.g., [1, 3] means videos 1 and 3 get AI narration; unlisted user videos keep their original audio).
+NOTE: Only applies when user_videos is provided. If omitted or empty, all user videos retain their original audio. 
+
+use_2_style bool False Optional Enable Golpo Canvas visual style.
+NOTE: Do not combine with use_lineart_2_style (Golpo Sketch). Use one or the other. 
+
+image_style Optional[str] None Optional Canvas style machine name. Bare style names select Expanded; append "_compact" for Compact. "notebook_infographic" is Compact-only.
+NOTE: Only available when Golpo Canvas is enabled (use_2_style=True). 
+
+input_images Optional[str | Path | List[str | Path]] None Optional Reference input images for Golpo Canvas. The video will be generated around the provided images.
+NOTE: Only available when Golpo Canvas is enabled (use_2_style=True). 
+
+pen_style Optional[str] None Optional Drawing pen style: "stylus", "marker", or "pen".
+NOTE: Only available when Golpo Canvas is enabled (use_2_style=True). 
+
+show_pencil_cursor bool False Optional Show a pencil cursor during drawing animation.
+NOTE: Only available when Golpo Canvas is enabled (use_2_style=True). 
+
+pacing str "normal" Optional "normal" (15s max per frame) or "fast" (10s max per frame).
+
+display_language Optional[str] None Optional Language for on-screen text in the video (e.g., 'English', 'Hindi', 'French'). Useful when the displayed text should differ from the narration language. Defaults to the value of language if omitted.
+Example: language: "Hindi", display_language: "English" — the narrator speaks in Hindi while all on-screen text, titles, and labels are shown in English. 
+
+onscreen_text_from_script_only bool False Optional Controls whether on-screen text is restricted to script content only.
+If True, Golpo uses only words from the script/transcript for on-screen text. If False (default), Golpo can also add helpful labels/titles where needed. 
+
+visual_animation_style Optional[str] None Optional Overall animation style preset. Accepted values: "auto", "fade_in", "sketch". Meaning: "auto" keeps Golpo default animation behavior, "fade_in" uses fade-in animation, and "sketch" uses sketch-style animation for generated visual components.
+NOTE: Only supported with Golpo Canvas. 
+
+language_variants Optional[List[str]] None Optional Create extra versions of the same video in other languages.
+Example: language="English", language_variants=["Spanish", "French"] creates additional Spanish and French versions from the same request. 
+
+variant_visuals_mode Optional[str] None Optional Control whether language variants share visuals or use separate visuals. Accepted values: "shared", "per_language".
+shared: all language variants reuse the same visuals from the primary video. Example: variant_visuals_mode="shared". 
+NOTE: per_language: each language variant gets its own language-specific visuals. Example: variant_visuals_mode="per_language". 
+
+own_narration_video_layout Optional[str] None Optional Layout for own narration mode. Accepted values: "round_overlay", "side_by_side".
+Use "round_overlay" to show a small circular narrator overlay, or "side_by_side" to split screen between narration and visuals. 
+
+own_narration_video_position Optional[str] None Optional Screen position for own narration overlay. Accepted values: "left-top", "right-top", "left-bottom", "right-bottom".
+NOTE: This is used for overlay positioning and is most relevant with round_overlay mode. 
+
+own_narration_split_size Optional[str] None Optional How much screen space own narration gets in side-by-side mode. Accepted values: "25%", "30%", "35%", "40%", "50%".
+NOTE: Only supported when own_narration_video_layout is side_by_side. 
+
+own_narration_video_fit Optional[str] None Optional Fit behavior for own narration video area. Accepted values: "crop", "full".
+NOTE: Only supported when own_narration_video_layout is side_by_side. 
+
+own_narration_focus_position Optional[float] None Optional Focus point (0-100) for cropped own narration video.
+NOTE: Only supported when own_narration_video_layout is side_by_side. Use values between 0 and 100. 
+
+create_podcast
+
+Submit a podcast generation job and return immediately with job metadata.
+
+Method Signature
+method_signature.py Copy 
+job = golpo_client.create_podcast(
+prompt: str,
+uploads: Optional[Union[str, Path, Iterable[Union[str, Path]]]] = None,
+*,
+voice_instructions: Optional[str] = None,
+language: Optional[str] = None,
+style: Optional[str] = "conversational",
+bg_music: Optional[str] = None,
+new_script: Optional[str] = None,
+timing: Union[str, float] = "1",
+) -> VideoJobResult
+
+# returns VideoJobResult
+# job.video_id, job.status 
+
+Returns
+VideoJobResult with video_id and status .
+Parameters
+Parameter Type Default Required Description 
+prompt str — Required Prompt/topic for podcast generation.
+
+uploads Optional[str | Path | Iterable[str | Path]] None Optional Supporting documents or media as file paths, URLs, or a list of them. Local files are automatically uploaded and then used as source material.
+
+voice_instructions Optional[str] None Optional Narration style instructions.
+
+language Optional[str] None Optional Any supported language string ("en", "English", "Hindi", etc.).
+
+style Optional[str] "conversational" Optional Podcast voice style. Common values: "solo-female-3", "solo-female-4", "solo-male-3", "solo-male-4".
+
+bg_music Optional[str] None Optional Background music key. Accepted values: "jazz", "lofi", "dramatic", "engaging", "hyper", "inspirational", "documentary".
+
+new_script Optional[str] None Optional Use provided script instead of generating one.
+
+timing str | float "1" Optional Podcast duration (minutes).
+Supported values: 0.25, 0.5, 1, 2, 4, 8, 10, 15. Values 8, 10 and 15 are in Beta. 
+
+get_video_status
+
+Fetch one-shot generation status for a submitted job.
+
+Method Signature
+method_signature.py Copy 
+status = golpo_client.get_video_status(
+job_id: str,
+) -> VideoStatusResult
+
+# returns VideoStatusResult
+# status.video_id, status.status, status.url, status.script, status.error (optional) 
+
+Returns
+VideoStatusResult with video_id , status , url , script , and optional error .
+Parameters
+Parameter Type Default Required Description 
+job_id str — Required Job ID returned by create_video or create_podcast.
+
+get_frame_animations
+
+Returns a dict mapping frame IDs to MP4 animation URLs.
+
+Method Signature
+get_frame_animations.py Copy 
+frame_animations: Dict[str, str] = golpo_client.get_frame_animations(video_id: str) 
+
+Parameters
+Parameter Type Default Required Description 
+video_id str — Required Video/job ID returned by create_video.
+
+Returns
+Dict[str, str] — frame IDs (e.g. "0" , "1" ) mapped to MP4 animation URLs.
+Example
+example_get_frame_animations.py Copy 
+result = golpo_client.create_video(prompt="Explain AI in 2 minutes")
+animations = golpo_client.get_frame_animations(result.video_id)
+
+for frame_id, url in sorted(animations.items(), key=lambda x: int(x[0])):
+print(f"Frame {frame_id}: {url}") 
+
+edit_video
+
+Edits specific frames using text prompts, then optionally combines them.
+
+Method Signature
+edit_video.py Copy 
+result = golpo_client.edit_video(
+video_id: str,
+frame_ids: List[str],
+edit_prompts: List[str],
+video_url: str,
+*,
+reference_images: Optional[List[str]] = None,
+user_id: Optional[str] = None,
+poll_interval_ms: int = 2000,
+auto_combine: bool = False,
+) -> VideoEditResult # .video_url, .job_id 
+
+Parameters
+Parameter Type Default Required Description 
+video_id str — Required Video ID to edit.
+
+frame_ids List[str] — Required Frame IDs to edit.
+
+edit_prompts List[str] — Required One prompt for each frame ID.
+
+video_url str — Required Original video URL used for combine/audio context.
+
+reference_images Optional[List[str]] None Optional Reference image URLs.
+
+user_id Optional[str] None Optional Optional user ID for the edit request.
+
+poll_interval_ms int 2000 Optional Status polling interval in milliseconds.
+
+auto_combine bool False Optional Combine edited frames into one output.
+
+Returns
+VideoEditResult with video_url (str) and job_id (str).
+Example
+example_edit_video.py Copy 
+video_result = golpo_client.create_video(prompt="Product demo in 3 scenes")
+edit_result = golpo_client.edit_video(
+video_id=video_result.video_id,
+frame_ids=["1"],
+edit_prompts=["Replace the background with a beach sunset"],
+video_url=video_result.url,
+auto_combine=True,
+)
+print(f"Edited video URL: {edit_result.video_url}") 
+
+combine_videos
+
+Merges multiple MP4 URLs into a single video with optional audio.
+
+Method Signature
+combine_videos.py Copy 
+result = golpo_client.combine_videos(
+mp4_urls: List[str],
+*,
+video_url: Optional[str] = None,
+poll_interval_ms: int = 2000,
+) -> CombinedVideoResult # .url 
+
+Parameters
+Parameter Type Default Required Description 
+mp4_urls List[str] — Required MP4 URLs to combine.
+
+video_url Optional[str] None Optional Optional original video URL for audio.
+
+poll_interval_ms int 2000 Optional Status polling interval in milliseconds.
+
+Returns
+CombinedVideoResult — url (str), the URL of the combined video.
+Example
+example_combine_videos.py Copy 
+animations = golpo_client.get_frame_animations(video_id)
+mp4_urls = [animations[k] for k in sorted(animations.keys(), key=int)]
+combined = golpo_client.combine_videos(mp4_urls, video_url=original_video_url)
+print(f"Combined video: {combined.url}") 
+
+update_video
+New in v1.0.0 
+Update video metadata such as prompt, context, scenes, video URL, and frame animations. Requires JWT authentication.
+
+Method Signature
+update_video.py Copy 
+result = golpo_client.update_video(
+video_id: str,
+*,
+prompt: Optional[str] = None,
+context: Optional[str] = None,
+scenes: Optional[int] = None,
+video_url: Optional[str] = None,
+frame_animations: Optional[Dict[str, Any]] = None,
+jwt_token: str, # Required
+) -> Dict[str, Any] 
+
+Parameters
+Parameter Type Default Required Description 
+video_id str — Required Video ID to update.
+
+prompt Optional[str] None Optional Updated prompt.
+
+context Optional[str] None Optional Updated context.
+
+scenes Optional[int] None Optional Updated number of scenes.
+
+video_url Optional[str] None Optional Updated video URL.
+
+frame_animations Optional[Dict[str, Any]] None Optional Updated frame animation map.
+
+jwt_token str — Required JWT token for authorization.
+
+Returns
+Dict[str, Any] — Dictionary with the updated video data from the API.
+Example
+example_update_video.py Copy 
+updated = golpo_client.update_video(
+video_id=result.video_id,
+prompt="Updated: comprehensive product overview",
+context="Q1 2025 product launch",
+scenes=5,
+jwt_token="your-jwt-token",
+)
+print(f"Updated video: {updated}") 
+
+Example - Video Generation
+
+Submit a video generation job and check final output status.
+
+example_video_generation.py Copy 
+from golpo import Golpo
+
+client = Golpo(api_key="your-api-key")
+
+job = client.create_video(
+prompt="Explain photosynthesis in simple terms",
+style="solo-female-3",
+timing="1",
+)
+print(job.video_id)
+print(job.status)
+
+status = client.get_video_status(job.video_id)
+print(status.status)
+print(status.url)
+print(status.script) 
+
+Example - Podcast Generation
+
+Submit a podcast generation job and check final output status.
+
+example_podcast_generation.py Copy 
+from golpo import Golpo
+
+client = Golpo(api_key="your-api-key")
+
+job = client.create_podcast(
+prompt="Summarize the latest AI trends",
+style="solo-male-3",
+bg_music="lofi",
+timing="1",
+)
+print(job.video_id)
+print(job.status)
+
+status = client.get_video_status(job.video_id)
+print(status.status)
+print(status.url)
+print(status.script) 
+
+Document Reference
+Advanced 
+
+local_files.py Copy 
+result = golpo_client.create_video(
+prompt="Summarize these privacy documents",
+uploads=["~/Documents/privacy_policy.pdf"],
+voice_instructions="calm professional female",
+bg_music="engaging",
+)
+print(f"Video URL: {result.url}") 
+
+Canvas Style
+Advanced 
+
+canvas_style.py Copy 
+result = golpo_client.create_video(
+prompt="Explain the solar system for students",
+use_2_style=True,
+# Supported image_style values:
+# chalkboard_white(_compact), chalkboard_black_on_white(_compact), neon(_compact),
+# whiteboard(_compact), modern_minimal(_compact), playful(_compact), technical(_compact),
+# editorial(_compact), marker(_compact), vox(_compact), notebook_infographic
+image_style="modern_minimal_compact",
+# Supported pen_style values: "stylus", "marker", "pen"
+pen_style="stylus",
+)
+print(f"Video URL: {result.url}") 
+
+Sketch Style
+Advanced 
+
+sketch_style.py Copy 
+result = golpo_client.create_video(
+prompt="Explain supply and demand with examples",
+# Supported use_lineart_2_style values:
+# "false", "true", "advanced", "whiteboard", "modern_minimal",
+# "storytelling", "creative", "vox", "chalkboard_black_on_white"
+use_lineart_2_style="advanced",
+# Supported pacing values: "normal", "fast"
+pacing="normal",
+)
+print(f"Video URL: {result.url}") 
+
+Multi-Lingual
+Advanced 
+
+multi_lingual.py Copy 
+job = golpo_client.create_video(
+prompt="Explain electric vehicles and battery technology",
+language="English",
+language_variants=["Spanish", "French"],
+variant_visuals_mode="shared", # "shared" or "per_language"
+style="solo-female-3",
+timing="1",
+)
+print(job.video_id)
+print(job.status)
+print(job.variant_job_ids) 
+
+Own Narration
+Advanced 
+
+own_narration.py Copy 
+job = golpo_client.create_video(
+prompt="Explain the product onboarding flow",
+audio_clip="~/narration.mp4",
+own_narration_video_layout="side_by_side",
+own_narration_video_position="right-bottom",
+own_narration_split_size="35%",
+own_narration_video_fit="crop",
+own_narration_focus_position=50,
+style="solo-female-3",
+)
+print(job.video_id)
+print(job.status) 
+
+Display Language
+Advanced 
+
+display_language.py Copy 
+result = golpo_client.create_video(
+prompt="Flower Structure for Reproduction",
+language="Hindi", # narrator speaks in Hindi
+display_language="English", # on-screen text, titles, and labels appear in English
+style="solo-female-4",
+use_color=True,
+video_type="long",
+)
+print(f"Video URL: {result.url}") 
+
+User Inserted Image
+Advanced 
+
+user_media.py Copy 
+result = golpo_client.create_video(
+prompt="Create a product showcase video",
+user_images=["~/product_photo_1.png", "~/product_photo_2.png"],
+user_images_descriptions=["Front view of the product", "Side view with packaging"],
+use_2_style=True,
+image_style="modern_minimal_compact",
+pen_style="stylus",
+)
+print(f"Video URL: {result.url}") 
+
+User Inserted Videos
+Advanced 
+
+user_videos.py Copy 
+result = golpo_client.create_video(
+prompt="Create an explainer incorporating these demo clips",
+user_videos=["~/demo_clip_1.mp4", "https://example.com/clip2.mp4"],
+user_videos_description=["App walkthrough demo", "Feature highlight reel"],
+user_audio_in_video=[2], # video 2 gets AI narration; video 1 keeps its original audio
+audio_clip="~/background_music.mp3",
+is_public=True,
+)
+print(f"Video URL: {result.url}") 
+
+Preview Gallery
+Quick examples for common style and music combinations in Python SDK v2.
+
+Golpo Canvas
+
+Use "use_2_style=True" with "image_style" to generate Golpo Canvas videos. These previews show the style family only.
+
+Chalkboard White-on-Black chalkboard_white_compact 
+
+Copy payload 
+
+Chalkboard Color neon_compact 
+
+Copy payload 
+
+Whiteboard whiteboard_compact 
+
+Copy payload 
+
+Modern Minimal modern_minimal_compact 
+
+Copy payload 
+
+Technical technical_compact 
+
+Copy payload 
+
+Sharpie marker_compact 
+
+Copy payload 
+
+Playful playful_compact 
+
+Copy payload 
+
+Editorial editorial_compact 
+
+Copy payload 
+
+Illustrations vox_compact 
+
+Copy payload 
+
+Chalkboard Black-on-White chalkboard_black_on_white_compact 
+
+Copy payload 
+
+Pen in Hand
+
+Golpo Canvas only. Use "pen_style" with accepted values: "stylus", "marker", "pen".
+
+Pen Whiteboard pen 
+
+Copy payload 
+
+Marker Whiteboard marker 
+
+Copy payload 
+
+Stylus Whiteboard stylus 
+
+Copy payload 
+
+Golpo Sketch
+
+Use "use_lineart_2_style" with accepted values: "false", "true", "advanced", "whiteboard", "modern_minimal", "storytelling", "creative", "vox", "chalkboard_black_on_white".
+
+Classic false 
+
+Copy payload 
+
+Improved (Beta) true 
+
+Copy payload 
+
+Formal advanced 
+
+Copy payload 
+
+Crayon storytelling 
+
+Copy payload 
+
+Dry Erase whiteboard 
+
+Copy payload 
+
+Professional Clean modern_minimal 
+
+Copy payload 
+
+Creative creative 
+
+Copy payload 
+
+Infographics vox 
+
+Copy payload 
+
+Chalkboard Black-on-White chalkboard_black_on_white 
+
+Copy payload 
+
+Background Music
+
+Use "bg_music" with accepted values: "jazz", "lofi", "dramatic", "engaging", "hyper", "inspirational", "documentary". Tap any track to preview.
+
+Engaging engaging Hyper hyper Inspirational inspirational Documentary documentary Jazz jazz Lo-fi lofi Dramatic dramatic 
+Style Values
+
+Use these values with the "style" parameter in create_video/create_podcast.
+
+Value Description 
+"solo-female-3" Female voice profile 
+"solo-female-4" Female voice profile (alternative) 
+"solo-male-3" Male voice profile 
+"solo-male-4" Male voice profile (alternative) 
+
+Background Music
+
+Use these values with the "bg_music" parameter.
+
+Value Description 
+"jazz" Warm, neutral bed 
+"lofi" Calm, study vibes 
+"dramatic" Cinematic tension 
+"engaging" Subtle corporate pulse 
+"hyper" High-energy electronic 
+"inspirational" Uplifting orchestral 
+"documentary" Serious factual tone 
+
+Video Orientation
+
+Use these values with the "video_type" parameter. Controls the video aspect ratio and orientation.
+
+Value Format Dimensions Use Cases 
+"short" Vertical / Portrait 1024x1536 px TikTok, Instagram Reels, YouTube Shorts 
+"long" Horizontal / Landscape (Default) 1536x1024 px YouTube, standard video content 
+
+9:16
+
+short
+1024x1536 px
+
+16:9
+
+long (default) 
+1536x1024 px
+
+Timing
+
+Use these values with the "timing" parameter.
+
+Value Duration 
+0.25 15 seconds 
+0.5 30 seconds 
+1 1 minute 
+2 2 minutes 
+4 4 minutes 
+8 8 minutes (Beta) 
+10 10 minutes (Beta) 
+15 15 minutes (Beta) 
+
+NOTE: "15" is restricted: 15-minute videos require Enterprise Custom. 
+Logo Placement
+
+Use these values with the "logo_placement" parameter.
+
+Value Description 
+"tl" Top-left 
+"tr" Top-right 
+"bl" Bottom-left 
+"br" Bottom-right 
+
+" tl " - Top-left
+
+" tr " - Top-right
+
+" bl " - Bottom-left
+
+" br " - Bottom-right
+
+Golpo Sketch Style
+
+Use these values with the "use_lineart_2_style" parameter.
+
+Style Value for use_lineart_2_style Description 
+Classic (Default) "false" Original Golpo Sketch style 
+Improved Beta "true" Cleaner line-art with improved strokes 
+Formal "advanced" More formal and detailed sketch output 
+Dry Erase "whiteboard" Whiteboard marker look 
+Professional Clean "modern_minimal" Minimal and polished visual style 
+Crayon "storytelling" Storytelling look with crayon-like strokes 
+Creative "creative" Creative marker-style visual treatment 
+Infographics "vox" Editorial infographic style 
+Chalkboard (Black on White) "chalkboard_black_on_white" Black ink on white background 
+
+Golpo Canvas Styles
+
+Use these values with the "image_style" parameter (when use_2_style=True).
+
+Set use_2_style=True to enable Golpo Canvas. Then use image_style to choose visual style, optionally pen_style to control drawing cursor style, and pacing to control animation speed.
+NOTE: image_style , pen_style , show_pencil_cursor , and input_images are only available when Golpo Canvas is enabled. 
+Style Compact value for image_style Expanded value for image_style Description 
+Chalkboard (White on Black) "chalkboard_white_compact" "chalkboard_white" White chalk on black background 
+Chalkboard (Black on White) "chalkboard_black_on_white_compact" "chalkboard_black_on_white" Black ink on white background 
+Chalkboard Color "neon_compact" "neon" Colorful neon chalkboard style 
+Whiteboard "whiteboard_compact" "whiteboard" Clean whiteboard illustrations 
+Modern Minimal "modern_minimal_compact" "modern_minimal" Sleek and minimal modern look 
+Playful "playful_compact" "playful" Fun, colorful playful illustrations 
+Technical "technical_compact" "technical" Technical diagram style 
+Editorial "editorial_compact" "editorial" Magazine/editorial illustration style 
+Sharpie "marker_compact" "marker" Bold marker-style visuals 
+Illustrations "vox_compact" "vox" Paper-textured editorial infographic look 
+Notebook "notebook_infographic" — Compact-only notebook infographic style 
+
+Pen Style
+
+Use these values with the "pen_style" parameter.
+
+Value Description 
+"stylus" Thin stylus pen 
+"marker" Thick marker pen 
+"pen" Classic pen 
+
+Pacing
+
+Use these values with the "pacing" parameter.
+
+Value Description 
+"normal" Maximum ~15 seconds per frame 
+"fast" Maximum ~10 seconds per frame 
+
+Visual Animation Style
+
+Use these values with the "visual_animation_style" parameter.
+
+Value Description 
+"auto" Keep default animation behavior 
+"fade_in" Use fade-in animation 
+"sketch" Use sketch-style animation 
+
+NOTE: Works only with Golpo Canvas ( use_2_style=True ). 
+Variant Visuals Mode
+
+Use these values with the "variant_visuals_mode" parameter.
+
+Value Description 
+"shared" Reuse primary visuals across language variants 
+"per_language" Generate separate visuals for each language variant 
+
+Own Narration Layout
+
+Use these values with the "own_narration_video_layout" parameter.
+
+Value Description 
+"round_overlay" Round overlay narrator video 
+"side_by_side" Split screen between narrator and visuals 
+
+round_overlay
+Narrator appears as a round overlay on top of visuals.
+
+side_by_side
+Screen is split between narrator video and generated visuals.
+
+Own Narration Position
+
+Use these values with the "own_narration_video_position" parameter.
+
+Value Description 
+"left-top" Top-left overlay 
+"right-top" Top-right overlay 
+"left-bottom" Bottom-left overlay 
+"right-bottom" Bottom-right overlay 
+
+left-top
+Top-left overlay
+
+right-top
+Top-right overlay
+
+left-bottom
+Bottom-left overlay
+
+right-bottom
+Bottom-right overlay
+
+Own Narration Split Size
+
+Use these values with the "own_narration_split_size" parameter.
+
+Value Description 
+"25%" Narrator takes 25% of split layout 
+"30%" Narrator takes 30% of split layout 
+"35%" Narrator takes 35% of split layout 
+"40%" Narrator takes 40% of split layout 
+"50%" Narrator takes 50% of split layout 
+
+25%
+Narrator area width in side_by_side layout.
+
+30%
+Narrator area width in side_by_side layout.
+
+35%
+Narrator area width in side_by_side layout.
+
+40%
+Narrator area width in side_by_side layout.
+
+50%
+Narrator area width in side_by_side layout.
+
+Own Narration Video Fit
+
+Use these values with the "own_narration_video_fit" parameter.
+
+Value Description 
+"crop" Crop narrator frame to fit area 
+"full" Fit full narrator frame without crop 
+
+Own Narration Focus Position
+
+Use these values with the "own_narration_focus_position" parameter.
+
+Value Description 
+0 - 100 Crop focus percentage when using side_by_side + crop mode 
+
+Language Support
+
+Use these values with the "language", "display_language", and "language_variants" parameters.
+
+Language Accepted values 
+English "english", "en" 
+Hindi "hindi", "hi" 
+Spanish "spanish", "es" 
+French "french", "fr" 
+German "german", "de" 
+Italian "italian", "it" 
+Portuguese "portuguese", "pt" 
+Russian "russian", "ru" 
+Japanese "japanese", "ja" 
+Korean "korean", "ko" 
+Chinese "chinese", "zh" 
+Mandarin (Chinese) "mandarin", "zh" 
+Cantonese "cantonese", "yue" 
+Arabic "arabic", "ar" 
+Dutch "dutch", "nl" 
+Polish "polish", "pl" 
+Turkish "turkish", "tr" 
+Swedish "swedish", "sv" 
+Danish "danish", "da" 
+Norwegian "norwegian", "no" 
+Finnish "finnish", "fi" 
+Greek "greek", "el" 
+Czech "czech", "cs" 
+Hungarian "hungarian", "hu" 
+Romanian "romanian", "ro" 
+Thai "thai", "th" 
+Vietnamese "vietnamese", "vi" 
+Indonesian "indonesian", "id" 
+Malay "malay", "ms" 
+Tamil "tamil", "ta" 
+Telugu "telugu", "te" 
+Bengali "bengali", "bn" 
+Marathi "marathi", "mr" 
+Gujarati "gujarati", "gu" 
+Kannada "kannada", "kn" 
+Malayalam "malayalam", "ml" 
+Punjabi "punjabi", "pa" 
+Urdu "urdu", "ur" 
+Swiss German "swiss-german", "gsw" 
+Hindi-English "hi-en" 
+
+Error Handling
+Common exceptions raised by SDK calls.
+
+Parameter Type Default Required Description 
+ValueError — — Optional Invalid method arguments (for example mismatched frame_ids/edit_prompts).
+
+TimeoutError — — Optional Polling timeout for edit/combine workflows.
+
+requests.exceptions.HTTPError — — Optional Backend request failed (4xx/5xx).
+
+FileNotFoundError — — Optional Local file path not found during upload.
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

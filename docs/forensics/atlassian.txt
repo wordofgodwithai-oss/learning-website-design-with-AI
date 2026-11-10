@@ -1,0 +1,152 @@
+Golpo AI for Atlassian — Documentation (Jira & Confluence) | Golpo AI About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+📖 Documentation · Jira & Confluence 
+Golpo AI for Atlassian 
+Everything you need to turn Jira tickets and Confluence pages into professional narrated whiteboard-animation videos — automatically. Two apps, one engine.
+Getting started Jira docs Confluence docs Configuration FAQ 
+
+Choose your app
+🎫 Golpo AI for Jira
+
+Turn tickets, sprints, and releases into narrated whiteboard videos — right inside Jira.
+Getting Started Features Configuration FAQ 
+Get on Marketplace → Open Jira docs → 
+
+📄 Golpo AI for Confluence
+
+Turn pages and selected text into narrated videos, and embed them inline with a macro.
+Getting Started Features Configuration FAQ 
+Get on Marketplace → Open Confluence docs → 
+
+Where it works Built into the places you already work
+
+🎫 In Jira
+
+Issue panel
+Generate from any issue — title, description, and attachments auto-fill the prompt.
+
+Project page (bulk)
+Filter and select many issues, set defaults, and batch-generate. Admins can auto-generate on new tickets.
+
+Board sprint summary
+Generate a sprint or board-overview video; schedule daily, on sprint close, or on custom days.
+
+Admin settings
+Site admins connect, change, or disconnect the shared API key.
+
+📄 In Confluence
+
+Page byline
+Generate from any page — title, content, labels, and attachments are read automatically.
+
+Context menu
+Highlight text → right-click → generate a quick video from just that selection.
+
+Space page (bulk)
+List every page in a space, filter, set defaults, and batch-generate.
+
+Macro embed
+Type /golpo to embed a generated video inline on any page.
+
+What you can do Available in both apps
+
+🎬 One-click generation
+Turn an issue, sprint, or page into a finished narrated video. It runs on Golpo servers (~3–35 min) — close the panel and come back.
+
+🎙️ AI voice narration
+Natural narration in 4 voices (female & male) with free-text voice instructions.
+
+🌍 45+ languages
+English, Spanish, French, German, Japanese, Hindi, Arabic, Bengali, and many more.
+
+🎨 19 art styles
+10 Canvas styles + 9 Sketch variants — whiteboard, chalkboard, modern minimal, technical, crayon, and more.
+
+📦 Bulk generation
+Generate across a whole Jira project or Confluence space, with filters and per-item settings.
+
+📎 Rich attachments
+Add images, video, documents (PDF, DOCX, PPTX, XLSX…), and audio — insert into the video or use as AI reference.
+
+🎵 8 music tracks
+Engaging, Hyper, Inspirational, Documentary, Jazz, Lo-fi, Dramatic — or none.
+
+⚙️ Full control
+Duration (15s–10 min), pacing, orientation (16:9 / 9:16), pen style, color, and video instructions.
+
+🌍
+45
+Languages
+
+🎨
+19
+Art styles (10 canvas + 9 sketch)
+
+🎙️
+4
+Narration voices
+
+🎵
+8
+Background music tracks
+
+⏱️
+8
+Durations (15s–10 min)
+
+Getting started Up and running in minutes
+1
+Install from the Marketplace
+Add the app to your site in a couple of clicks (requires a site admin).
+
+2
+Start free, or add your API key
+New installs include a free starter pool. For ongoing use, paste an API key from any plan with API access in the app's settings.
+
+3
+Generate & share
+Create videos from issues or pages — one at a time or in bulk — then share or embed them.
+
+Read the full getting-started guide → 
+
+Plans with API access Any plan with API access
+The Golpo AI apps for Jira & Confluence run on any Golpo plan that includes API access:
+API Only From USD $200 · usage-based 
+Scale USD $999.99 / mo 
+Enterprise / Custom Custom 
+Business + USD $200 API add-on 
+
+See plans & pricing → 
+
+Frequently asked questions
+Do I need an API key to get started? + No — every install includes a free starter pool for short videos (30s–1 min). Add an API key for longer videos and ongoing use.
+How long does video generation take? + About 3–35 minutes depending on duration. It runs on Golpo AI servers, so you can close the panel and come back later.
+How many languages, voices, and styles are there? + 45+ languages, 4 narration voices, and 19 art styles (10 Canvas + 9 Sketch).
+What can I attach to a video? + Images (JPG, PNG, GIF, WEBP), video (MP4, MOV, …), documents (PDF, DOCX, PPTX, XLSX, …), and audio (MP3, WAV, …).
+Who configures the API key? + A site administrator connects it once in the app's settings; after that, everyone on the site can generate without their own key.
+
+See the full FAQ for Jira or Confluence .
+
+Need a hand?
+Pick your app above for full guides, or email support@golpoai.com .
+
+← Product overview 
+Jira Privacy Jira Security Jira Terms Confluence Privacy Confluence Security Confluence Terms 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

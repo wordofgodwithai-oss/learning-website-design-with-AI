@@ -1,0 +1,308 @@
+Every Golpo Video Style: Sketch, Canvas and Pen-in-Hand About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Get Started Every Golpo Video Style (2026 Guide): Sketch, Canvas and Pen-in-Hand
+A 2026 gallery of every Golpo Sketch and Canvas visual style, including Notebook, Compact and Expanded Canvas profiles, Classic with words, Infographics, Illustration, Custom Style, and all three Pen-in-Hand options.
+Sudip Kar • June 26, 2026 • 8 min read 
+
+Picking a Golpo video style from a dropdown is hard when you can't see what each one actually looks like. This gallery brings the current Golpo Sketch and Canvas choices together on one page.
+
+For Sketch, the core comparison keeps one prompt fixed while the style changes. For Canvas, each Compact/Expanded pair uses the same subject in both videos, so the profile is the only change within that pair.
+
+→ Jump to Sketch styles · 
+Jump to Canvas styles · 
+Jump to Custom Style · 
+Jump to Pen-in-Hand animations 
+
+The setup
+
+We asked Codex (via the Golpo skill plugin) to generate the shared Sketch comparison prompt:
+
+How Golpo transforms internal company documents and knowledge into engaging visual explainer videos 
+
+The core Sketch comparison videos are 2 minutes long and use that same prompt. Classic with words and Infographics use clearly labeled reference prompts. The Canvas section reuses the ten matched Compact/Expanded pairs from the dedicated comparison guide; each pair keeps its subject fixed. Every style label matches the Golpo dashboard dropdown one-to-one.
+
+Golpo Sketch styles
+
+The original Golpo pipeline. Hand-drawn-feeling whiteboard animation rendered through Golpo's line-art engine. Pick a built-in Sketch style under the Style dropdown, or choose + Custom Style to follow an image, video, or written description.
+
+One thing to know about pace: all the Sketch videos below were generated with the default Pace setting of Fast — a tighter, quicker-feeling animation that matches what you get out of the create-video screen by default. Switch Pace to Normal in the dashboard (or set the equivalent field in the API payload) if you want slower, more deliberate pacing.
+
+Classic
+
+The default Golpo Sketch style. The same Classic style produces a black-and-white video or a colorized one depending on the Use color toggle — both variants are shown below.
+
+Classic — black and white: 
+
+Your browser does not support embedded video.
+
+Classic — color: 
+
+Your browser does not support embedded video.
+
+Classic with words
+
+Classic with words keeps the hand-drawn Golpo Sketch look but adds a few large key words and labels directly to each scene. This 30-second reference example uses the prompt Why is the sky blue? 
+
+Classic with words — color: 
+
+Your browser does not support embedded video.
+
+Classic with words — black-and-white comparison: 
+
+Your browser does not support embedded video.
+
+Both players use the same front cover. The color clip is a public Golpo Classic with words render; the black-and-white clip is a grayscale comparison made from that same master so the narration, words, frames, and timing stay identical. 
+
+Improved (Beta)
+
+Golpo's newer Sketch line-art treatment.
+
+Your browser does not support embedded video.
+
+Dry Erase
+
+The traditional dry-erase whiteboard look — thicker outlines, hand-drawn feel.
+
+Your browser does not support embedded video.
+
+Professional Clean
+
+A pared-back Sketch treatment with cleaner lines and more whitespace.
+
+Your browser does not support embedded video.
+
+Crayon
+
+Looser, more illustrative line work that leans into a hand-drawn crayon feel.
+
+Your browser does not support embedded video.
+
+Formal
+
+A more refined Sketch treatment with denser composition per scene.
+
+Your browser does not support embedded video.
+
+Infographics
+
+A data-forward Sketch treatment that organizes ideas into labeled diagrams, icons, callouts, and visual summaries. This reference example uses the Golpo Prompt Cheatsheet rather than the shared comparison prompt.
+
+Custom Style
+
+Custom Style is now available in Golpo Sketch as well as Canvas. Instead of picking a built-in Sketch look, upload an image, upload a video, or write a description. The three examples below use each kind of reference. The full walkthrough is in the Custom Style guide .
+
+From a video — Lila's Story: 
+
+From a description — Love Triangle, using stickman characters and realistic solid-color objects: 
+
+From an image — Ganesha and Sage Vyasa: 
+
+Sketch styles not shown in this gallery (available in the dropdown — generate a sample to see how each looks): Chalkboard (Black on White), Creative, Formal (Legacy).
+
+Golpo Canvas styles
+
+Golpo Canvas is the image-generation-driven pipeline. Ten established visual-style families offer both Compact and Expanded profiles. The examples below use the same matched pairs as the Compact vs Expanded guide .
+
+How to compare the pairs: Expanded distributes components across more scenes for additional visual space and smaller explanatory steps. Compact combines more components within each scene so viewers can see more of the explanation together. Each pair below uses the same subject in both profiles. Notebook is Compact-only. 
+
+Chalkboard White on Black
+
+High-contrast white drawing on a dark chalkboard. Both examples explain Galileo and Falling Objects , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+Chalkboard Black on White
+
+Dark chalk-style drawing on a light background. Both examples explain Life in the Indus Valley , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+Chalkboard Color
+
+Chalkboard drawing with color accents. Both examples explain How Cities Build Public Budgets , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+Whiteboard
+
+A clean, familiar whiteboard treatment. Both examples explain The Monty Hall Probability Puzzle , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+Modern Minimal
+
+A restrained, modern composition with generous white space. Both examples explain How Compound Growth Works , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+Playful
+
+A brighter, more expressive visual treatment. Both examples explain The Octopus That Vanished , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+Technical
+
+A schematic treatment for processes and technical ideas. Both examples explain How GPS Calculates Your Location , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+Editorial
+
+A designed, magazine-like illustration style. Both examples explain How Vaccines Train the Immune System , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+Sharpie
+
+Bold marker-like strokes and an intentionally direct feel. Both examples explain The Shared Meadow Problem , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+Illustration
+
+A fuller scene-led illustration treatment. Both examples explain A Raindrop's Water Cycle Journey , so only the Canvas profile changes within the pair.
+
+Expanded
+
+Compact
+
+Compact-only Canvas style
+
+Notebook
+
+Notebook gives structured visual explanations a notebook-like treatment. This example explains Mean, Median, and Mode . Notebook is Compact-only, so there is no Expanded counterpart.
+
+Golpo Canvas Pen-in-Hand animation styles
+
+Canvas also lets you choose how the artwork appears. Pen-in-Hand animation places a realistic hand and drawing tool on screen as each illustration is revealed, giving any Canvas visual style a more handcrafted whiteboard feel. Choose the visual style first, then pair it with one of these three animation options.
+
+Pen in Hand
+
+A fine-tipped pen draws precise, elegant lines. Pick it for clean professional explainers, detailed diagrams, and restrained visual styles. Watch How to be a good person :
+
+Marker in Hand
+
+A bold marker produces thicker, more confident strokes. Use it when you want the energy of a live whiteboard session and stronger visual punch. Watch Secret for success of a startup :
+
+Stylus in Hand
+
+A digital stylus draws on a tablet-like surface. It feels modern and tech-forward, making it a natural match for SaaS, product, engineering, and digital-native content. Watch How to Ace an Exam? :
+
+Compatibility and access: Pen-in-Hand works with all Canvas visual styles. Pen, Stylus, and Marker are available on the Scale plan and above.
+
+Picking a style
+
+Watch the videos above and pick the one whose look matches the audience and tone you're targeting. There's no wrong answer — generate a quick 30-second test in two or three candidate styles and compare side by side before committing to a longer video.
+
+If none of the visible styles fit, try the three remaining Sketch styles from the same dropdown, or create a Custom Style from an image, video, or description. For Canvas, compare Compact and Expanded where both are offered, then compare the default reveal against Pen, Stylus, and Marker animation before committing to a longer video.
+
+Related guides
+
+Golpo Canvas Compact vs Expanded — matched pairs for all ten established Canvas styles plus Notebook.
+
+Golpo Canvas styles guide — deeper notes on each Canvas style.
+
+Custom Style guide — create a reusable look from an image, video, or description in Canvas or Sketch.
+
+Golpo prompt cheatsheet — prompting patterns that work across every style.
+
+Generate Golpo videos from Codex — the workflow we used to produce this gallery.
+
+Golpo API payload examples — full payload reference if you're generating programmatically.
+
+Golpo AI complete tutorial — end-to-end walkthrough of the dashboard.
+
+Have a use case where none of the styles fit? Book a 15-minute call and we'll help you pick — or extend a style with a custom image-style description.
+
+In this guide
+The setup 
+Golpo Sketch styles 
+Classic 
+Classic with words 
+Improved (Beta) 
+Dry Erase 
+Professional Clean 
+Crayon 
+Formal 
+Infographics 
+Custom Style 
+Golpo Canvas styles 
+Chalkboard White on Black 
+Chalkboard Black on White 
+Chalkboard Color 
+Whiteboard 
+Modern Minimal 
+Playful 
+Technical 
+Editorial 
+Sharpie 
+Illustration 
+Notebook 
+Golpo Canvas Pen-in-Hand animation styles 
+Pen in Hand 
+Marker in Hand 
+Stylus in Hand 
+Picking a style 
+Related guides 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

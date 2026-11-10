@@ -1,0 +1,333 @@
+Multiple Languages in One Video: Golpo Script Only Guide About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Features & Editing How to Create a Video With Multiple Languages in Golpo
+Watch one video combine English, German, French, and Hindi, then try English–Spanish and English–Bengali lessons. Copy the exact Script Only scripts and saved settings behind all three.
+Maya Okonkwo • October 21, 2026 • 13 min read 
+
+You can create one video with multiple spoken languages by writing those languages directly into a Script Only script in Golpo. This guide shows three finished examples: English with German, French, and Hindi in a single 46.50-second video; an English–Spanish lesson; and an English–Bengali lesson. Each teaches “What’s your name?”, “How old are you?”, and “Where do you live?”
+
+The useful detail: all three examples had Language set to English . The script itself supplies the language switches. Watch the videos below, then copy their exact scripts and saved settings.
+
+Jump to: Four-language video · English–Spanish · English–Bengali · Exact settings · Step-by-step workflow · FAQ 
+
+1. English, German, French, and Hindi in one video
+
+The same three questions move from English into German, then French, then Hindi. Each new paragraph introduces the next language inside the spoken script. Listen for the transitions at about 15 seconds and 29 seconds.
+
+Your browser does not support embedded video. Open the MP4 . 
+Chalkboard Color · 46.50 seconds · 1536 × 864 · Original shared video · Open MP4 
+
+Listen for: German from the opening, French at about 0:15, and Hindi at about 0:29.
+
+Exact Script used for this video
+
+We'll learn some English to German translations. "What's your name?" is translated as "Wie heißt du?" and "How old are you?" as "Wie alt bist du?" and "Where do you live?" is translated as "Wo wohnst du?"
+
+Now we'll learn some English to French translations. "What's your name?" is translated as "Comment tu t'appelles ?" and "How old are you?" as "Quel âge as-tu ?" and "Where do you live?" is translated as "Où habites-tu ?"
+
+And now we'll learn some English to Hindi translations. "What's your name?" is translated as "तुम्हारा नाम क्या है?" and "How old are you?" as "तुम्हारी उम्र कितनी है?" and "Where do you live?" is translated as "तुम कहाँ रहते हो?"
+
+Download the exact script (.txt) · View saved generation settings (.json) 
+
+What to copy: Use a complete paragraph for each language pair when a lesson has several sections. The spoken transitions tell the viewer what comes next, while the repeated English questions make the translations easy to compare.
+
+2. English and Spanish in a short translation lesson
+
+Three English questions are paired with Spanish translations in one continuous narration: a name, an age, and a place to live. The compact illustrated layout keeps the question-and-translation pairs together.
+
+Your browser does not support embedded video. Open the MP4 . 
+Editorial Compact · 18.93 seconds · 1536 × 864 · Original shared video · Open MP4 
+
+Exact Script used for this video
+
+We'll learn some English to Spanish translations. "What's your name?"	is translated as "¿Cómo te llamas?" and "How old are you?" as	"¿Cuántos años tienes?" and "Where do you live?" is traslated as	"¿Dónde vives?"
+
+Download the exact script (.txt) · View saved generation settings (.json) 
+
+The original Spanish script spells its last “translated” as “traslated” and includes tabs. Both are preserved here and in the text download. Correct the typo in your own script before generating.
+
+What to copy: For a short bilingual lesson, keep each English phrase beside its translation in the script. The repeated phrase “is translated as” makes the relationship explicit without adding production directions to the narration.
+
+3. English and Bengali using Bengali script
+
+The same three questions are paired with Bengali text: তোমার নাম কী?, তোমার বয়স কত?, and তুমি কোথায় থাকো? The supplied script contains Bengali characters directly, alongside the English sentences.
+
+Your browser does not support embedded video. Open the MP4 . 
+Notebook Infographic · 20.43 seconds · 1536 × 864 · Original shared video · Open MP4 
+
+Exact Script used for this video
+
+We'll learn some English to Bengali translations. "What's your name?" is translated as "তোমার নাম কী?" and "How old are you?" as "তোমার বয়স কত?" and "Where do you live?" is translated as "তুমি কোথায় থাকো?"
+
+Download the exact script (.txt) · View saved generation settings (.json) 
+
+What to copy: Paste the actual Bengali words into the Script field. This example gives Golpo both the English explanation and the Bengali phrases to speak; a brief that only asks for a Bengali lesson would leave the wording to a drafting step.
+
+The video settings used in all three examples
+
+These are the saved settings behind the embedded videos, recorded on October 21, 2026. The settings downloads under each script preserve the relevant saved field names and values; use the readable labels below when recreating the examples in Golpo.
+
+Setting
+German + French + Hindi
+Spanish
+Bengali
+
+Canvas visual style
+Chalkboard Color
+Editorial Compact
+Notebook Infographic
+
+Saved image_style
+neon
+editorial_compact
+notebook_infographic
+
+Saved canvas_base_style
+neon
+editorial
+notebook_infographic
+
+Duration selection
+1 minute
+0.25 minutes (15 seconds)
+0.25 minutes (15 seconds)
+
+Exported runtime
+46.50 seconds
+18.93 seconds
+20.43 seconds
+
+The duration selection is not the exported runtime. The two short examples were saved with a 15-second selection, but their files run for 18.93 and 20.43 seconds. The longer example was saved with a 1-minute selection and exports at 46.50 seconds.
+
+Control
+Saved value in all three examples
+
+Input mode
+Script Only (script_mode: true)
+
+Video engine
+Golpo Canvas (golpo_type: golpo_2_0; use_2_0_style: true)
+
+Voice
+Female 1 (video_voice: solo-female-3)
+
+Language
+English (language: English)
+
+Display Language
+English (display_language: English)
+
+Use only script words on screen
+Enabled (script_only_text: true)
+
+Pacing
+Fast (pacing: fast)
+
+Visual animation
+Auto (visual_animation_style: auto)
+
+Background music
+None (bg_music: none)
+
+Color and fill
+Enabled (use_color: true; fill_in: true)
+
+Pen and pencil cursor
+None / hidden (pen_style: none; show_pencil_cursor: false)
+
+Camera follow
+Off (enable_camera_follow: false)
+
+Watermark
+Off (include_watermark: false)
+
+Video Instructions
+Empty (video_instructions: null)
+
+Voice Instructions
+Empty (voice_instructions: null)
+
+Edit script before creating video
+Off (enable_script_editing: false)
+
+Custom scene selection
+Off; no custom count or sentence map
+
+Own Narration / Avatar
+Off / no avatar selected
+
+Uploaded images, videos, audio, documents
+None
+
+Measured export orientation
+Horizontal 16:9, 1536 × 864 pixels
+
+No extra translation directions, reference documents, uploaded media, custom narrator instructions, or manual scene map were supplied. The language pairs and transitions are already in the Script. The visual style changes the presentation; it does not replace the mixed-language wording.
+
+How to create your own video with multiple languages
+
+Choose the phrases and write the translations first. Decide what the learner should hear. For a phrase lesson, write each source question followed immediately by its translation. Use a fluent reviewer to check meaning, spelling, and the level of formality before generation.
+
+Open Golpo and choose Script Only mode. Paste the complete narration into the Script field. The script should contain the actual words in every language, rather than a request such as “make this bilingual.” See the Prompt Mode vs Script Mode guide for the input-mode controls.
+
+Make the transitions part of the narration. Start with “We’ll learn some English to Spanish translations.” For another section, add a spoken transition such as “Now we’ll learn some English to French translations.” Put a blank line between language sections so you can review the structure easily.
+
+Start with the demonstrated settings. To reproduce these examples, use Canvas, Female 1, English for Language, and English for Display Language. Choose a duration suitable for the complete script and check the character allowance shown in your current interface. Keep native characters, accents, and punctuation.
+
+Choose how the video should look. Try Chalkboard Color, Editorial Compact, or Notebook Infographic. All three examples used Fast pacing, Auto visual animation, no background music, and Generate on-screen text using only the script content enabled. The Canvas styles guide helps you choose the layout.
+
+Review the script and create the video. Read every source-and-translation pair aloud before submitting. If you use the separate Edit script before creating video control, approve that script before rendering. The examples above were generated directly with that review control off.
+
+Watch and listen through every language switch. Check pronunciation, omitted words, pacing, visible characters, and the exported length. Ask someone fluent in each target language to review the result before teaching from it or sending it to customers.
+
+How to write the script so the language switches are clear
+
+Write a spoken relationship between the two phrases. “What’s your name?” followed by “is translated as” and the target-language question gives the narration a clear order. A list of language names or an instruction to translate does not supply the words you want spoken.
+
+Use one language pair per short section. The first example repeats the same three English questions in German, French, and Hindi sections. That repetition lets the viewer compare translations without learning a new question at every switch. Add a spoken transition when the target language changes.
+
+Keep the original writing system. The Hindi phrases use Devanagari, and the Bengali phrases use Bengali script. Preserve characters such as ß, ¿, ñ, and accented French letters. If you need transliteration for your audience, decide whether it belongs in the spoken lesson or in the visual directions before you add it.
+
+Keep production directions in their own fields. Putting “switch to Hindi now” or “[show the translation]” into Script Only mode may turn those words into narration. Write a natural spoken transition in Script, and place visual directions in Video Instructions.
+
+Field
+What to put there
+
+Script
+The complete words to speak, including every English and translated phrase, in order.
+
+Video Instructions
+What to draw and which on-screen labels to show. These instructions are not spoken.
+
+Voice Instructions
+How the narration should sound: pace, tone, emphasis, and delivery. These are not the script.
+
+The three examples left Video Instructions and Voice Instructions empty. If your lesson needs extra direction, use the Video Instructions guide for drawings and labels, and the Voice Instructions guide for delivery. Those would be changes to the demonstrated configuration.
+
+Spoken language and on-screen text need separate checks
+
+The Script supplies the multilingual narration. Display Language is a separate setting for visible wording. In these examples it stayed on English, while the scripts supplied the German, French, Hindi, Spanish, and Bengali phrases visible in the finished videos.
+
+Generate on-screen text using only the script content was enabled in all three. That setting limits the source wording available for generated labels; it does not make every word appear on screen, set the spoken language, or replace proofreading. See the on-screen text from script guide for a fuller explanation.
+
+Check the final video against the supplied script. Generated display text can still need a correction: for example, the Bengali video shows “What’s your nme?” where the supplied English script says “What’s your name?” The original video is embedded here unchanged so you can judge the output yourself.
+
+What to check if your multilingual video needs a correction
+
+A phrase is missing or changed: confirm that Script Only mode is enabled and that the exact phrase is present in Script. A topic prompt and a complete narration serve different purposes.
+
+A language switch sounds rushed: use shorter phrases and clearer sentence breaks, then review the new render. For a lesson with distinct language sections, the sentence-to-scene selection guide explains how to plan scene boundaries.
+
+The pronunciation needs work: have a fluent reviewer identify the exact phrase. Revise that phrase or test voice delivery on a short passage before creating a longer lesson. The same voice may not perform equally across every language or accent.
+
+The visible translation differs from the spoken one: compare both with the approved script and review the display-text setting. A correct script still needs a visual check of accents, spelling, and non-Latin characters.
+
+You need a separate video for each language: use the multilingual video editions workflow . That serves a different goal from mixing languages inside one continuous video.
+
+Frequently asked questions
+Can Golpo speak multiple languages in the same video?
+Yes. The examples on this page use one Script Only narration containing several languages. The first video combines English with German, French, and Hindi; the other two pair English with Spanish and Bengali.
+Do I need to select every language in the language picker?
+To reproduce these examples, leave Language set to English and paste the mixed-language narration into Script Only mode. All three saved examples used English for both language and display_language. Selecting several output languages is a separate workflow for creating localized video editions.
+Should I write the foreign-language phrases or ask Golpo to translate them?
+For this Script Only workflow, write the actual phrases in every language before generation. Put each source phrase beside its translation, keep native characters and accents, and review the wording with someone who knows the language.
+What is the difference between Script, Video Instructions, and Voice Instructions?
+Script contains the words to speak. Video Instructions describe what to draw and which labels to show. Voice Instructions describe delivery, pace, and tone. All three published examples left Video Instructions and Voice Instructions empty.
+Does the script-only on-screen text setting control the spoken language?
+No. Generate on-screen text using only the script content restricts the wording available for generated display text. The mixed-language Script supplies the narration. The checkbox was enabled in all three examples, and it does not guarantee that every script word appears on screen.
+Can I keep Hindi or Bengali in its native script?
+Yes. The supplied Hindi example uses Devanagari and the Bengali example uses Bengali characters. Keep those characters in your script and review both the generated narration and any visible text before sharing.
+Which voice and visual styles were used?
+All three examples used Female 1, saved as solo-female-3, with fast pacing and Auto visual animation. Their Canvas styles were Chalkboard Color (neon), Editorial Compact (editorial_compact), and Notebook Infographic (notebook_infographic).
+Why is the finished video longer or shorter than the duration selected?
+Treat the duration selection and exported runtime as separate values. The 1-minute example exports at 46.50 seconds; the two examples saved with 0.25-minute selections export at 18.93 and 20.43 seconds. Check the finished file rather than assuming the selection is its exact runtime.
+Will every language and accent sound equally natural?
+These three videos demonstrate these particular scripts and one selected voice. They do not establish equal pronunciation quality for every language, accent, or voice. Listen to every language switch and ask a fluent reviewer to check pronunciation, meaning, and register before using the video for teaching or customers.
+
+Related Golpo guides
+
+Prompt Mode vs Script Mode — choose who writes the narration and review the input controls.
+
+Every Golpo Canvas style — compare Compact, Expanded, and Notebook visual layouts.
+
+Use only script words for on-screen text — understand the separate display-text control.
+
+Video Instructions — direct drawings and labels without putting those directions into the narration.
+
+Voice Instructions — guide tone, pace, and emphasis.
+
+Map sentences to scenes — plan visual changes before production.
+
+Create separate multilingual video editions — prepare localized outputs when each audience needs its own video.
+
+Try it with three phrases. Copy one of the exact scripts above, replace the translations with reviewed wording for your lesson, and create your multilingual video in Golpo using Script Only mode.
+
+Tags
+# Script Only # Multilingual Video # Bilingual Video # Golpo Canvas 
+
+In this guide
+1. English, German, French, and Hindi in one video 
+Exact Script used for this video 
+2. English and Spanish in a short translation lesson 
+Exact Script used for this video 
+3. English and Bengali using Bengali script 
+Exact Script used for this video 
+The video settings used in all three examples 
+How to create your own video with multiple languages 
+How to write the script so the language switches are clear 
+Spoken language and on-screen text need separate checks 
+What to check if your multilingual video needs a correction 
+Frequently asked questions 
+Can Golpo speak multiple languages in the same video? 
+Do I need to select every language in the language picker? 
+Should I write the foreign-language phrases or ask Golpo to translate them? 
+What is the difference between Script, Video Instructions, and Voice Instructions? 
+Does the script-only on-screen text setting control the spoken language? 
+Can I keep Hindi or Bengali in its native script? 
+Which voice and visual styles were used? 
+Why is the finished video longer or shorter than the duration selected? 
+Will every language and accent sound equally natural? 
+Related Golpo guides 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

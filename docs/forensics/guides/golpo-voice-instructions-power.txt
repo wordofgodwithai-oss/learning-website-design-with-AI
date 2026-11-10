@@ -1,0 +1,375 @@
+Golpo Voice Instructions: 8 Categories, 13 Examples (2026 Guide) About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Features & Editing Voice Instructions in Golpo: One Field, Thirteen Different Voices
+A second optional field — voice_instructions — quietly controls more of how your video lands than the script itself. Eight categories, thirteen side-by-side demos, all with style held constant — so you can hear exactly how much one or two sentences can reshape the narrator.
+Sudip Kar • June 29, 2026 • 19 min read 
+
+If video_instructions is the most powerful single field in the Golpo API (we made that case here ), then voice_instructions is the quietest. Most users leave it blank. The ones who don't quietly produce videos that sound like they were narrated by a real person hired for the job — not a default TTS read.
+
+This field is free-text, which is a blessing and a curse. The blessing: you can be as specific as you want — accent, persona, age, pacing, pronunciations, even what the voice must NOT sound like. The curse: it's not obvious where to start. So here are eight categories worth knowing about, illustrated with thirteen example prompts you can copy, paste, and modify for your own videos.
+
+Below: one or two side-by-side demos for each of the eight categories. Same script style. Same Golpo Sketch engine. The only variable is the voice_instructions string. Press play on a few and you'll hear how much one or two sentences can reshape who you're listening to.
+
+→ Accent & language · 
+Persona · 
+Tone · 
+Pacing · 
+Pauses · 
+Pronunciation · 
+Demographics · 
+Negative constraints · 
+Bonus: 5 male-voice prompts 
+
+How to read these demos
+
+Voice prompts tend to come in three sizes. Short directives — five to ten words like "British accent" , "talk like a professor" , or "slow and calm" — nudge a single dimension. Structured paragraphs of 80–500 characters cover tone, pace, and accent in one breath; this is the sweet spot for most videos. Full directorial briefs add pronunciation guides, line-by-line pause markers, and energy curves; these are worth the effort when you're producing at scale or for a specific brand.
+
+The eight categories below cover the axes you'll most often want to control: accent and language, persona, tone, pacing, pause and rhythm, pronunciation, demographics, and negative constraints. Thirteen demos follow. Most hold style constant (Golpo Sketch Classic) so your ears can isolate the voice change; the cinematic cosmic example is a vertical 9:16 short, because that is the format the instruction was written for.
+
+1. Accent and language — where the narrator lives
+
+The most named axis. Common patterns: a region name ("British", "Indian English", "español de España", "Korean broadcast"). The interesting move is to blend two — a base accent with a softer secondary modifier underneath. The example below layers a light educated London accent over a subtle Caribbean lilt, and it gives the narrator a far more specific character than either half alone.
+
+Educated London with a subtle Caribbean warmth
+
+Prompt: Three small habits of great everyday teachers — explained warmly. · Voice slot: solo-female-3 · Length: 1 minute.
+
+voice_instructions: "Female voice, mid-20s to early 30s. Light British accent — think educated London, not posh, not RP, definitely not cockney. Underneath the British is a subtle Caribbean warmth — the melodic rise and fall in the cadence carries a hint of island lilt, but the vowels and consonants stay British. Not patois, not exaggerated. Warm, conversational, slightly playful — like a friend explaining something interesting over coffee." 
+
+Voice · solo-female-3 · UK + Caribbean 
+
+Castellano neutral, written for an older audience
+
+Prompt: Tres pasos sencillos para entender la inteligencia artificial. · Voice slot: solo-male-3 · Language: es · Length: 30 seconds.
+
+voice_instructions: "Voz masculina, español de España (castellano), acento neutro de España (no latinoamericano). Tono cálido, pausado y de confianza, para un público de personas mayores." 
+
+Voice · solo-male-3 · Castellano 
+
+What we learned: Accent prompts honor most reliably when the narration language matches the cultural target. For non-English accents, set language explicitly — the model picks the regional voice cues from the language code as much as from the prompt. For English-language regional accents (UK, Indian English, Irish), the voice_instructions string does the work, and stacked accents ("British base with a Caribbean lilt") get surprisingly far. The harder failure mode is over-specifying: prompts that ask for "posh RP British" or "thick Cockney" tend to be more cartoonish than the lighter "educated London" framing.
+
+2. Persona and character archetype — who the narrator is 
+
+Instead of describing voice qualities directly, name a character. "Talk like a TEDx keynote speaker" . "Authoritative scholarly teacher" . "Investment-banker British" . Persona names are shorthand for a whole bundle of tonal, pacing, and rhythm choices — and the model is surprisingly good at unpacking them.
+
+TEDx keynote speaker
+
+Prompt: Why one small daily habit beats a hundred motivational speeches. · Voice slot: solo-male-3 · Length: 1 minute.
+
+voice_instructions: "Talk like a TEDx keynote speaker, emphasizing the right words, speaking slowly when necessary and keeping the audience hooked. Confident, warm, deliberate. Pause before key reveals. Energy builds toward the close." 
+
+Voice · solo-male-3 · TEDx 
+
+Authoritative scholarly teacher — explicitly NOT a pastor
+
+Prompt: What the Greek word "metanoia" actually meant — and how we lost the meaning. · Voice slot: solo-male-3 · Length: 1 minute.
+
+voice_instructions: "Authoritative scholarly teacher. The voice of someone who has spent years in primary sources and is now making the work accessible. NOT a pastor, NOT an inspirational speaker, NOT a devotional guide, NOT a motivational coach. No revival cadence, no sermon stress, no sing-song phrasing, no vocal fry, no warmth filler. Pronunciation: metanoia — meh-TAH-noy-ah; noos — NOH-ohs; paenitentia — pie-nih-TEN-tee-ah. Em dashes — brief beat. Closing line: deliberate, quiet authority. Do not rush it." 
+
+Voice · solo-male-3 · Scholar 
+
+What we learned: Naming a persona is the single highest-leverage move you can make in three to seven words. "TEDx keynote speaker" pulls confident pacing, deliberate emphasis, and pre-reveal pauses without you having to spell any of them out. But the scholarly example shows an important pattern: persona names alone aren't always enough . For categories where the default voice has a "wrong attractor" (sermon cadence, motivational coach energy), pairing the positive persona with a paragraph of negative constraints does more work than either half alone.
+
+3. Tone and emotional register — how the narrator feels 
+
+Where persona names a character, tone names a feeling. Three distinctive tonal patterns worth knowing: "deep, gritty, knowing-insider" for content that wants to feel like a quiet truth being shared, "warm, calm, and grounded" for self-improvement and wellness content, and "deep, cinematic cosmic narration" when the script is about scale, awe, and a last line that should land.
+
+Deep, gritty, knowing-insider tone
+
+Prompt: The one thing every junior engineer believes about senior engineers — and why it's wrong. · Voice slot: solo-male-3 · Length: 1 minute.
+
+voice_instructions: "Deep, gritty, knowing-insider tone. Like a friend who has done the research and is dropping a hard truth. Confident but not preachy. Slight edge. Speak at a deliberate, steady pace. Let each idea land before moving on. Pause naturally between sentences. Do not rush. Each sentence should take long enough for the listener to fully picture what you said before the next sentence starts." 
+
+Voice · solo-male-3 · Gritty insider 
+
+Warm, calm, and grounded
+
+Prompt: What your nervous system does when you skip lunch — explained in three calm minutes. · Voice slot: solo-female-3 · Length: 1 minute.
+
+voice_instructions: "Warm, calm, and grounded voice. Speak at a moderate, thoughtful pace with natural pauses. Tone should feel honest and slightly reflective, encouraging self-awareness rather than judgment. The overall feeling should be wise, steady, and gently eye-opening rather than dramatic. Avoid any sense of urgency or hype." 
+
+Voice · solo-female-3 · Calm wise 
+
+Deep cinematic cosmic narration — awe, then a held last line
+
+Prompt: Why the universe spent hundreds of millions of years without stars. · Format: Vertical 9:16 · Length: 1 minute.
+
+voice_instructions: "Deep, cinematic cosmic narration with measured pacing, awe, and a powerful final sentence." 
+
+Watch the cinematic cosmic narration example 
+
+Vertical 9:16 · Cinematic cosmic 
+
+What this controls: One short sentence names the genre ( cinematic cosmic narration ), the tempo ( measured pacing ), the feeling ( awe ), and the close ( a powerful final sentence ). The read is slower and more documentary than the default male slot; the last line is given extra weight. Pair it with a matching script about scale — first stars, cosmic dawn, deep time — so the voice has something large enough to land on.
+
+What we learned: Tone prompts honor best when they bundle three things: a feeling word (gritty, grounded, calm, awe), an analogy (like a friend, like a trusted teacher, like a cosmic documentary), and a pacing direction (deliberate, moderate, unhurried, measured). All three of those layers together push the voice toward a coherent emotional center. A feeling word alone tends to drift — "calm" without "moderate pace" sometimes produces something monotone rather than calm. The cosmic example is the short-form version of the same pattern: genre + pace + feeling + how the last sentence should land.
+
+4. Pacing and tempo — how fast the narrator moves
+
+Pacing is the bluntest dial on the voice. One-line prompts work well — "slow and calm" , "fast and energetic" — and so do explicit words-per-minute targets like "120–130 words/min" . The two ends of the spectrum below: a deliberately slow, meditative pace for self-improvement content, and a fast, punchy broadcast tempo for short-form social.
+
+Slow and unhurried — meditation-teacher pacing
+
+Prompt: Three reasons your meditation streak keeps breaking — and what to do. · Voice slot: solo-female-3 · Length: 1 minute.
+
+voice_instructions: "Talk in a slow and calm tone. Speak deliberately. Pause naturally between sentences. Tone should feel grounded and unhurried, like a meditation teacher giving practical advice — not breathy or hushed. Just steady and clear." 
+
+Voice · solo-female-3 · Slow & calm 
+
+Fast, punchy Korean broadcast
+
+Prompt: 다섯 가지 놀라운 인공지능 활용 사례 — 1분 안에 빠르게. · Voice slot: solo-male-3 · Language: ko · Length: 1 minute.
+
+voice_instructions: "Fast, energetic, punchy delivery. Korean broadcast narrator. Quick pace with sharp emphasis on key words. Minimal pauses. Urgent and driven rhythm throughout. No slow or drawn-out narration." 
+
+Voice · solo-male-3 · Korean punchy 
+
+What we learned: Pacing prompts work best when paired with a category of speaker (meditation teacher, broadcast anchor, sports commentator). A bare "fast" or "slow" instruction tends to land as a general nudge; "fast like a Korean broadcast anchor" pulls a whole rhythm template. WPM numbers (140, 150, 170) get honored loosely — they're a directional hint, not an exact metronome.
+
+5. Pause and rhythm control — where the narrator stops 
+
+The most underrated category. Pause instructions are how you sculpt emphasis. You can list specific quoted lines that must be followed by a beat ( "pause after: 'The job market changed'" ), or give numeric specifications ( "0.8 seconds after rhetorical questions" ). The line-specific approach in the example below is one of the cleanest directorial briefs you can write into this field.
+
+Pause after specific quoted lines
+
+Prompt: Three quiet truths every job applicant should hear about the modern hiring market. · Voice slot: solo-female-3 · Length: 1 minute.
+
+voice_instructions: "Use a calm, confident British female voice. Tone should feel intelligent, grounded and reassuring. Do not sound excited, salesy, dramatic or overly motivational. Speak naturally, with enough space between ideas for the visuals to land.
+
+Pause slightly after these lines:
+'The job market changed.'
+'But that world no longer exists.'
+'Being qualified is no longer enough.'
+'You have to be visible.'
+'Conversations do.'
+
+The final line, 'Apply for an assessment conversation,' should be clear and calm, not rushed." 
+
+Voice · solo-female-3 · Line-specific pauses 
+
+What we learned: When you quote the exact line in the prompt, the model treats that line as a landmark and respects the pause around it. This is the only reliable way to get a specific beat at a specific moment. Numeric pause times (0.5s, 0.8s, etc.) are honored only loosely; quoted lines act as anchors and work much better.
+
+6. Pronunciation guidance — proper names, tickers, foreign terms
+
+For finance, religious-studies, medical, and pharmaceutical content, the difference between a video that sounds credible and one that doesn't is whether the narrator pronounces the right things correctly. Supply an explicit pronunciation table. Two patterns worth borrowing: ticker spellouts for finance content, and Greek/Hebrew/Latin syllable guides for religious and academic content.
+
+Financial ticker spellouts and number formatting
+
+Prompt: Three stocks that defined the AI boom — and what every retail investor missed. · Voice slot: solo-male-3 · Length: 1 minute.
+
+voice_instructions: "Confident, fast-moving, retail-investor energy, like a sharp trader sharing alpha. Pronounce these tickers letter by letter: N V D A, M U, C R W V, A A P L, A I. Say 'one point six T' as written. Say large numbers clearly and deliberately. Brief pause before the big reveals, and slow down slightly on the key numbers so they land. No em dashes — read it as natural speech." 
+
+Voice · solo-male-3 · Finance / tickers 
+
+What we learned: Pronunciation tables are the highest-effort, highest-payoff prompts. The pattern that works most consistently: list each name once, in capital letters with hyphens between syllables and the stressed syllable capitalized — meh-TAH-noy-ah , ZY-mer-gen , NO-vo-niks . For tickers, force letter-by-letter spellout — "N V D A" , with spaces between letters. Without the explicit spellout the model frequently reads tickers as words (which sounds wrong half the time and unintentionally funny the other half).
+
+7. Demographic anchoring — age, gender, voice timbre
+
+Supply concrete demographic specs: "male, late 30s, deep baritone" , "female mid-20s, light, curious" , "45-year-old American doctor" . These prompts work as guardrails on the voice slot — solo-male-3 might default to a young-sounding read, but adding "deep baritone with warm resonance, late 30s" pushes the voice toward a specific point in the demographic space.
+
+Deep baritone late 30s — mentor energy
+
+Prompt: Three life lessons no one tells you until your thirties — and why they're worth the wait. · Voice slot: solo-male-3 · Length: 1 minute.
+
+voice_instructions: "Male, deep baritone with warm resonance — confident, grounded, and wise. Accent: neutral North American (no regional drawl). Tone: calm authority, motivational, compassionate — sounds like he's explaining life lessons, not reading a script. Style: educational / cinematic narrator. Energy curve: start low and reflective for the intro; grow firmer and emotionally charged on key ideas; ease back into a smooth, hopeful register by the outro." 
+
+Voice · solo-male-3 · Baritone mentor 
+
+What we learned: Demographic specs are most useful when they describe timbre , not just age. "Deep baritone with warm resonance" gives the model something to honor; "male, late 30s" alone is too thin. The "energy curve" instruction (low/reflective → firmer → smooth) is a power-user pattern worth borrowing — you're telling the model how the voice should evolve across the video, not just how it should start.
+
+8. Negative constraints — what the narrator must NOT sound like
+
+The most consistently high-leverage pattern of all. Across every category, the prompts that land most reliably include an explicit list of what the voice should not be . Anti-guru, anti-pastor, anti-influencer, anti-salesy, anti-trailer-voice constraints produce videos that sound calibrated rather than generic.
+
+"Just keep the voice human" — anti-guru, anti-trailer
+
+Prompt: Three things every productivity guru gets dangerously wrong about being busy. · Voice slot: solo-male-3 · Length: 1 minute.
+
+voice_instructions: "Calm, sharp, warm male voice. Natural delivery with slight dry humor. Honest, not motivational. Pause after punchlines. No dramatic trailer voice, no guru tone, no influencer hype. Just keep the voice human. Read it as if you're explaining the truth to a friend over coffee, not delivering a TED talk." 
+
+Voice · solo-male-3 · Anti-guru, human 
+
+What we learned: Negative constraints work because they exclude the "wrong attractors" — the default modes the TTS model gravitates toward when given vague positive prompts. "Be calm" can drift into bored. "Be calm. Do not sound like a meditation guru, no breathy reverence, no spa voice" lands far more reliably. The more specific the negative, the better. "No trailer voice" beats "don't be dramatic" .
+
+Bonus — five more male-voice prompts worth stealing
+
+Five more voice_instructions prompts that pair particularly well with the default male slot ( solo-male-3 ). Each one is a self-contained directive — copy, edit, and paste into the field on the create-video screen.
+
+1. Neutral American — credible, curiosity-driven
+
+Prompt: Three quiet rules that separate good explainer videos from forgettable ones. · Voice slot: solo-male-3 · Length: 1 minute.
+
+voice_instructions: "Neutral American English. Clear, composed, credible — curiosity-driven, with precise articulation and controlled emphasis. The voice of an expert sharing something the listener hasn't heard before, at a moderate but slightly forward pace." 
+
+Voice · solo-male-3 · Neutral American credible 
+
+2. Gritty, raspy, slightly sarcastic — the cynical-friend voice
+
+Prompt: Three lies every productivity newsletter is built on. · Voice slot: solo-male-3 · Length: 1 minute.
+
+voice_instructions: "Mid-to-low pitch, gritty and slightly raspy. Fast-paced delivery with sharp emphasis, darkly humorous, sarcastic inflections. Like a jaded scientist explaining how something quietly broke. Confident, urgent, sprinkled with cynical humor." 
+
+Voice · solo-male-3 · Gritty / sarcastic 
+
+3. Tech-journalist — authority with curiosity
+
+Prompt: Three things that actually changed in software engineering this year. · Voice slot: solo-male-3 · Length: 1 minute.
+
+voice_instructions: "Clear, confident, mid-pitch male voice. Calm pacing, precise pronunciation. Tone balances authority with curiosity — like a tech journalist explaining something both factual and genuinely interesting. Minimal regional twang, smooth intonation, slight upward inflection at key moments to keep engagement high." 
+
+Voice · solo-male-3 · Tech journalist 
+
+4. Warm conversational friend — over coffee, not over a lectern
+
+Prompt: Three things a first-year manager learns the hard way. · Voice slot: solo-male-3 · Length: 1 minute.
+
+voice_instructions: "Warm, conversational male voice, mid-to-slightly-lower pitch. Tone feels like a trusted friend revealing a hard truth over coffee — not lecturing, just sharing insight. Calm authority. Unhurried." 
+
+Voice · solo-male-3 · Warm conversational 
+
+5. British refined authority — quietly compelling
+
+Prompt: What separates a good documentary from a great one. · Voice slot: solo-male-3 · Length: 1 minute.
+
+voice_instructions: "Male British English. Warm, authoritative, and deeply trustworthy. Refined articulation with a measured, confident pace that commands attention without rushing. Quietly compelling — emotionally intelligent rather than dramatic. Subtle emphasis on the key turns. No urgency." 
+
+Voice · solo-male-3 · British refined 
+
+What we learned: Across these five, the move that most reliably pulls a distinctive male voice out of solo-male-3 is anchoring with one mid-pitch directive ("mid-to-low pitch, gritty" / "mid-pitch, calm pacing" / "warm, mid-to-slightly-lower") combined with one cultural anchor ("tech journalist", "jaded scientist", "trusted friend over coffee", "British editorial"). Two short clauses do more than a paragraph of adjectives.
+
+What we learned across all 13
+
+Seven observations from running these demos side-by-side:
+
+1. Persona names are shortcuts. Three to seven words ("TEDx keynote speaker", "true-crime narrator", "high-end documentary voice", "investment-banker British") pull a whole bundle of pacing, tone, and emphasis choices. Use them.
+
+2. Stack two cultural references for distinctive voices. "Educated London accent with a subtle Caribbean lilt underneath" produces a more specific narrator than either half alone. The blend is the differentiator.
+
+3. Quote the exact line you want a pause around. Numeric pause times (0.5s, 0.8s) are honored loosely; quoted lines act as landmarks. This is the only reliable way to control rhythm at a specific moment.
+
+4. Pronunciation tables earn their weight. For finance tickers, religious terms, brand names, drug names — spell each one phonetically with capitalized stress and hyphens. The model honors them remarkably well.
+
+5. Force letter-by-letter on acronyms and tickers. Without explicit spaced spellout ( "N V D A" ), the model will read them as words half the time.
+
+6. Negative constraints beat positive ones — again. Same lesson as video_instructions : listing the wrong attractors ("no guru tone, no trailer voice, no sermon cadence") does more to shape the output than any positive description alone.
+
+7. Length doesn't matter — anchoring does. The shortest prompts that work consistently are the ones that name a persona AND specify a tone in one breath. "Warm, clear teacher — engaging and encouraging" is five words and does more than most 200-word paragraphs. The cosmic example is even shorter: genre, pace, feeling, and how the last line should land, packed into one sentence.
+
+How to write your own
+
+The pattern that produces the most coherent voices, across all thirteen demos:
+
+Open with a persona or accent name — one short clause ("TEDx keynote speaker", "Castellano neutral", "deep cinematic cosmic narration").
+
+Add one tonal anchor and one pacing anchor — "warm and grounded, moderate pace", "confident and fast, broadcast tempo".
+
+List 2–4 absolute negatives — what NOT to be. "Not a pastor. Not a motivational speaker. No vocal fry. No salesy energy."
+
+If pronunciation matters, add a small table — name → stressed syllable in caps. Five entries is plenty.
+
+If a specific moment needs a beat, quote the line — the model treats quoted lines as anchors.
+
+Stop there. 100–400 character prompts honor more reliably than 800+ character paragraphs.
+
+Two-line template:
+
+"[Persona / accent / language]. [One tonal anchor + one pacing anchor]." 
+
+"[2–4 absolute negatives — what the voice must NOT sound like.]" 
+
+Where the field lives
+
+In the Golpo dashboard, voice_instructions is the text area labeled Voice Instructions on the create-video screen — directly below the script and voice-slot pickers, available on the Creator plan and above ( see pricing ). Type your instruction string there before hitting generate.
+
+If you're calling the Golpo API, pass voice_instructions as a string field in the request payload. See the API payload examples guide and the API access guide for the full request shape. The field accepts free-text in any language — Korean voice prompts written in Korean honor better than transliterated versions.
+
+Related guides
+
+Video Instructions: One Line, Fifteen Different Looks — the visual sibling of this guide. Same exercise, opposite field.
+
+Every Golpo Video Style — what changes when the engine, not the prompt, changes.
+
+Golpo prompt cheatsheet — companion patterns for the script itself.
+
+Use your own narration (audio_clip) — when voice_instructions isn't enough and you want to upload a real human voice.
+
+Golpo AI complete tutorial — full walkthrough of the dashboard.
+
+Want help calibrating a brand voice that survives across thousands of videos? Book a 15-minute call — we'll help you write the prompt.
+
+In this guide
+How to read these demos 
+1. Accent and language — where the narrator lives 
+Educated London with a subtle Caribbean warmth 
+Castellano neutral, written for an older audience 
+2. Persona and character archetype — who the narrator is 
+TEDx keynote speaker 
+Authoritative scholarly teacher — explicitly NOT a pastor 
+3. Tone and emotional register — how the narrator feels 
+Deep, gritty, knowing-insider tone 
+Warm, calm, and grounded 
+Deep cinematic cosmic narration — awe, then a held last line 
+4. Pacing and tempo — how fast the narrator moves 
+Slow and unhurried — meditation-teacher pacing 
+Fast, punchy Korean broadcast 
+5. Pause and rhythm control — where the narrator stops 
+Pause after specific quoted lines 
+6. Pronunciation guidance — proper names, tickers, foreign terms 
+Financial ticker spellouts and number formatting 
+7. Demographic anchoring — age, gender, voice timbre 
+Deep baritone late 30s — mentor energy 
+8. Negative constraints — what the narrator must NOT sound like 
+"Just keep the voice human" — anti-guru, anti-trailer 
+Bonus — five more male-voice prompts worth stealing 
+1. Neutral American — credible, curiosity-driven 
+2. Gritty, raspy, slightly sarcastic — the cynical-friend voice 
+3. Tech-journalist — authority with curiosity 
+4. Warm conversational friend — over coffee, not over a lectern 
+5. British refined authority — quietly compelling 
+What we learned across all 13 
+How to write your own 
+Where the field lives 
+Related guides 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

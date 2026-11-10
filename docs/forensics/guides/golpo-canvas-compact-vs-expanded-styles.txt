@@ -1,0 +1,305 @@
+Golpo Canvas Compact vs Expanded Styles + Notebook About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Features & Editing Golpo Canvas Compact vs Expanded: Every Style Compared + Notebook
+Compare all ten Golpo Canvas styles in Compact and Expanded profiles using matched video pairs, then watch the new Compact-only Notebook style.
+Sophie Müller • September 3, 2026 • 9 min read 
+
+Golpo Canvas now gives each of its ten established visual-style families two clearly named choices: Compact and Expanded . The earlier, original Canvas profiles have not disappeared; they are now named Expanded. Compact is the newer option.
+
+Also new: Notebook. Notebook is an additional Golpo Canvas style built for a notebook-like visual treatment. It is Compact-only, so there is no Expanded Notebook comparison to show. 
+This guide uses the same subject inside each pair. That makes the comparison useful: you are judging the Compact and Expanded profiles rather than two unrelated scripts.
+
+Compact and Expanded at a glance
+
+Golpo Canvas style
+Examples
+Available profiles
+
+Chalkboard White on Black 
+Watch pair 
+Compact + Expanded
+
+Chalkboard Black on White 
+Watch pair 
+Compact + Expanded
+
+Chalkboard Color 
+Watch pair 
+Compact + Expanded
+
+Whiteboard 
+Watch pair 
+Compact + Expanded
+
+Modern Minimal 
+Watch pair 
+Compact + Expanded
+
+Playful 
+Watch pair 
+Compact + Expanded
+
+Technical 
+Watch pair 
+Compact + Expanded
+
+Editorial 
+Watch pair 
+Compact + Expanded
+
+Sharpie 
+Watch pair 
+Compact + Expanded
+
+Illustration 
+Watch pair 
+Compact + Expanded
+
+Notebook 
+Watch example 
+Compact-only
+
+What the names mean
+
+Compact combines more components within each scene so viewers can see more of the explanation together and retain the relationships between its ideas.
+
+Expanded distributes those components across more scenes, giving each component more visual space and revealing the explanation in smaller steps. It is the new public name for the earlier, original profile of each established Canvas style.
+
+Notebook is an additional Compact-only style.
+
+Compact/Expanded is separate from orientation and duration. Continue to choose Horizontal or Vertical and the video duration independently.
+
+In the Golpo creator, choose Golpo Canvas , select the visual style, and use the available Compact or Expanded choice for that style. If you are integrating through REST, the official Golpo API documentation says unsuffixed image_style (v1) and canvas_style_variant (v2) values select Compact. Add _legacy to one of the ten pre-Notebook values for Expanded. Notebook uses notebook_infographic and has no _legacy form.
+
+Style 1 of 10
+
+Chalkboard White on Black: Compact vs Expanded
+
+High-contrast white drawing on a dark chalkboard. Both examples explain Galileo and Falling Objects .
+
+Expanded
+
+Compact
+
+Style 2 of 10
+
+Chalkboard Black on White: Compact vs Expanded
+
+Dark chalk-style drawing on a light background. Both examples explain Life in the Indus Valley .
+
+Expanded
+
+Compact
+
+Style 3 of 10
+
+Chalkboard Color: Compact vs Expanded
+
+Chalkboard drawing with color accents. Both examples explain How Cities Build Public Budgets .
+
+Expanded
+
+Compact
+
+Style 4 of 10
+
+Whiteboard: Compact vs Expanded
+
+A clean, familiar whiteboard treatment. Both examples explain The Monty Hall Probability Puzzle .
+
+Expanded
+
+Compact
+
+Style 5 of 10
+
+Modern Minimal: Compact vs Expanded
+
+A restrained, modern composition with generous white space. Both examples explain How Compound Growth Works .
+
+Expanded
+
+Compact
+
+Style 6 of 10
+
+Playful: Compact vs Expanded
+
+A brighter, more expressive visual treatment. Both examples explain The Octopus That Vanished .
+
+Expanded
+
+Compact
+
+Style 7 of 10
+
+Technical: Compact vs Expanded
+
+A schematic treatment for processes and technical ideas. Both examples explain How GPS Calculates Your Location .
+
+Expanded
+
+Compact
+
+Style 8 of 10
+
+Editorial: Compact vs Expanded
+
+A designed, magazine-like illustration style. Both examples explain How Vaccines Train the Immune System .
+
+Expanded
+
+Compact
+
+Style 9 of 10
+
+Sharpie: Compact vs Expanded
+
+Bold marker-like strokes and an intentionally direct feel. Both examples explain The Shared Meadow Problem .
+
+Expanded
+
+Compact
+
+Style 10 of 10
+
+Illustration: Compact vs Expanded
+
+A fuller scene-led illustration treatment. Both examples explain A Raindrop's Water Cycle Journey .
+
+Expanded
+
+Compact
+
+New Canvas style
+
+Notebook
+
+Watch Notebook explain Mean, Median, and Mode . Notebook is Compact-only; an Expanded version is not offered.
+
+How to choose
+
+Pick the visual family that fits the subject and audience.
+
+Watch the matching Compact and Expanded examples above.
+
+Generate a short test with your own script before committing to a longer video.
+
+Keep orientation, pacing, voice, and script constant if you want a controlled comparison.
+
+Frequently asked questions
+
+What is the difference between Compact and Expanded in Golpo Canvas?
+Compact combines more components within each scene so viewers can see more of the explanation together and retain the relationships between its ideas. Expanded distributes those components across more scenes, giving each component more visual space and revealing the explanation in smaller steps. The earlier, original profile is now called Expanded, while Compact is the current default when an unsuffixed REST API style value is used.
+
+Were the older Golpo Canvas styles removed?
+No. The earlier Canvas profiles remain available and are now named Expanded. Compact is available alongside Expanded for the ten pre-Notebook style families.
+
+Does the Notebook style have Compact and Expanded versions?
+Notebook is Compact-only. It does not have an Expanded counterpart or a REST API _legacy alias.
+
+Golpo Canvas — Compact vs Expanded
+The same topic rendered in both style profiles for every Canvas family the API exposes. Compact ( _compact suffix) packs more content into each scene; Expanded (unsuffixed value, the default) spreads content across more scenes. Notebook is Compact-only. Each tile's payload sends the exact canvas_style_variant shown — see Canvas Style for the full value table.
+
+Are the comparison videos fair pairs?
+Yes. Each Compact and Expanded pair uses the same subject so you can compare the style profile without changing the topic.
+
+Related Golpo guides
+
+Every visual style available on Golpo Canvas 
+
+Every Golpo video style: Sketch, Canvas, and Pen-in-Hand 
+
+Golpo AI complete tutorial 
+
+Try the styles with your own subject 
+Open Golpo AI , choose Golpo Canvas, and compare a Compact or Expanded profile—or start with the new Notebook style.
+
+Tags
+# Golpo Canvas # Compact and Expanded # Notebook Style # AI Video Styles 
+
+In this guide
+Compact and Expanded at a glance 
+What the names mean 
+Chalkboard White on Black: Compact vs Expanded 
+Expanded 
+Compact 
+Chalkboard Black on White: Compact vs Expanded 
+Expanded 
+Compact 
+Chalkboard Color: Compact vs Expanded 
+Expanded 
+Compact 
+Whiteboard: Compact vs Expanded 
+Expanded 
+Compact 
+Modern Minimal: Compact vs Expanded 
+Expanded 
+Compact 
+Playful: Compact vs Expanded 
+Expanded 
+Compact 
+Technical: Compact vs Expanded 
+Expanded 
+Compact 
+Editorial: Compact vs Expanded 
+Expanded 
+Compact 
+Sharpie: Compact vs Expanded 
+Expanded 
+Compact 
+Illustration: Compact vs Expanded 
+Expanded 
+Compact 
+Notebook 
+How to choose 
+Frequently asked questions 
+What is the difference between Compact and Expanded in Golpo Canvas? 
+Were the older Golpo Canvas styles removed? 
+Does the Notebook style have Compact and Expanded versions? 
+Golpo Canvas — Compact vs Expanded 
+Are the comparison videos fair pairs? 
+Related Golpo guides 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

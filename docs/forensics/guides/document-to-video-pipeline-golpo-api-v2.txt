@@ -1,0 +1,313 @@
+Document-to-Video Pipeline With Golpo API v2 About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+API & Developers How to Build an End-to-End Document-to-Video Pipeline With Golpo API v2
+This production-focused Golpo API v2 tutorial covers the complete document-to-video lifecycle: validate and upload a source, submit generation, persist state, poll safely, validate output, copy it to governed storage, publish it, retry failures, and track cost and provenance.
+Daniel Rivera • July 18, 2026 • 8 min read 
+
+A production document-to-video pipeline is not one POST request. The source must be approved and small enough to upload. The upload has state. Generation is asynchronous. A retry can accidentally create a duplicate. The returned video still needs validation, governed storage, metadata, publishing, and a relationship back to the exact source version that produced it.
+
+This tutorial implements that surrounding system with Golpo REST API v2. It uses the current v2 names and endpoints and deliberately does not reproduce the older v1 payload catalog. For the architecture and governance decisions behind this implementation, read Enterprise AI Video Automation .
+
+Reference flow
+
+approved document
+→ validate and fingerprint
+→ create customer generation record
+→ request upload URL
+→ PUT document bytes
+→ submit /api/v2/videos/generate
+→ persist job_id
+→ poll /api/v2/videos/status/{job_id}
+→ validate script and media
+→ copy to governed storage
+→ publish through customer system
+→ record cost, destinations, and source version 
+
+Golpo owns the upload and generation APIs. The calling organization owns source approval, idempotency, scheduling, review, storage, distribution, observability, and business measurement.
+
+Step 1: validate the source before upload
+
+The current API v2 endpoint reference says files must be under 10 MB. It also documents PDF, DOC, DOCX, TXT, MD, CSV, spreadsheet, and presentation formats. Do not transfer a limit from the UI, an SDK release note, or another integration to this endpoint without verification.
+
+Before network work:
+
+Confirm the source is in an approved state.
+
+Reject files at or above the current endpoint limit.
+
+Allow only formats the workflow expects.
+
+Scan according to the organization's file-security policy.
+
+Compute a cryptographic checksum.
+
+Record a stable source ID, version, owner, and classification.
+
+Normalize the requested engine, style, duration, language, voice, and instructions into a request fingerprint.
+
+Step 2: make retries idempotent in your database
+
+The public v2 documentation does not currently describe an idempotency-key header. Prevent accidental duplicates in the customer layer. Create a unique constraint on something such as:
+
+(source_id, source_version, request_fingerprint) 
+
+The generation record should move through explicit states: created , uploading , submitted , generating , review , approved , published , failed_retryable , and failed_terminal . Acquire the record before calling Golpo. If a worker crashes after submission, another worker should recover the saved job_id instead of submitting again.
+
+Step 3: upload the document
+
+API v2 uses a two-step upload. First send multipart form data to POST /api/v2/videos/upload-file . The response includes an upload_url , file_url , and content_type . Then PUT the bytes to the presigned upload_url . Pass the resulting file_url in reference_source .
+
+The endpoint reference labels upload access as plan-gated, while the live pricing page describes the available API-access paths. Confirm that the API offering and key issued to your organization include the upload endpoint before making document upload a production dependency.
+
+import hashlib
+import os
+import requests
+
+BASE_URL = os.environ["GOLPO_BASE_URL"]
+API_KEY = os.environ["GOLPO_API_KEY"]
+HEADERS = {"x-api-key": API_KEY}
+
+def upload_document(path):
+if os.path.getsize(path) >= 10 * 1024 * 1024:
+raise ValueError("API v2 files must be under 10 MB")
+
+with open(path, "rb") as source:
+response = requests.post(
+f"{BASE_URL}/api/v2/videos/upload-file",
+headers=HEADERS,
+files={"file": (os.path.basename(path), source)},
+timeout=60,
+)
+response.raise_for_status()
+upload = response.json()
+
+with open(path, "rb") as source:
+put = requests.put(
+upload["upload_url"],
+headers={"Content-Type": upload["content_type"]},
+data=source,
+timeout=120,
+)
+put.raise_for_status()
+return upload["file_url"] 
+
+The documentation states that document URLs are single-use after text extraction. Upload again for a separate generation request instead of treating a document file_url as a permanent reference. Keep your own source file in its governed repository.
+
+Step 4: submit a v2 generation request
+
+def generate_from_document(file_url):
+payload = {
+"prompt": "Create a concise employee explainer from the approved policy.",
+"reference_source": [file_url],
+"golpo_video_engine": "golpo_canvas",
+"canvas_style_variant": "technical",
+"narration_language": "english",
+"narration_instructions": "Clear, calm, professional delivery.",
+"visual_instructions": "Use simple process diagrams and restrained brand colors.",
+"scene_pacing": "fast",
+"timing": "2",
+"visibility": "private",
+}
+response = requests.post(
+f"{BASE_URL}/api/v2/videos/generate",
+headers={**HEADERS, "Content-Type": "application/json"},
+json=payload,
+timeout=60,
+)
+response.raise_for_status()
+return response.json() 
+
+prompt is the only universally required request field, but the engine-specific style must be coherent: Canvas uses canvas_style_variant ; Sketch uses sketch_style_variant . Validate this in your application before submission so a configuration error does not become an operational retry.
+
+For high-risk content, consider a separate script-approval phase with enable_script_only_mode , then submit the approved custom_script for rendering. The current docs note that script-only mode does not apply to the own-narration workflow.
+
+Step 5: poll with bounds and persist every transition
+
+The documented status endpoint is GET /api/v2/videos/status/{job_id} . Response content depends on the request and may include script_text , podcast_url , or video_url . The public reference does not currently document a native completion webhook.
+
+import random
+import time
+
+TERMINAL = {"completed", "failed"}
+
+def wait_for_job(job_id, deadline_seconds=1800):
+deadline = time.monotonic() + deadline_seconds
+delay = 10
+while time.monotonic() < deadline:
+response = requests.get(
+f"{BASE_URL}/api/v2/videos/status/{job_id}",
+headers=HEADERS,
+timeout=30,
+)
+response.raise_for_status()
+result = response.json()
+persist_status(job_id, result)
+if result.get("status") in TERMINAL:
+return result
+time.sleep(delay + random.uniform(0, 2))
+delay = min(45, delay * 1.4)
+raise TimeoutError(f"Job {job_id} exceeded polling deadline") 
+
+A timeout means “the customer worker stopped waiting,” not necessarily “Golpo failed.” Reconcile timed-out records before resubmitting. Separate HTTP 4xx configuration or access errors from retryable network and service failures. Add a maximum attempt count and a dead-letter review path.
+
+Step 6: validate before publishing
+
+On completion, verify that the result URL exists and can be downloaded; record size, duration, checksum, language, source version, request fingerprint, and job ID. Human reviewers should compare the script and visuals with the approved source, especially names, numbers, obligations, ordered steps, and inserted assets.
+
+Do not describe a successful render as proof of accessibility, legal compliance, learning effectiveness, or security review. Those determinations depend on the final media, player, destination, organizational requirements, and qualified review.
+
+Step 7: copy to governed storage and publish
+
+Download the approved result to customer-controlled storage. Use an immutable object key and a stable delivery alias when possible. Store:
+
+Source ID, version, and checksum.
+
+Golpo job and video identifiers.
+
+Generation request fingerprint.
+
+Output checksum, duration, and locale.
+
+Reviewer and approval timestamp.
+
+Published destinations and replacement relationship.
+
+Observed credits or cost data returned by the applicable interface.
+
+Publishing to an LMS, YouTube, DAM, portal, or help center is a customer integration. Golpo's Jira and Confluence apps provide dedicated workflows inside Atlassian, but the REST API does not imply universal auto-publishing.
+
+Optional controls that change the pipeline
+
+Language variants
+
+Use language_variants with the duration-dependent limits in the current docs. The response includes variant IDs and each variant must be polled. Each output is a separate render. Track review and publication per locale.
+
+Own narration and user media
+
+own_narration_source can use uploaded audio or video. API v2 documents picture-in-picture via own_narration_video_mode for video sources. custom_images and custom_videos require matching description arrays. use_ai_audio_at uses 1-indexed positions whose original video audio should be replaced with AI narration.
+
+Editing
+
+General PATCH is limited to title and visibility. Current v2 documentation provides frame-version, edit, combine, and revert operations only for completed Golpo Sketch videos. Do not design a Canvas workflow around undocumented frame editing.
+
+Deletion
+
+DELETE /api/v2/videos/{video_id} is documented as soft delete. Your own archive and published copies have independent retention and deletion obligations.
+
+Production checklist
+
+Secret manager for the API key; never ship it to a browser client.
+
+Approved-source gate and content classification.
+
+File validation before upload.
+
+Customer idempotency record and unique request fingerprint.
+
+Persisted job ID before polling.
+
+Bounded polling, retry categories, deadline, and dead-letter queue.
+
+Automated media validation plus human factual review.
+
+Customer-controlled storage and checksum.
+
+Destination registry and rollback plan.
+
+Structured logs without source content or credentials.
+
+Metrics for completion, failure, latency, duplicate prevention, review rejection, and cost.
+
+FAQ
+
+What is the API v2 upload limit?
+
+The current endpoint reference requires files to be under 10 MB. Confirm the specific surface because other documentation may describe different historical or interface-specific limits.
+
+Does API v2 have webhooks?
+
+The public reference currently documents status polling and does not document a native completion webhook. Operate a bounded poller and emit an event within your own system.
+
+How do we prevent duplicate renders?
+
+Create a unique customer record from the source ID, source version, and normalized request fingerprint before submission. Persist the returned job ID and recover it after worker failure.
+
+Can completed videos be edited through the API?
+
+Frame editing is currently documented for completed Golpo Sketch videos. General PATCH changes only title and visibility, and the same frame workflow is not documented for Canvas.
+
+Should we publish directly from the returned URL?
+
+For governed production, validate the result, copy it to customer-controlled storage, store provenance and checksum, then publish through the organization's delivery layer.
+
+For legacy v1 request examples, see the existing payload guide ; do not copy its v1 parameter names into new v2 code. For access options, use the Golpo API access guide and verify current pricing before purchase.
+
+Open the current API v2 reference · Review an enterprise integration with Golpo 
+
+Tags
+# Golpo API # Enterprise Automation # Developer Tutorial 
+
+In this guide
+Reference flow 
+Step 1: validate the source before upload 
+Step 2: make retries idempotent in your database 
+Step 3: upload the document 
+Step 4: submit a v2 generation request 
+Step 5: poll with bounds and persist every transition 
+Step 6: validate before publishing 
+Step 7: copy to governed storage and publish 
+Optional controls that change the pipeline 
+Language variants 
+Own narration and user media 
+Editing 
+Deletion 
+Production checklist 
+FAQ 
+What is the API v2 upload limit? 
+Does API v2 have webhooks? 
+How do we prevent duplicate renders? 
+Can completed videos be edited through the API? 
+Should we publish directly from the returned URL? 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

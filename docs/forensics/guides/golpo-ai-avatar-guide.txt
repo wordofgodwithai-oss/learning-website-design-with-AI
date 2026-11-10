@@ -1,0 +1,325 @@
+Golpo Avatar: Selfie & Stock AI Presenters + 9 Examples About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Features & Editing Introducing Golpo Avatar: Turn a Selfie into a Talking AI Presenter
+Golpo now supports talking AI avatars. Create a custom presenter from a selfie or choose a stock Golpo Avatar, explore layouts, and watch nine examples.
+Liam Park • October 1, 2026 • 11 min read 
+
+Golpo now supports talking AI avatars . Upload a portrait or selfie to create your own presenter, or choose a ready-to-use stock avatar from Golpo. Then bring that presenter into a video alongside the visuals that explain your story.
+
+Your avatar can sit beside a whiteboard explanation, appear in a round overlay, take the full screen, or share a vertical frame with your content. You choose the presentation—or let Auto choose among your approved layouts for each scene.
+
+Combine your presenter with Golpo, the world's best AI explainer video maker, for a winning combination. Your presenter brings a face to the story, while Golpo's animated visuals help explain the idea. Together, they give you a personal way to teach, introduce a product, share a founder update, or walk an audience through something new.
+
+In this guide 
+
+Choose a stock or custom avatar 
+
+Create an avatar from a selfie 
+
+Choose a layout and presenter size 
+
+Explore all nine video examples 
+
+Frequently asked questions 
+
+Two ways to choose your presenter
+
+Start with a stock Golpo Avatar
+
+Open Talking AI Avatars and choose Golpo Avatars . The library shown here contains 20 presenters ready for video generation, with options such as Maya, Arjun, Sofia, and Daniel.
+
+A stock avatar is a useful starting point for a lesson, product explanation, onboarding video, or business update when you want a presenter without uploading a portrait. For the library screenshots, step-by-step setup, and all 20 presenter examples, see the Golpo Stock Avatars guide .
+
+Create a custom avatar from your image
+
+Want to put yourself in the video? Choose Create Avatar and upload a portrait or selfie. Golpo lets you frame the image, review its presentation, name the avatar, and save it for reuse in My Avatars .
+
+This is a useful way to give a founder update, teach a lesson, or introduce a product with your own on-screen identity.
+
+How to create an avatar from a selfie
+
+1. Upload and frame a clear portrait
+
+In Talking AI Avatars → Create Avatar , drag your image into the upload area or click to browse. The upload screen accepts PNG, JPEG, or WebP files up to 10 MB .
+
+Use a photo with one person facing the camera, with the full head, chin, and shoulders visible. Even lighting, a simple background, and a sharp image help the animation. Avoid group photos, hands covering the face, dark sunglasses, heavy shadows, blur, and cropped hair.
+
+Frame the portrait, then choose Continue to review .
+
+Start with a clear portrait. The creation screen says your portrait and saved avatar stay in your personal library by default. 
+
+2. Choose Natural or Polished
+
+The review screen offers two presenter styles:
+
+Natural avatar: uses your original portrait and approved framing. It is ready immediately and has no avatar creation credit charge .
+
+Polished avatar: creates an AI-styled portrait designed to retain your recognizable appearance. It costs 1 credit after successful creation .
+
+3. Review layouts, name your avatar, and save
+
+Preview the layouts you want to use: Side by side , Top and bottom , Round overlay , and Full screen . Approve the layouts that look correct, adjust the portrait if needed, enter an avatar name, and complete the image-use confirmation before saving.
+
+The review screenshot below shows this stage with another portrait. The nine gallery videos later in this guide use Shraman's black T-shirt selfie shown in the gallery introduction.
+
+Review the presenter style and layout previews, name the avatar, and confirm image use before saving. 
+
+4. Select the avatar for your video
+
+Enable Talking AI Avatar in your video settings. Choose a saved custom avatar from Mine / My Avatars , select a stock presenter from Golpo / Golpo Avatars , or use Create new .
+
+Choose your presentation settings and check the live preview before continuing with video generation. The selected avatar card and credit-rate panel show the applicable rate.
+
+Choose how your avatar shares the screen
+
+The avatar adds a presenter to your explanation. The layout determines how much space that presenter and your supporting visuals receive.
+
+Layout
+
+How it works
+
+A useful starting point
+
+Side by side 
+
+Presenter and content sit beside each other in a landscape 16:9 frame.
+
+Lessons, explainers, and founder updates.
+
+Top and bottom 
+
+Presenter and content share a portrait 9:16 frame vertically.
+
+Shorts, Reels, and other vertical explanations.
+
+Round overlay 
+
+The presenter appears in a round corner overlay.
+
+Demos and explanations where the main content needs space.
+
+Full screen 
+
+The presenter fills the frame. The gallery includes an example with visual insets.
+
+A direct introduction or presenter-led message.
+
+Auto 
+
+Golpo chooses among approved layouts to suit each scene.
+
+A video that benefits from changes in presentation.
+
+Adjust presenter size and placement
+
+For the landscape split shown in the settings screenshot, the presenter can use 25%, 30%, 35%, 40%, or 50% of the width , with placement on the left or right .
+
+Use a 50/50 split when you want the presenter and content to have equal space. A smaller presenter leaves more room for diagrams, labels, and visual explanations. The gallery includes both 50/50 and 35% presenter examples, including vertical videos.
+
+Let Auto adapt the presentation
+
+Auto chooses among the approved layouts that fit each scene. When at least two visible layouts are compatible, it uses at least two. It may briefly hide the avatar to keep important content unobstructed.
+
+The Preview Auto layouts tabs let you inspect appearances such as Side by side, Round overlay, and Full screen. Switching those preview tabs does not change the generation setting: it still uses Auto.
+
+Shraman's custom avatar selected with Auto, a 35% presenter size, and presenter-right placement. The live preview and credit panel reflect those selections. 
+
+One selfie, nine Avatar video examples
+
+These nine videos were created using Shraman's selfie below . They show how one custom avatar can appear across landscape and vertical formats, different screen layouts, and Golpo visual styles.
+
+The source portrait used for the custom avatar in this gallery. 
+
+Play each video inside this guide and use the player's full-screen button to expand it. Press Esc to return to the guide.
+
+Browse the Avatar playlist → 
+
+1. Side-by-Side AI Avatar: Presenter Left (Formal Sketch)
+
+Put the presenter on the left and pair the explanation with Formal Sketch visuals.
+
+Watch this example on YouTube → 
+
+2. Side-by-Side AI Avatar: Presenter Right (Playful Canvas)
+
+Place the presenter on the right alongside a Playful Canvas explanation.
+
+Watch this example on YouTube → 
+
+3. 50/50 AI Avatar Layout for Founder Videos
+
+Give the presenter and supporting content equal space in a landscape frame.
+
+Watch this example on YouTube → 
+
+4. AI Avatar Layout with More Visual Space (Dry Erase)
+
+Use a smaller presenter area to leave more space for the Dry Erase explanation.
+
+Watch this example on YouTube → 
+
+5. Golpo AI Auto Layout: Whiteboard + Avatar
+
+See how Auto presents a custom avatar together with whiteboard visuals.
+
+Watch this example on YouTube → 
+
+6. Vertical AI Avatar for Shorts: 50/50 Split
+
+Share a vertical frame equally between the avatar and the explanation.
+
+Watch this example on YouTube → 
+
+7. Vertical AI Avatar for Shorts: 35% Presenter
+
+Keep a presenter in the vertical video while giving more space to the visuals.
+
+Watch this example on YouTube → 
+
+8. Round AI Avatar Overlay for Demos
+
+Add a round presenter overlay while keeping the main content prominent.
+
+Watch this example on YouTube → 
+
+9. Golpo AI Vertical Auto Layout: Chalkboard Sketch
+
+Combine a vertical Avatar video, Auto presentation, and Chalkboard Sketch visuals.
+
+Watch this example on YouTube → 
+
+Stock Avatar videos use 3 credits per minute. Custom avatar videos use 5.
+
+Frequently asked questions
+
+Can I create an avatar from a selfie?
+
+Yes. Upload a clear portrait or selfie in Create Avatar , frame it, review and approve suitable layouts, name it, and save it to your library.
+
+Do I need to upload my own photo?
+
+No. Choose a ready-to-use presenter from Golpo Avatars .
+
+What is the difference between Natural and Polished?
+
+Natural uses your original portrait and approved framing, with no creation credit charge. Polished creates an AI-styled portrait designed to keep your recognizable appearance and uses 1 credit after successful creation.
+
+Can I reuse my custom avatar?
+
+Yes. Save it in My Avatars , then select it for another video. You do not need to start from the upload screen each time.
+
+Does uploading a selfie clone my voice?
+
+A selfie supplies the avatar's appearance. Set the narration voice separately. For Golpo's voice workflow, see how to clone your voice for AI video .
+
+Can I make vertical Avatar videos?
+
+Yes. The gallery includes vertical split layouts and a vertical Auto example. Preview Top and bottom when reviewing your avatar's portrait 9:16 presentation.
+
+Will the avatar appear throughout an Auto video?
+
+Auto may briefly hide the avatar to keep important content unobstructed. It chooses among the layouts you approved that fit the scene.
+
+Where does my uploaded portrait go?
+
+The creation screen states that your portrait and saved avatar stay in your personal library by default.
+
+Bring a presenter into your next Golpo video
+
+Choose a stock presenter for a quick start, or upload a selfie to create your own reusable avatar. Pick a layout, preview the balance between presenter and visuals, and turn your next explanation into an Avatar video.
+
+Combine your presenter with the world's best AI explainer video maker—and bring that winning combination to your next story.
+
+Create your Avatar video in Golpo → 
+
+Related guides
+
+Choose a Stock Avatar and watch all 20 examples 
+
+Explore every Golpo video style 
+
+Clone your voice for AI video 
+
+Understand Golpo credit deduction 
+
+Golpo's complete tutorial 
+
+Tags
+# Golpo Avatar # AI avatars 
+
+In this guide
+Two ways to choose your presenter 
+Start with a stock Golpo Avatar 
+Create a custom avatar from your image 
+How to create an avatar from a selfie 
+1. Upload and frame a clear portrait 
+2. Choose Natural or Polished 
+3. Review layouts, name your avatar, and save 
+4. Select the avatar for your video 
+Choose how your avatar shares the screen 
+Adjust presenter size and placement 
+Let Auto adapt the presentation 
+One selfie, nine Avatar video examples 
+1. Side-by-Side AI Avatar: Presenter Left (Formal Sketch) 
+2. Side-by-Side AI Avatar: Presenter Right (Playful Canvas) 
+3. 50/50 AI Avatar Layout for Founder Videos 
+4. AI Avatar Layout with More Visual Space (Dry Erase) 
+5. Golpo AI Auto Layout: Whiteboard + Avatar 
+6. Vertical AI Avatar for Shorts: 50/50 Split 
+7. Vertical AI Avatar for Shorts: 35% Presenter 
+8. Round AI Avatar Overlay for Demos 
+9. Golpo AI Vertical Auto Layout: Chalkboard Sketch 
+Frequently asked questions 
+Can I create an avatar from a selfie? 
+Do I need to upload my own photo? 
+What is the difference between Natural and Polished? 
+Can I reuse my custom avatar? 
+Does uploading a selfie clone my voice? 
+Can I make vertical Avatar videos? 
+Will the avatar appear throughout an Auto video? 
+Where does my uploaded portrait go? 
+Bring a presenter into your next Golpo video 
+Related guides 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

@@ -1,0 +1,514 @@
+The Golpo Prompt Cheatsheet: 10 Templates with Real Demo Videos (2026) About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+All Guides 
+Get Started The Golpo Prompt Cheatsheet: How to Write Prompts That Produce Great Videos
+A field guide to writing prompts that produce great Golpo videos. Most of what you'd think to put in a prompt is actually a UI control — duration, visual style, voice, music, language. The main prompt is for content. This cheatsheet covers what goes where, the universal do's and don'ts, and ten category templates (K-12 to Sales to YouTube long-form), each with the recommended UI settings, a Voice Instructions snippet, a sharp main-prompt example, and a real demo video generated from those exact settings.
+Sudip Kar • April 26, 2026 • 19 min read 
+
+below points at a Golpo Video API S3 render generated using the
+exact UI parameters shown in its category card. (Iframes are used in place of
+tags because the CMS strips .) The source MP4 URLs are listed
+at the bottom of this file in a final HTML comment block.
+-->
+
+Most of what you'd think to put in a Golpo prompt is actually a UI control. Duration, visual style, language, voice, orientation, music, and pacing are dropdowns. Tone, accent, and personality go in the optional Voice Instructions field, not the main prompt. The main prompt is for content : topic, audience, outcome, outline, key points, and CTA. If the narration is already written, turn on Script Mode and paste only the words that should be spoken. Turn on Edit script before creating video when you want a review pause before rendering. See the complete Prompt Mode vs Script Mode guide . This cheatsheet focuses on Prompt Mode.
+
+This guide covers all three surfaces:
+
+Section 1 — the mental model: what goes where.
+
+Section 2 — universal do's and don'ts.
+
+Section 3 — ten category cards. Each one has the recommended UI settings, a Voice Instructions snippet, a sharp main-prompt example, and a real demo video generated from those exact settings.
+
+Section 4 — quick reference card.
+
+Section 1 — What goes where
+
+The three input surfaces
+
+UI controls (dropdowns, toggles) — for format and packaging: duration, visual style, language, voice, music, orientation, pacing, logo.
+
+Voice Instructions field (optional, Creator+) — for tone, accent, personality. Examples: "warm and curious, like a favorite teacher" / "calm, procedural, no excitement" .
+
+Main prompt (the big textarea) — for content and structure: topic, audience, outcome, outline, must-include points, CTA.
+
+The placeholder in the main prompt textarea reads, verbatim: "Describe your video/podcast topic, perspective, and instructions in any language…" . That's the spec. Topic. Perspective. Instructions about content. Not format.
+
+What NOT to put in the main prompt
+
+These instructions are wasted (or actively harmful) in the main prompt because the engine takes them from elsewhere:
+
+"Make a 90-second video…" — duration is a dropdown.
+
+"In a whiteboard style…" — visual style is a dropdown.
+
+"In Spanish…" — language is a dropdown.
+
+"Use a female narrator with a British accent…" — voice is a dropdown; accent goes in Voice Instructions.
+
+"Add upbeat background music…" — music is a dropdown.
+
+Visual style picker (UI dropdown)
+
+Golpo Sketch styles: Classic · Improved (Beta) · Dry Erase · Professional Clean · Crayon · Formal · Infographics · plus Custom Style from an image, video, or description.
+
+Golpo Canvas image styles: Chalkboard White on Black · Chalkboard Black on White · Chalkboard Color · Whiteboard · Modern Minimal · Playful · Technical · Editorial · Sharpie · Illustration · Notebook · plus Custom Style from an image, video, or description.
+
+Compact combines more components within each scene so viewers can see more of the explanation together and retain the relationships between its ideas. Expanded distributes those components across more scenes, giving each component more visual space and revealing the explanation in smaller steps. The ten pre-Notebook Canvas style families are available in Compact and Expanded profiles; the earlier profiles are now named Expanded. Notebook is Compact-only. Watch the full comparison . 
+
+Rule of thumb:
+
+Dry Erase / Classic / Whiteboard / Chalkboard — education, K-12, the "explained" feel.
+
+Professional Clean / Modern Minimal — product demos, finance, corporate.
+
+Crayon / Playful — kids, lifestyle, casual brands.
+
+Formal / Editorial — storytelling, thought leadership, internal comms, finance reporting.
+
+Technical — engineering tutorials, dev tools.
+
+Documents and language
+
+Attach your document and mention in your prompt if you want Golpo to consider a certain portion of the document, such as a chapter or a page range. The model will write its own narrative.
+
+Set the language in the dropdown, and then write the main prompt in that language if you can.
+
+Section 2 — Universal do's and don'ts
+
+In the main prompt, always
+
+Name the audience. "For first-year medical students" beats "for everyone."
+
+State the outcome. "Viewer should be able to identify three risk factors" beats "tell them about heart disease."
+
+Use imperative verbs. "Explain…", "Walk through…", "Compare…", "Pitch…"
+
+Hint at structure. "Open with the surprise, then three examples, then a one-line takeaway."
+
+List must-include points if there are non-negotiables (a stat, a quote, exact CTA wording).
+
+Pick a scope to fit the duration. One idea per 30s, three at most per 4 min.
+
+In the main prompt, never
+
+Don't restate UI fields (duration, style, language, voice, music) — wasted text.
+
+Don't paste raw documents. Attach them, or summarize key points in 5 lines.
+
+Don't include unpronounceable strings. 
+
+Don't ask for content the safety filter will block — MUST avoid biosafety hazard, nudity, or sex, any public hazard, any self-harm, any harmful material, any abusive language, anything obscene. Your video will likely not generate.
+
+Don't load 8 ideas into a 1-minute video. Pick one.
+
+Section 3 — The 10 category cheatsheets
+
+Each card below shows the UI settings, a Voice Instructions snippet, the main-prompt formula, an example main prompt, an anti-example, do's, don'ts — and a real demo video generated by the Golpo Video API using exactly those settings.
+
+1. K-12 / General Education
+
+Main-prompt formula: hook with a question or surprise → one concept → one concrete example a kid can picture → one-line takeaway.
+
+Great main-prompt example: 
+
+Why is the sky blue, for curious 9–12 year olds. Open with the question "why isn't the sky green or purple?" then walk through how sunlight scatters in the atmosphere using the analogy of a flashlight in fog. End with one line they can repeat to a friend.
+
+Avoid main-prompts like this: 
+
+Make a 1-minute educational video in whiteboard style about light. Cover wavelengths, Rayleigh scattering, the electromagnetic spectrum, and why sunsets are red.
+
+Why it fails: duration and style belong in the UI; the content half is four ideas crammed into one short video with no audience and no hook.
+
+Demo video — generated from the example main prompt at 1 minute, Sketch Classic, female warm voice: 
+
+Optional Voice Instructions: "Warm, curious, like a favorite teacher. No jargon. Slightly playful." 
+
+Do's 
+
+Anchor every abstract idea to a physical thing the audience can see or touch.
+
+Use the question-first opener — kids stay if they want the answer.
+
+Specify the age band: "9–12" produces very different language than "5–7."
+
+Ask for one repeatable takeaway line.
+
+Don'ts 
+
+Don't load multiple concepts. One video = one idea.
+
+Don't ask for "definitions of technical vocabulary" — it eats the word budget.
+
+2. Online Course Creators
+
+Voice Instructions: "Friendly TA. Patient, no condescension. Speaks like someone who's tutored for years." 
+
+Main-prompt formula: state the learning objective up front → 2–3 sub-skills → one worked example → recap of what they should now be able to do.
+
+Great main-prompt example: 
+
+Lesson 4 of a Python course for self-taught beginners who already know variables and if-statements. Topic: for-loops. Open by stating the objective: "by the end, you'll be able to loop through a list and act on each item." Walk through the syntax, then a worked example that prints each name in a list of attendees, then one common mistake (modifying a list while iterating). End with a recap.
+
+Avoid main-prompts like this: 
+
+Teach for-loops in Python.
+
+Why it fails: no learner level, no objective, no example, no scope. The model will produce a generic Wikipedia-flavored summary.
+
+Demo video — generated at 2 minutes, Sketch Improved, female course-creator voice: 
+
+Do's 
+
+Always declare the prerequisite ("learners who already know X").
+
+Lead with the explicit learning objective — the engine uses it to anchor the script.
+
+Include one worked example. One.
+
+Mention the lesson's place in the series so tone stays consistent.
+
+Don'ts 
+
+Don't try to teach 4 sub-skills in one video. Split into a series.
+
+Don't paste full code blocks — describe the example in prose.
+
+Don't end with "thanks for watching." Close on the recap so the lesson is reusable.
+
+3. Corporate L&D / Training (Onboarding, Safety, Compliance)
+
+Voice Instructions: "Calm, procedural, instructional. Not motivational. Confident but not stern." 
+
+Main-prompt formula: why this matters → the rules or steps → what to do when things go wrong → who to escalate to.
+
+Great main-prompt example: 
+
+New-hire onboarding video on our incident response policy. Audience: engineers in their first week. Cover (1) why we have an on-call rotation, (2) how to acknowledge an alert in PagerDuty, (3) the three severity levels and what each means, (4) when to page a manager, (5) where to find the post-incident template. End with the Slack channel they should join today.
+
+Avoid main-prompts like this: 
+
+Make a 4-minute professional onboarding video about how we handle incidents at the company. Be thorough.
+
+Why it fails: duration and style belong in the UI; "thorough" is unbounded; no audience-level set; no concrete actions called out. Output will be vague filler.
+
+Demo video — generated at 4 minutes, Sketch Formal, male voice: 
+
+Do's 
+
+Number the steps in your prompt — the engine respects ordering.
+
+Specify role and tenure ("engineers in their first week" not "employees").
+
+Always include the escalation path — it's the most-asked compliance question.
+
+Tell the model the content should be procedural, not motivational.
+
+Don'ts 
+
+Don't ask for legal definitions verbatim — they read poorly aloud.
+
+4. Marketing / Product Demos
+
+Voice Instructions: "Confident, benefit-led, not hypey. Like a senior PM who's actually proud of the product." 
+
+Main-prompt formula: the pain (10s) → how the product solves it (40s) → 2–3 specific features framed as benefits (60s) → CTA (10s).
+
+Great main-prompt example: 
+
+Product demo for ThreadDigest, a Slack app that auto-summarizes long threads. Audience: managers at 50–500 person companies who feel they spend too long catching up after meetings. Open with the pain: "you're back from PTO and Slack has 1,200 unread messages." Then introduce ThreadDigest and three benefits — daily digest of channels, one-click thread summary, weekly highlight reel. Close with a CTA to install from the Slack App Directory.
+
+Avoid main-prompts like this: 
+
+Make a 90-second marketing video about our amazing new Slack app. Mention all the features.
+
+Why it fails: duration belongs in the UI; "amazing" triggers AI-voice patterns; "all features" is impossible in 90 seconds; no audience.
+
+Demo video — generated at 1 minute, Sketch Improved, female benefit-led voice: 
+
+Do's 
+
+Lead with the pain in the audience's words, not your own.
+
+Pick two or three features. Put the strongest one last.
+
+End with a single CTA. Multiple CTAs split conversion.
+
+Specify a buyer persona — "managers at 50–500 person companies" beats "businesses."
+
+Don'ts 
+
+Don't list every feature on your roadmap.
+
+Don't include pricing unless it's a price-led message — pricing dates fast.
+
+Don't use "revolutionary," "game-changing," "amazing" — they trigger AI-voice patterns.
+
+5. Social Media Ads (Short-form)
+
+Voice Instructions: "Punchy, high energy. Talk like you're trying to stop someone scrolling. Not hypey or fake." 
+
+Main-prompt formula: 3-second hook → 1 promise → 1 CTA. That's it.
+
+Great main-prompt example: 
+
+TikTok ad for our meal-prep service, aimed at busy parents of school-age kids. Open with the line "what if dinner was already done?" Then briefly explain how it works — delivery, kid-friendly menus, no commitment. Close with "first week 50% off — link in bio."
+
+Avoid main-prompts like this: 
+
+Create a 30-second ad in playful style for our meal-prep service that explains the menu options, the dietary filters, the family plans, and how the rewards program works.
+
+Why it fails: duration and style belong in the UI; five ideas in 30 seconds means nobody remembers anything. Ads need one beat.
+
+Demo video — generated at 30 seconds, Sketch Improved, vertical, female high-energy voice: 
+
+Do's 
+
+Start with a question, a contrarian claim, or an unexpected stat.
+
+Pick one promise — speed, savings, novelty, status. Just one.
+
+Write the CTA verbatim in the prompt. Don't leave it to the model.
+
+Don'ts 
+
+Don't try to "explain the product" in a 30-second ad — that's a demo, not an ad.
+
+Don't include pricing terms or fine print. Channel them to the link.
+
+Don't ask the model to "make it go viral." Vague aspirational language produces vague output.
+
+6. YouTube Storytelling / Long-form
+
+Voice Instructions: "Narrative, retention-aware, editorial. Like a Wendover Productions or Patrick Boyle voiceover. No hype." 
+
+Main-prompt formula: cold-open hook → "I'm going to tell you X" promise → 3-act narrative with a re-hook every 60–90s → payoff → soft subscribe ask.
+
+Great main-prompt example: 
+
+How Costco's hot dog stayed $1.50 for 40 years. Audience: business-curious viewers. Open cold with "this hot dog has lost the company an estimated $50 million in inflation-adjusted margin — on purpose." Then three acts: (1) the founder's 1985 promise and why it mattered, (2) how the supply chain absorbs the loss through vertical integration of the bun and meat, (3) what the hot dog actually is — a customer-acquisition asset, not food. Re-hook every 90 seconds with a "but here's what's weird" beat. Close with the broader lesson about loss-leaders.
+
+Avoid main-prompts like this: 
+
+Make a long YouTube video about Costco. Make it interesting.
+
+Why it fails: no thesis, no audience reference, no structure, no retention plan. "Interesting" is the most useless adjective in prompting.
+
+Demo video — generated at 4 minutes (a tighter render of the same prompt; bump to 8–10 min for the real upload), Sketch Formal, male narrative voice: 
+
+Do's 
+
+State the thesis in one sentence. The whole script orbits it.
+
+Reference creators whose tone you want — the model anchors well to named comparables (put these in Voice Instructions, not the main prompt).
+
+Don'ts 
+
+Don't ask for "all the details." Pick the three that serve the thesis.
+
+7. Finance / FinTech Explainers
+
+Voice Instructions: "Calm, neutral, analogy-driven. No hype, no doom. Like a finance journalist explaining to a friend." 
+
+Main-prompt formula: define the term in plain English → analogy from everyday life → one numerical example → why the viewer should care.
+
+Great main-prompt example: 
+
+What a yield curve inversion is, for retail investors who follow markets but aren't finance professionals. Open with "when the curve inverts, traders panic — here's why." Define short-term vs. long-term yields using the analogy of borrowing rates at a bank. Walk through one concrete example: 2-year Treasury at 4.5% vs. 10-year at 4.1%. Explain why this historically precedes recessions but isn't a guarantee. Close with what the viewer should and shouldn't conclude.
+
+Avoid main-prompts like this: 
+
+Explain inverted yield curves and what they mean for the economy and the stock market and bond market and the Fed and recessions.
+
+Why it fails: five threads at once. Finance topics need a single anchor or the script becomes incoherent.
+
+Demo video — generated at 2 minutes, Sketch Formal, male neutral voice: 
+
+Do's 
+
+Always include an analogy from outside finance — the script gets ~30% clearer.
+
+State the audience's existing knowledge level explicitly.
+
+Use one concrete number, not three. Specificity sells.
+
+Add the caveat ("isn't a guarantee", "past performance…") — it builds trust and prevents safety-filter issues.
+
+Don'ts 
+
+Don't ask for investment advice. The safety filter will block it or hedge it to mush.
+
+Don't use jargon as if defined — define it, then use it.
+
+8. Sales Enablement (Pitches, Outbound)
+
+Voice Instructions: "Warm, peer-to-peer. Like a platform engineer who's done this before, sharing what worked. Candid, slightly understated, no sales-speak." 
+
+Main-prompt formula: their pain (in their words) → how peers solved it → your specific solution → soft next step.
+
+Great main-prompt example: 
+
+Outbound video for VPs of Engineering at Series B startups (50–200 engineers) who are evaluating internal developer platforms. Open by naming the pain ("at around 100 engineers, dev velocity quietly stops scaling"). Then how peer companies are solving it with golden paths, what changed in the last 12 months, and end with a soft ask for a 20-minute conversation. No product mentions until the final 10 seconds.
+
+Avoid main-prompts like this: 
+
+Make a sales video that pitches our platform to engineering leaders. Be persuasive.
+
+Why it fails: "persuasive" without specifics produces generic copy. No persona, no pain, no proof, no ask.
+
+Demo video — generated at 1 minute, Sketch Improved, male peer-to-peer voice: 
+
+Do's 
+
+Cast the narrator as a peer of the prospect. Set this in the Voice Instructions field.
+
+Lead with peer proof, not product features.
+
+Save the product reveal for the last 10–15 seconds.
+
+Don'ts 
+
+Don't open with the product name. Open with their pain.
+
+Don't drop pricing — it short-circuits the conversation.
+
+9. Internal Comms (All-hands recap, exec updates)
+
+Voice Instructions: "Direct, factual, transparent. Like an exec who respects the team enough to be honest. No corporate-speak." 
+
+Main-prompt formula: what changed → why it changed → what it means for you → what's next.
+
+Great main-prompt example: 
+
+Company-wide update for all employees on Q1 results and Q2 priorities. Cover: (1) we missed revenue by 8% but improved gross margin by 4 points, (2) the reasons — slower enterprise close cycles, faster mid-market growth, (3) what changes in Q2 — refocusing AE comp on mid-market deals, hiring 2 more AEs, pausing one product line, (4) what stays the same — runway, hiring plan, the offsite. End with where to ask questions.
+
+Avoid main-prompts like this: 
+
+Summarize Q1 results in a positive way and motivate the team for Q2.
+
+Why it fails: "positive way" plus "motivate" equals corporate fluff. Internal audiences smell spin instantly. The engine's anti-cringe instruction will fight you.
+
+Demo video — generated at 2 minutes, Sketch Formal, female direct voice: 
+
+Do's 
+
+Be specific about numbers — "missed by 8%" beats "fell short."
+
+Always include "what stays the same" — it's the most reassuring section.
+
+End with a Q&A pointer (Slack channel, AMA time, doc link).
+
+Set the tone in Voice Instructions, not the main prompt.
+
+Don'ts 
+
+Don't sand off bad news. The model will produce hollow copy and the team will notice.
+
+Don't include confidential details that shouldn't leave the company — videos get forwarded.
+
+Don't end with "thanks for all you do" boilerplate.
+
+10. Customer Support / Help / Tutorials
+
+Voice Instructions: "Stepwise, calm, procedural. No excitement. Like a support engineer who's seen this hundreds of times." 
+
+Main-prompt formula: state the goal → list the prerequisites → walk through the steps in order → confirm what success looks like → what to do if it doesn't work.
+
+Great main-prompt example: 
+
+How to connect a Stripe account inside our dashboard. Audience: small-business admins who've signed up but haven't taken payments yet. State the goal up front: "by the end of this, you'll have Stripe connected and your first test charge ready." List prerequisites (admin role, Stripe account exists). Walk through the four steps: Settings, then Payments, then Connect Stripe, then confirm callback. Describe what success looks like (green checkmark next to "Stripe connected"). End with the help-center link to use if the OAuth callback fails.
+
+Avoid main-prompts like this: 
+
+Make a 2-minute technical-style tutorial for connecting Stripe with all the troubleshooting steps and error messages and edge cases.
+
+Why it fails: duration and style belong in the UI; troubleshooting belongs in a separate video. One tutorial equals one happy path.
+
+Demo video — generated at 2 minutes, Sketch Improved, female clear voice: 
+
+Do's 
+
+One tutorial covers the happy path. Edge cases live in their own videos.
+
+State prerequisites before steps — it filters out viewers who'll get stuck.
+
+Number the steps in your prompt; the model preserves order.
+
+Tell viewers what success literally looks like (a checkmark, a confirmation screen, a sound).
+
+Don'ts 
+
+Don't ask for "every possible error." Cover the top failure with a help-center pointer.
+
+Don't mix conceptual and procedural content. Decide: are you teaching what or how ?
+
+The single rule above all rules
+
+The main prompt is for content. Everything else has a UI control. 
+
+Set duration, style, voice, music, language, orientation, and pacing in the dropdowns. Drop tone and personality in the Voice Instructions field. Then write the main prompt as a tight content brief — audience, outcome, outline, must-include points, CTA. The Golpo engine is sharp, opinionated, and well-tuned. Give it the right inputs in the right places and step out of its way.
+
+In this guide
+Section 1 — What goes where 
+The three input surfaces 
+What NOT to put in the main prompt 
+Visual style picker (UI dropdown) 
+Documents and language 
+Section 2 — Universal do's and don'ts 
+In the main prompt, always 
+In the main prompt, never 
+Section 3 — The 10 category cheatsheets 
+1. K-12 / General Education 
+2. Online Course Creators 
+3. Corporate L&D / Training (Onboarding, Safety, Compliance) 
+4. Marketing / Product Demos 
+5. Social Media Ads (Short-form) 
+6. YouTube Storytelling / Long-form 
+7. Finance / FinTech Explainers 
+8. Sales Enablement (Pitches, Outbound) 
+9. Internal Comms (All-hands recap, exec updates) 
+10. Customer Support / Help / Tutorials 
+The single rule above all rules 
+Keep reading
+
+Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+Get Started · 27 min read 
+
+Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+Pricing & Credits · 12 min read 
+
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Features & Editing · 4 min read 
+
+Keep reading
+
+Get Started Golpo AI Complete Tutorial: Every Feature, Control, and Setting Explained
+A complete walkthrough of every feature, control, input, and dropdown in Golpo AI — from creating your first video to editing frames in the Library. This tutorial explains what each setting does, which plans unlock it, and how to get the most out of every option on the platform.
+Rohan Mehta • 27 min read 
+
+Pricing & Credits Golpo Pricing Explained: Full Plan Breakdown for 2026 (Starter to Enterprise)
+A complete breakdown of every Golpo plan — Starter, Creator, Growth, Business, Scale, and Enterprise. Compare credits, video lengths, Custom Style availability, features, and add-ons.
+Liam Park • 12 min read 
+
+Features & Editing How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+Anika Sharma • 4 min read 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service

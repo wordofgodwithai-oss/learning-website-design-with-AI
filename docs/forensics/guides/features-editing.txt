@@ -1,0 +1,313 @@
+Golpo Editing, Narration, and Feature Guides | Golpo AI About Us Solutions Gallery Pricing FAQ API MCP Guides 
+
+Home 
+/
+Guides 
+/
+Features & Editing
+Features and editing hub
+Golpo Editing, Narration, and Feature Guides
+Edit generated videos, add your own narration, insert images, and publish in more than one language.
+
+Ready to produce?
+Next step 
+Open Playground Whiteboard Animation Maker 
+
+43 practical guides Browse within all guides 
+
+Edit
+Edit the generated video
+
+Adjust scenes, refine frames, and bring your own images into a finished Golpo video.
+
+Edit 
+Field guide # 01 
+How to Edit Videos on Golpo AI: Frame-by-Frame Editing Guide
+Learn how to edit videos on Golpo frame by frame. With this feature, you can edit visuals with plain text, add images, replace text, upload reference images and edit animations in a super easy and intutive manner. and understand the credit cost before you start editing.
+4 min read Read guide 
+
+Edit 
+Field guide # 02 
+How to Insert Your Own Images into Golpo AI Videos — A Step-by-Step Guide
+A complete walkthrough of Golpo AI's "User Created Videos and Images Insertion" feature. Learn how to upload product photos, choose between still and animated display, edit the generated script with image markers, and produce a polished video ad — all in minutes.
+9 min read Read guide 
+
+Edit 
+Field guide # 03 
+Every Visual Style Available on Golpo Canvas (2026 Guide)
+See all 11 named Golpo Canvas styles: ten with Compact and Expanded profiles, plus the Compact-only Notebook style and playable Pen, Marker, and Stylus in Hand examples.
+4 min read Read guide 
+
+Edit 
+Field guide # 04 
+Video Instructions in Golpo: One Line in Your Payload, Seventeen Different Looks
+A single optional field — `video_instructions` — is the most powerful lever in the Golpo API. We tested it across 8 categories and 17 contextual prompts to show exactly how much a sentence or two can reshape your output.
+16 min read Read guide 
+
+Edit 
+Field guide # 05 
+Character Consistency in Golpo AI: The Complete Guide to Recurring Characters
+Character Consistency (BETA) lets you keep the same character across every scene of a Golpo video and across every video in a series. Give a character a name, an appearance description, and an optional reference image, and Golpo carries that character forward, frame by frame. This guide covers what the feature is, where to find it on the create page, how to write a description that renders reliably, and five real examples with the exact character setups and finished videos. Available on the Scale plan.
+19 min read Read guide 
+
+Edit 
+Field guide # 06 
+Your Training Videos Aren't Accessible: A Practical WCAG and Section 508 Checklist
+Build accessibility into a required training module before you render. Golpo drafts the narration from the procedure, and you control what is spoken, how much appears on screen, and how a second language is reviewed. Captions, the player, and conformance checks stay in your publishing workflow.
+13 min read Read guide 
+
+Edit 
+Field guide # 07 
+How to Turn Markdown and LaTeX Equations Into Educational Videos: 10 Golpo Examples
+Create accurate math and science explainer videos by pasting Markdown-style LaTeX equations directly into Golpo's Script Only workflow. This practical guide explains the syntax, shows the correct UI and API workflow, and includes ten exact scripts with ten real output videos across calculus, algebra, geometry, physics, chemistry, electricity, nuclear decay, waves, and statistics. Every example identifies its exact Canvas or Sketch style.
+21 min read Read guide 
+
+Edit 
+Field guide # 08 
+How to Turn a Song Into a Music Video With AI: 2026 Guide + 9 Real Examples
+Turn an original song, jingle, or Suno track into an illustrated AI music video without animating every scene yourself. This 2026 guide shows the complete Golpo Own Narration workflow, nine real song-and-video pairs, the exact visual instructions and styles used, a Suno-to-MP3 process, an API example, and the quality checks that matter before publishing.
+28 min read Read guide 
+
+Edit 
+Field guide # 09 
+How to Create a Custom Style in Golpo Canvas and Golpo Sketch Using an Image, Video, or Description
+Create a reusable visual style for Golpo Canvas or Golpo Sketch from an image, a video, or a written description. This step-by-step guide shows the complete workflow and six real Custom Style examples.
+11 min read Read guide 
+
+Edit 
+Field guide # 10 
+How to Create Picture-in-Picture Animations in Golpo: Webcam, Split Screen, and Round Overlays
+Keep the presenter on screen while Golpo builds an animated explainer around their narration. See seven real examples, then learn how to record a webcam video or upload a speaking video and place it in a round overlay or split-screen layout.
+10 min read Read guide 
+
+Edit 
+Field guide # 11 
+How to Create RSA Animate, MinutePhysics, The Swedish Investor, Practical Engineering and The Paint Explainer Styles With Golpo
+Watch five real Golpo Custom Style videos inspired by the broad visual languages of RSA Animate, MinutePhysics, The Swedish Investor, Practical Engineering, and The Paint Explainer. See the exact reference image and prompt used for every example.
+11 min read Read guide 
+
+Edit 
+Field guide # 12 
+How We Turned One Instagram Reel Into 8 AI Videos With the Same Narration
+We took the narration from Natalie Fratto's brilliant Databricks Reel and used Golpo Own Narration to create eight Canvas versions. Watch every style and follow the complete, repeatable workflow.
+13 min read Read guide 
+
+Edit 
+Field guide # 13 
+Golpo Prompt Mode vs Script Mode: The Complete Guide
+Compare two real two-minute Golpo videos made from the same topic: one written by Golpo from a prompt and one using a 1,785-character ChatGPT script as the exact narration. Learn duration-based character limits, display-text controls, and the pre-render script review.
+17 min read Read guide 
+
+Edit 
+Field guide # 14 
+How to Make Stickman Videos with AI: 3 Ways to Do It in Golpo
+You can make a stickman video in Golpo three different ways: write a strict Video Instruction, upload one drawing as a reusable Custom Style, or define recurring characters with Character Consistency. This guide shows all three workflows with real Golpo outputs—including a stick-figure team video, a gardening tutorial inspired by one image, and a story starring Michael and Sarah.
+13 min read Read guide 
+
+Edit 
+Field guide # 15 
+Generate On-Screen Text Using Only Your Script in Golpo
+Keep every generated on-screen word inside your approved script. See four API-generated Canvas and Sketch examples made with the exact same script, learn where to enable the control, and copy a working API v2 payload.
+9 min read Read guide 
+
+Edit 
+Field guide # 16 
+How to Make an AI Explainer Video Look Professional: A Golpo-First Quality Checklist
+Professional AI explainer video is not created by adding more motion. It comes from an authoritative source, a focused script, scenes that teach, deliberate voice and visual direction, real evidence where needed, and a disciplined review before publishing.
+4 min read Read guide 
+
+Edit 
+Field guide # 17 
+How to Make Vertical Explainer Videos for Shorts, Reels, and TikTok with Golpo
+Golpo can compose a 9:16 explainer for the phone before it renders. Choose Vertical in Orientation, turn a wide diagram into sequential screens with Custom Scenes, and add a top-and-bottom or circle presenter only when a face helps.
+9 min read Read guide 
+
+Edit 
+Field guide # 18 
+Golpo Canvas Compact vs Expanded: Every Style Compared + Notebook
+Compare all ten Golpo Canvas styles in Compact and Expanded profiles using matched video pairs, then watch the new Compact-only Notebook style.
+9 min read Read guide 
+
+Edit 
+Field guide # 19 
+How We Test Source Fidelity in AI-Generated Explainer Videos
+Test AI explainer videos from source to script to scene. Includes a severity rubric, worked NIST example, review workflow, copyable checklist, and FAQs.
+5 min read Read guide 
+
+Edit 
+Field guide # 20 
+How to Map Sentences to Scenes in Golpo Before Video Production
+Use Golpo's Custom scenes and sentence selection feature to review the automatic scene map, move sentence boundaries, combine or split scenes, and choose the final scene count before production begins.
+11 min read Read guide 
+
+Edit 
+Field guide # 21 
+Introducing Golpo Avatar: Turn a Selfie into a Talking AI Presenter
+Golpo now supports talking AI avatars. Create a custom presenter from a selfie or choose a stock Golpo Avatar, explore layouts, and watch nine examples.
+11 min read Read guide 
+
+Edit 
+Field guide # 22 
+Golpo Stock Avatars: 20 Ready-to-Use Presenters and Video Examples
+Choose a ready-to-use Golpo presenter without uploading a selfie. Follow the Stock Avatar workflow, explore all 20 presenters, and play their video examples inside the guide.
+18 min read Read guide 
+
+Edit 
+Field guide # 23 
+Your Founder on Every Product Update—Without Another Recording Session
+Turn an approved founder explanation into a steady stream of presenter-led product updates, with the feature itself taking center stage.
+6 min read Read guide 
+
+Edit 
+Field guide # 24 
+Put Your Best Product Explanation in Every Sales Conversation
+Give buyers a useful pre-call explainer so the live meeting can focus on their situation, decisions, and objections.
+6 min read Read guide 
+
+Edit 
+Field guide # 25 
+Answer It Once, Help Hundreds: Golpo Avatar for Repeated Support Questions
+Build a findable library of task-specific answers, with a calm presenter guiding customers through the exact next step.
+7 min read Read guide 
+
+Edit 
+Field guide # 26 
+From Signup to First Success: A Golpo Avatar Welcome That Scales
+Give every new account a clear first-task walkthrough, while customer-success managers spend their time on customers who need judgment and guidance.
+7 min read Read guide 
+
+Edit 
+Field guide # 27 
+Stop Repeating the Same Onboarding Talk at Every Location
+Make the routine part of onboarding consistent across sites, with a presenter-led explanation managers can reuse and update.
+7 min read Read guide 
+
+Edit 
+Field guide # 28 
+Turn Your Best Explanations Into a Reusable Lesson Library
+Put a familiar instructor beside a clear visual explanation, then reuse that lesson while live teaching focuses on feedback and practice.
+6 min read Read guide 
+
+Edit 
+Field guide # 29 
+Let Your Expertise Sell Before the First Consultation
+Turn an original framework into a useful presenter-led explanation that buyers can share with colleagues before they speak to you.
+7 min read Read guide 
+
+Edit 
+Field guide # 30 
+Build a Presenter-Led Explainer Service Without Organizing Every Shoot
+Offer a clearly scoped package of reviewed Avatar explainers, with stock presenters for speed and authorized custom presenters for client identity.
+7 min read Read guide 
+
+Edit 
+Field guide # 31 
+Your Listings, Your Face, More Time for Qualified Buyers
+Pair an agent’s custom Avatar with real listing pictures and verified details to make repeatable property explanations.
+6 min read Read guide 
+
+Edit 
+Field guide # 32 
+One Presenter, More Markets: Localized Explainers Without Repeated Recording
+Reuse an approved presenter identity across localized explanations, while native-language reviewers protect the meaning and product accuracy.
+6 min read Read guide 
+
+Edit 
+Field guide # 33 
+AI Presenter and Golpo Avatars: Put a Face Beside the Explainer
+Upload a photo and present beside the explainer, or choose a ready-made Golpo Avatar. See how AI Presenter works, watch current examples, and follow four use cases.
+12 min read Read guide 
+
+Edit 
+Field guide # 34 
+Golpo Update: Free First Video Edit + Up to 50% Off Annual Plans
+Video editing now comes with every paid Golpo plan, with one free edit per video. Explore the October 16 launch and annual offers of up to 50% off.
+7 min read Read guide 
+
+Narrate
+Add your own voice
+
+Replace generated narration with your own recording or webcam presence.
+
+Narrate 
+Field guide # 01 
+How to Use Own Narration on Golpo AI: Upload Audio, Video, or Record Live
+Own Narration is on Business and above, and on Pay As You Go. Golpo AI's Own Narration toggle lets you use your own voice, your own audio files, or your own video recordings to create polished explainer videos. Upload an MP3 from ElevenLabs, repurpose a Zoom recording, or record directly from your microphone or webcam — and Golpo turns it into a professional whiteboard-style video. Here is exactly how to do it.
+10 min read Read guide 
+
+Narrate 
+Field guide # 02 
+Introducing Golpo Own Narration: Turn Your Webcam Recording Into Animated Videos
+Golpo AI now lets you record yourself speaking on camera and automatically turns your narration into a beautifully animated video — with your webcam inset in any corner. Available on Business plan and above.
+4 min read Read guide 
+
+Narrate 
+Field guide # 03 
+Voice Instructions in Golpo: One Field, Thirteen Different Voices
+A second optional field — voice_instructions — quietly controls more of how your video lands than the script itself. Eight categories, thirteen side-by-side demos, all with style held constant — so you can hear exactly how much one or two sentences can reshape the narrator.
+19 min read Read guide 
+
+Narrate 
+Field guide # 04 
+How to Turn Reports and Documents Into AI-Generated Podcasts With Golpo
+Turn approved reports, research, executive updates, policies, and knowledge-base documents into reviewed audio briefings with Golpo's audio-only podcast engine. This guide covers source preparation, script review, voice direction, API v2, Python and Node SDK workflows, distribution, accessibility, governance, and refresh.
+6 min read Read guide 
+
+Narrate 
+Field guide # 05 
+Your Own Audio to Video in Minutes (2026): Complete Own Narration Guide
+Upload a voice recording, podcast segment, lesson, or executive message and turn it into a synchronized illustrated video. Learn the exact Own Narration workflow, Audio in Video versus Picture in Picture, and how Golpo compares with Headliner, Pictory, Descript, and VEED.
+8 min read Read guide 
+
+Narrate 
+Field guide # 06 
+How to Clone Your Voice for AI Videos Automatically (2026 Guide)
+Create one authorized voice clone, select it for future prompts or scripts, and let Golpo automatically narrate complete illustrated videos in the same recognizable voice. Includes recording, consent, quality review, governance, and an honest comparison with ElevenLabs, HeyGen, Synthesia, and Descript.
+13 min read Read guide 
+
+Localize
+Publish in more languages
+
+Take one explainer and deliver it to audiences in multiple languages.
+
+Localize 
+Field guide # 01 
+How to Create Multilingual Whiteboard Explainer Videos with AI (45+ languages, One Source)
+Multilingual explainer video used to be the line-item that quietly killed projects — every language meant a new production cycle. With AI, the same source video re-renders in 45+ languages with one dropdown switch. This guide is the practical workflow — what the language dropdown actually does, the 5-step process from one source to a global video library, common mistakes, and how to scale via the API.
+11 min read Read guide 
+
+Localize 
+Field guide # 02 
+How to Create a Video With Multiple Languages in Golpo
+Watch one video combine English, German, French, and Hindi, then try English–Spanish and English–Bengali lessons. Copy the exact Script Only scripts and saved settings behind all three.
+13 min read Read guide 
+
+Localize 
+Field guide # 03 
+Video Production Is the Bottleneck in Global Enablement: Build a Multilingual Pipeline
+Global enablement breaks when every localized video becomes a separate production project. This guide shows how to run one approved source through terminology control, locale review, Golpo API v2 language variants, accessibility checks, version-parity tracking, and governed regional publishing.
+9 min read Read guide 
+
+Choose your next step
+Keep exploring the guide library
+Stay in this category, jump to an adjacent topic, or browse the full Golpo guide library.
+
+Open Playground Browse all Golpo guides 
+
+AI-powered whiteboard video generator. Convert documents into engaging videos in minutes.
+
+Affiliate Program
+Share Golpo with your audience and earn rewards.
+Sign Up Here → 
+
+Product
+Video Gallery Pricing AI Whiteboard Animation Maker AI Explainer Video Maker Release Notes 
+Use Cases
+All Solutions Enterprise Learning (L&D) Marketing Educators HR & Onboarding Sales Enablement Internal Comms Content Creators 
+Resources
+Guides FAQ API Docs Golpo MCP 
+Company
+About Careers In the news 
+
+© 2026 Golpo AI - Red Tree Inc. All rights reserved.
+Privacy Policy Terms of Service
