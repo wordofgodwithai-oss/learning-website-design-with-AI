@@ -57,6 +57,20 @@ const REVEAL_FPS = 12;
 
 const WORDS_PER_SECOND: Record<string, number> = { slow: 2.1, normal: 2.4, fast: 3.0 };
 
+/**
+ * v2 `pen_animation_style` controls how long the artwork wipe runs. Unknown
+ * values deliberately keep the default rather than disabling the animation.
+ */
+function penReveal(style: string | null | undefined): { enabled: boolean; factor: number } {
+  const key = (style ?? "").trim().toLowerCase().replace(/[_-]+/g, " ");
+  if (["none", "off", "instant", "disabled", "no animation"].includes(key)) {
+    return { enabled: false, factor: 0 };
+  }
+  if (key.includes("slow") || key.includes("detailed")) return { enabled: true, factor: 1.6 };
+  if (key.includes("fast") || key.includes("quick")) return { enabled: true, factor: 0.55 };
+  return { enabled: true, factor: 1 };
+}
+
 export interface RenderResult {
   videoPath: string;
   posterPath: string;
@@ -433,6 +447,9 @@ export async function renderVideo(video: Video): Promise<RenderResult> {
     const mediaPaths: string[] = [];
     for (let index = 0; index < mediaFiles.length; index += 1) {
       const entry = mediaFiles[index];
+      // `media_file_use_as_is: false` keeps the upload as a reference only; a
+      // generated illustration is used for the panel instead.
+      if (entry.useAsIs === false) continue;
       const local = await localAsset(entry.url);
       if (!local) continue;
       if (entry.type.startsWith("video") || /\.(mp4|mov|webm|mkv)$/i.test(entry.url)) {
@@ -559,6 +576,8 @@ export async function renderVideo(video: Video): Promise<RenderResult> {
             seed: (index + 1) * 7919,
             width: panelWidth,
             height: panelHeight,
+            characters: settings.characters,
+            model: settings.imageGenerationModel,
           });
           if (generated.dataUrl) {
             artwork = generated.dataUrl;
@@ -579,12 +598,14 @@ export async function renderVideo(video: Video): Promise<RenderResult> {
       };
 
       // Frames --------------------------------------------------------------
-      const revealSeconds = settings.skipAnimation
-        ? 0
-        : Math.min(REVEAL_SECONDS, Math.max(0.7, seconds * 0.22));
-      const frameCount = settings.skipAnimation
-        ? 1
-        : Math.max(2, Math.round(revealSeconds * REVEAL_FPS));
+      const pen = penReveal(settings.penAnimationStyle);
+      const animate = !settings.skipAnimation && pen.enabled;
+      const revealSeconds = animate
+        ? Math.min(REVEAL_SECONDS * pen.factor, Math.max(0.7, seconds * 0.22 * pen.factor))
+        : 0;
+      const frameCount = animate
+        ? Math.max(2, Math.round(revealSeconds * REVEAL_FPS))
+        : 1;
 
       for (let step = 0; step < frameCount; step += 1) {
         const progress = frameCount === 1 ? 1 : step / (frameCount - 1);

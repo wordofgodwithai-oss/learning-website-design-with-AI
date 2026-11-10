@@ -8,19 +8,20 @@ import { fail, json, readJson, safeFetch, str } from "@/lib/http";
  *
  * Turns a document or recording into script text. Accepts:
  *   - multipart `file` (.txt, .md, .csv, .json, .srt, .html)
+ *   - multipart `file` (.pdf, .docx) → text extraction
  *   - multipart `file` audio/video (.mp3, .wav, .m4a, .ogg, .webm, .flac, .mp4)
  *     → Groq Whisper with word-level timestamps when GROQ_API_KEY is set
  *   - JSON `{ text: "…" }`
  *   - JSON `{ url: "https://…" }` (size- and address-guarded)
  *
- * PDF/DOCX parsing is intentionally NOT implemented: the real extractor runs
- * server-side and its libraries are not observable.
- *
- * TODO(REAL-EXTRACT): add pdf-parse / mammoth and an OCR path.
+ * PDF and DOCX extraction runs locally (`unpdf` / `mammoth`); no document ever
+ * leaves the machine. OCR for scanned PDFs is not implemented.
  */
 const MAX_BYTES = 2 * 1024 * 1024;
 const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
+const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
 const TEXT_EXTENSIONS = [".txt", ".md", ".markdown", ".csv", ".json", ".srt", ".vtt", ".html", ".htm"];
+const DOCUMENT_EXTENSIONS = [".pdf", ".docx"];
 const AUDIO_EXTENSIONS = [".mp3", ".wav", ".m4a", ".ogg", ".webm", ".flac", ".mp4"];
 
 const AUDIO_CONTENT_TYPES: Record<string, string> = {
@@ -142,11 +143,53 @@ export async function POST(request: Request) {
     }
   }
 
+  if (DOCUMENT_EXTENSIONS.includes(extension)) {
+    if (file.size > MAX_DOCUMENT_BYTES) {
+      return fail(413, "Documents must be 10 MB or smaller.");
+    }
+    try {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      let text = "";
+      if (extension === ".docx") {
+        const mammoth = await import("mammoth");
+        const extracted = await mammoth.extractRawText({ buffer: Buffer.from(bytes) });
+        text = extracted.value.trim();
+      } else {
+        const { extractText, getDocumentProxy } = await import("unpdf");
+        const pdf = await getDocumentProxy(bytes);
+        const extracted = await extractText(pdf, { mergePages: true });
+        text = (Array.isArray(extracted.text) ? extracted.text.join("\n") : extracted.text).trim();
+      }
+      if (!text) {
+        return fail(
+          422,
+          extension === ".pdf"
+            ? "No selectable text found. Scanned PDFs need OCR, which is not supported yet."
+            : "The document contained no readable text.",
+        );
+      }
+      return json({
+        success: true,
+        text,
+        source_type: extension === ".pdf" ? "pdf" : "docx",
+        filename: file.name,
+        word_count: wordCount(text),
+      });
+    } catch (error) {
+      return fail(
+        422,
+        `Could not read that ${extension === ".pdf" ? "PDF" : "DOCX"}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
   if (file.size > MAX_BYTES) return fail(413, "Files must be 2 MB or smaller.");
   if (!TEXT_EXTENSIONS.includes(extension)) {
     return fail(
       415,
-      "Unsupported file. Use a text file (.txt, .md, .srt, .vtt, .csv, .json, .html) or audio (.mp3, .wav, .m4a, .ogg, .webm, .flac, .mp4). PDF and DOCX extraction is not implemented.",
+      "Unsupported file. Use a text file (.txt, .md, .srt, .vtt, .csv, .json, .html), a document (.pdf, .docx) or audio (.mp3, .wav, .m4a, .ogg, .webm, .flac, .mp4).",
     );
   }
 

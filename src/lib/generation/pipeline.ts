@@ -1,5 +1,7 @@
 import "server-only";
 
+import { randomUUID } from "node:crypto";
+
 import { withDb, readDb, nowIso } from "@/lib/db";
 import { jobId as newJobId, videoId as newVideoId } from "@/lib/ids";
 import { num, clamp, str } from "@/lib/http";
@@ -40,8 +42,13 @@ const SIMULATED_RENDER_MS = Math.max(
 
 const MAX_CONCURRENT_JOBS = Math.max(1, num(process.env.GOLPO_MAX_CONCURRENT_JOBS, 5));
 
-/** Renders currently owned by this process (survives dev hot reloads poorly). */
-const activeRenders = new Set<string>();
+/**
+ * Renders owned by this process. Kept on globalThis so a dev hot reload does
+ * not forget a render that is still writing files, and paired with a DB token
+ * (below) so ownership also survives module duplication.
+ */
+const globalRenders = globalThis as unknown as { __golpoActiveRenders?: Set<string> };
+const activeRenders = (globalRenders.__golpoActiveRenders ??= new Set<string>());
 const RENDER_STALE_MS = 10 * 60 * 1000;
 
 const STAGE_STEPS = [
@@ -101,7 +108,10 @@ function variantTitle(title: string, language: string): string {
 }
 
 /** Everything the renderer needs, resolved from the normalized request. */
-function buildRenderSettings(input: NormalizedGenerationRequest): RenderSettings {
+function buildRenderSettings(
+  input: NormalizedGenerationRequest,
+  characters: RenderSettings["characters"],
+): RenderSettings {
   const orientation = normaliseOrientation(str(input.raw.video_orientation));
   const background = str(input.raw.background_track);
   const avatarImage =
@@ -124,6 +134,7 @@ function buildRenderSettings(input: NormalizedGenerationRequest): RenderSettings
       url,
       type: input.mediaFileTypes[index] ?? "image",
       description: input.mediaFileDescriptions[index] ?? "",
+      useAsIs: input.mediaFileUseAsIs[index] ?? true,
     })),
   ];
 
@@ -174,6 +185,9 @@ function buildRenderSettings(input: NormalizedGenerationRequest): RenderSettings
     penStyle: input.penStyle,
     imageStyle: input.imageStyle,
     imageGenerationModel: input.imageGenerationModel,
+    penAnimationStyle: input.penAnimationStyle,
+    characters,
+    styleReference: input.styleReference,
     skipAnimation: input.skipAnimation,
     watermark: input.forceWatermark || input.includeWatermark,
     logo: input.logoUrl ? { url: input.logoUrl, placement: input.logoPlacement ?? "top_right" } : null,
@@ -206,6 +220,58 @@ function requiredFeatures(input: NormalizedGenerationRequest): Feature[] {
 }
 
 /**
+ * `characters` arrives either as saved-character ids (dashboard) or inline
+ * objects (v2 API). Resolve both into the descriptor the artwork prompt uses.
+ */
+async function resolveCharacters(
+  userId: string,
+  raw: unknown[],
+): Promise<RenderSettings["characters"]> {
+  if (raw.length === 0) return [];
+
+  const db = await readDb();
+  const resolved: RenderSettings["characters"] = [];
+  for (const entry of raw) {
+    if (entry && typeof entry === "object") {
+      const record = entry as Record<string, unknown>;
+      const name = str(record.name).trim();
+      const description = str(record.description).trim();
+      const imageUrl = str(record.image_url ?? record.imageUrl).trim() || null;
+      if (name || description) {
+        resolved.push({ name: name || "Character", description, imageUrl });
+        continue;
+      }
+      // `{ id }` is how the dashboard batch API represents a selection.
+      const objectId = str(record.id).trim();
+      if (objectId) {
+        const row = db.characters.find(
+          (character) => character.id === objectId && character.user_id === userId,
+        );
+        if (row) {
+          resolved.push({
+            name: row.name,
+            description: row.description,
+            imageUrl: row.image_url,
+          });
+        }
+        continue;
+      }
+    }
+
+    const id = str(entry).trim();
+    if (!id) continue;
+    const row = db.characters.find(
+      (character) => character.id === id && character.user_id === userId,
+    );
+    if (row) {
+      resolved.push({ name: row.name, description: row.description, imageUrl: row.image_url });
+    }
+  }
+
+  return resolved.slice(0, 8);
+}
+
+/**
  * Creates the job + placeholder video rows and returns immediately. The client
  * then polls /api/generate/poll exactly like the real dashboard.
  *
@@ -226,6 +292,8 @@ export async function startGeneration(
     }
   }
 
+  const characters = await resolveCharacters(user.id, input.characters);
+
   const avatar = input.avatarRenderer
     ? input.characters.length
       ? "custom"
@@ -245,10 +313,11 @@ export async function startGeneration(
     kind: input.kind,
     scriptText: input.scriptOnlyText,
     displayLanguage: input.displayLanguage,
+    fillIn: input.fillIn,
   });
 
   const renderSettings = {
-    ...buildRenderSettings(input),
+    ...buildRenderSettings(input, characters),
     scriptSource: scriptResult.source,
   };
 
@@ -379,6 +448,7 @@ function snapshot(job: Job, video: Video | null): JobSnapshot {
  */
 export async function syncJob(jobId: string, userId: string): Promise<JobSnapshot | null> {
   let startRender = false;
+  let renderToken: string | null = null;
 
   const result = await withDb((db) => {
     const job = db.jobs.find((row) => row.id === jobId && row.user_id === userId);
@@ -414,22 +484,28 @@ export async function syncJob(jobId: string, userId: string): Promise<JobSnapsho
         job.request.render_error = "render timed out; served storyboard";
         finalize(job, video, db, "svg");
       } else {
-        if (!job.render_started_at) job.render_started_at = Date.now();
+        if (!job.render_started_at) {
+          // First caller claims the render. Every later sync (worker, polling,
+          // another module instance) sees the token and leaves it alone.
+          job.render_started_at = Date.now();
+          job.render_token = randomUUID();
+          renderToken = job.render_token;
+          startRender = true;
+        }
         job.stage = "encoding";
         job.progress = 97;
-        startRender = !activeRenders.has(job.id);
       }
     }
 
     return snapshot(job, video);
   });
 
-  if (startRender) void runRender(jobId);
+  if (startRender && renderToken) void runRender(jobId, renderToken);
   return result;
 }
 
 /** Renders in the background; never throws into the caller. */
-async function runRender(jobId: string): Promise<void> {
+async function runRender(jobId: string, token: string): Promise<void> {
   if (activeRenders.has(jobId)) return;
   activeRenders.add(jobId);
 
@@ -438,6 +514,7 @@ async function runRender(jobId: string): Promise<void> {
     const job = db.jobs.find((row) => row.id === jobId);
     const video = job?.video_id ? db.videos.find((row) => row.id === job.video_id) : null;
     if (!job || !video) return;
+    if (job.render_token && job.render_token !== token) return;
 
     // Lazy import keeps sharp/FFmpeg out of the bundle when storyboard mode is
     // active, and isolates a missing/broken binary to this one job.

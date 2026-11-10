@@ -17,6 +17,7 @@ import {
 } from "@/lib/integrations";
 import { json } from "@/lib/http";
 import { getSystemStatus } from "@/lib/repo";
+import { ensureJobWorker } from "@/lib/generation/worker";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,9 @@ export const dynamic = "force-dynamic";
  * without digging through logs. Safe to call unauthenticated.
  */
 export async function GET() {
+  // Probing health is the natural boot hook: it starts the background worker
+  // and clears jobs abandoned by a previous process.
+  await ensureJobWorker();
   const systemStatus = await getSystemStatus().catch(() => null);
 
   return json(

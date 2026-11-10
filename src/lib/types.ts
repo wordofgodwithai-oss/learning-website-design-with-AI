@@ -69,6 +69,8 @@ export interface RenderMedia {
   url: string;
   type: string;
   description: string;
+  /** `media_file_use_as_is`: false means use as an artwork reference, not as the panel image. */
+  useAsIs?: boolean;
 }
 
 /**
@@ -86,6 +88,12 @@ export interface RenderSettings {
   penStyle: string | null;
   imageStyle: string | null;
   imageGenerationModel: string;
+  /** v2 `pen_animation_style`; controls how the artwork is revealed. */
+  penAnimationStyle: string | null;
+  /** Saved characters resolved to their prompt descriptions. */
+  characters: Array<{ name: string; description: string; imageUrl: string | null }>;
+  /** Optional style reference image URL (reported, not yet image-conditioned). */
+  styleReference: string | null;
   skipAnimation: boolean;
   watermark: boolean;
   logo: { url: string; placement: string } | null;
@@ -151,6 +159,8 @@ export interface Job {
   completes_at: number;
   /** Epoch ms when the real FFmpeg render was kicked off (null in storyboard mode). */
   render_started_at?: number | null;
+  /** Ownership token for the render, so duplicate starters cannot both run it. */
+  render_token?: string | null;
 }
 
 export interface Character {

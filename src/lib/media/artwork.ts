@@ -41,6 +41,10 @@ export interface ArtworkRequest {
   seed: number;
   width: number;
   height: number;
+  /** Saved characters that must stay visually consistent across scenes. */
+  characters?: Array<{ name: string; description: string }>;
+  /** v2 `image_generation_model`; mapped onto the provider's model list. */
+  model?: string;
 }
 
 const ART_DIR = path.join(MEDIA_DIR, "art");
@@ -94,6 +98,18 @@ function styleHint(style: string): string {
 export function buildArtworkPrompt(request: ArtworkRequest): string {
   const subject = cleanDescription(request.description) || "an educational concept";
   const hint = styleHint(request.style);
+  const cast = (request.characters ?? [])
+    .filter((character) => character.name || character.description)
+    .slice(0, 4)
+    .map((character) =>
+      cleanDescription(
+        [character.name, character.description].filter(Boolean).join(": "),
+      ).slice(0, 140),
+    );
+  const castLine = cast.length
+    ? ` Keep the recurring characters consistent with these descriptions: ${cast.join("; ")}.`
+    : "";
+
   if (request.engine === "golpo_sketch") {
     const color = request.useColor
       ? "one accent colour only, otherwise black ink"
@@ -103,7 +119,8 @@ export function buildArtworkPrompt(request: ArtworkRequest): string {
       `${hint ? `${hint[0].toUpperCase()}${hint.slice(1)}, ` : ""}` +
       `simple marker line art on a clean white background, ${color}, ` +
       `thick confident strokes, minimal composition, generous empty space, ` +
-      `friendly explainer-video doodle, no text, no letters, no numbers, centered.`
+      `friendly explainer-video doodle, no text, no letters, no numbers, centered.` +
+      castLine
     );
   }
   return (
@@ -111,7 +128,8 @@ export function buildArtworkPrompt(request: ArtworkRequest): string {
     `${hint ? `${hint[0].toUpperCase()}${hint.slice(1)}, ` : ""}` +
     `bold geometric shapes, limited three-colour palette, soft gradient background, ` +
     `clean modern explainer-video art, centered composition, ` +
-    `no text, no letters, no numbers, no watermark.`
+    `no text, no letters, no numbers, no watermark.` +
+    castLine
   );
 }
 
@@ -146,7 +164,13 @@ async function cloudflareImage(prompt: string, seed: number): Promise<Buffer | n
   return Buffer.from(normaliseBase64(image), "base64");
 }
 
-async function pollinationsImage(prompt: string, seed: number, width: number, height: number): Promise<Buffer | null> {
+async function pollinationsImage(
+  prompt: string,
+  seed: number,
+  width: number,
+  height: number,
+  model: string,
+): Promise<Buffer | null> {
   const now = Date.now();
   if (now < disabledUntil) return null;
   const wait = lastPollinationsAt + POLLINATIONS_INTERVAL_MS - now;
@@ -156,34 +180,69 @@ async function pollinationsImage(prompt: string, seed: number, width: number, he
   const url = new URL(`${POLLINATIONS_BASE_URL.replace(/\/+$/, "")}/prompt/${encodeURIComponent(prompt)}`);
   url.searchParams.set("width", String(Math.min(1024, width)));
   url.searchParams.set("height", String(Math.min(1024, height)));
-  url.searchParams.set("model", "flux");
+  url.searchParams.set("model", model);
   url.searchParams.set("seed", String(seed));
   url.searchParams.set("nologo", "true");
   url.searchParams.set("private", "true");
   url.searchParams.set("enhance", "false");
 
-  const response = await fetch(url, {
-    headers: { accept: "image/jpeg,image/png" },
-    signal: AbortSignal.timeout(IMAGE_TIMEOUT_MS),
-  });
-  if (response.status === 402 || response.status === 429) {
-    // Free slot exhausted; stop hammering for a while.
-    disabledUntil = Date.now() + 120_000;
-    return null;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    if (attempt > 0) {
+      // A 5xx is usually transient. Wait out another throttle slot before the
+      // single retry rather than letting one bad response drop the scene to
+      // the doodle fallback.
+      const pause = lastPollinationsAt + POLLINATIONS_INTERVAL_MS - Date.now();
+      if (pause > 0) await new Promise((resolve) => setTimeout(resolve, pause));
+      lastPollinationsAt = Date.now();
+    }
+
+    const response = await fetch(url, {
+      headers: { accept: "image/jpeg,image/png" },
+      signal: AbortSignal.timeout(IMAGE_TIMEOUT_MS),
+    });
+    if (response.status === 402 || response.status === 429) {
+      // Free slot exhausted; stop hammering for a while.
+      disabledUntil = Date.now() + 120_000;
+      return null;
+    }
+    if (response.status >= 500 && attempt === 0) {
+      console.warn(`[artwork] pollinations ${response.status}; retrying once`);
+      continue;
+    }
+    if (!response.ok) {
+      throw new Error(`pollinations ${response.status}: ${(await response.text()).slice(0, 180)}`);
+    }
+    const type = response.headers.get("content-type") ?? "";
+    if (!type.startsWith("image/")) {
+      throw new Error(`pollinations returned ${type || "no content type"}`);
+    }
+    return Buffer.from(await response.arrayBuffer());
   }
-  if (!response.ok) {
-    throw new Error(`pollinations ${response.status}: ${(await response.text()).slice(0, 180)}`);
-  }
-  const type = response.headers.get("content-type") ?? "";
-  if (!type.startsWith("image/")) {
-    throw new Error(`pollinations returned ${type || "no content type"}`);
-  }
-  return Buffer.from(await response.arrayBuffer());
+
+  return null;
 }
 
-async function rawImage(prompt: string, seed: number, width: number, height: number): Promise<Buffer | null> {
+/**
+ * Maps the v2 `image_generation_model` onto the free provider's catalogue.
+ * Cloudflare serves one configured FLUX model, so only Pollinations gets a
+ * choice; unknown names fall back to FLUX rather than failing the render.
+ */
+function providerModel(requested: string | undefined): string {
+  const key = (requested ?? "").trim().toLowerCase();
+  if (!key || key === "default" || key === "flux" || key.includes("schnell")) return "flux";
+  if (key.includes("turbo") || key.includes("sdxl") || key === "sd") return "turbo";
+  return "flux";
+}
+
+async function rawImage(
+  prompt: string,
+  seed: number,
+  width: number,
+  height: number,
+  model: string,
+): Promise<Buffer | null> {
   if (imageMode === "cloudflare") return cloudflareImage(prompt, seed);
-  if (imageMode === "pollinations") return pollinationsImage(prompt, seed, width, height);
+  if (imageMode === "pollinations") return pollinationsImage(prompt, seed, width, height, model);
   return null;
 }
 
@@ -231,9 +290,11 @@ export interface ArtworkResult {
 
 export async function generateArtwork(request: ArtworkRequest): Promise<ArtworkResult> {
   const prompt = buildArtworkPrompt(request);
+  const model = providerModel(request.model);
   const key = sha256(
     [
       imageMode,
+      model,
       prompt,
       String(request.width),
       String(request.height),
@@ -263,7 +324,7 @@ export async function generateArtwork(request: ArtworkRequest): Promise<ArtworkR
   try {
     const bytes = await serialise(async () => {
       await new Promise((resolve) => setTimeout(resolve, REQUEST_GAP_MS));
-      return rawImage(prompt, request.seed, request.width, request.height);
+      return rawImage(prompt, request.seed, request.width, request.height, model);
     });
     if (!bytes) return { file: null, dataUrl: null, provider: "none", prompt };
 

@@ -35,6 +35,8 @@ interface WriteScriptOptions {
   kind: GenerationKind;
   scriptText?: string | null;
   displayLanguage?: string;
+  /** `fill_in`: keep a pasted script and expand it to the requested runtime. */
+  fillIn?: boolean;
 }
 
 const SYSTEM_PROMPT = `You are a senior explainer-video scriptwriter.
@@ -218,16 +220,29 @@ async function writeWithGroq(options: WriteScriptOptions): Promise<BuiltScript> 
   const language = options.displayLanguage?.trim() || languageName("en");
   const format = options.kind === "podcast" ? "audio-only podcast episode" : "explainer video";
 
-  const basePrompt = [
-    `Create the narration for a ${options.durationSeconds}-second ${format}.`,
-    `Language: ${language}.`,
-    `Target length: about ${budget} spoken words (within about 10%), split into ${requestedScenes} scenes.`,
-    `Aim for roughly ${Math.max(8, Math.round(budget / requestedScenes))} words of narration per scene.`,
-    "Cover the topic from start to finish: a hook, the explanation, one concrete example, and a takeaway.",
-    "",
-    "Source material from the creator:",
-    options.prompt.trim(),
-  ].join("\n");
+  const basePrompt =
+    options.fillIn && options.scriptText?.trim()
+      ? [
+          `A creator supplied the script below for a ${options.durationSeconds}-second ${format}.`,
+          `Language: ${language}.`,
+          `It currently runs about ${countWords(options.scriptText)} spoken words; the target is about ${budget}.`,
+          `Keep the creator's existing wording, order and meaning, and expand it with real explanation,`,
+          `one concrete example and a practical takeaway until it fills the runtime.`,
+          `Do not pad with filler and do not change the topic. Split into ${requestedScenes} scenes.`,
+          "",
+          "Creator's script:",
+          options.scriptText.trim(),
+        ].join("\n")
+      : [
+          `Create the narration for a ${options.durationSeconds}-second ${format}.`,
+          `Language: ${language}.`,
+          `Target length: about ${budget} spoken words (within about 10%), split into ${requestedScenes} scenes.`,
+          `Aim for roughly ${Math.max(8, Math.round(budget / requestedScenes))} words of narration per scene.`,
+          "Cover the topic from start to finish: a hook, the explanation, one concrete example, and a takeaway.",
+          "",
+          "Source material from the creator:",
+          options.prompt.trim(),
+        ].join("\n");
 
   const maxTokens = Math.min(6_000, Math.max(1_200, Math.round(budget * 3.2)));
   let best: DraftScene[] = [];
@@ -297,7 +312,22 @@ async function writeWithGroq(options: WriteScriptOptions): Promise<BuiltScript> 
 }
 
 export async function writeScript(options: WriteScriptOptions): Promise<BuiltScript> {
-  if (options.scriptText?.trim()) return buildScript(options);
+  if (options.scriptText?.trim()) {
+    // `fill_in` asks the provider to grow the pasted script instead of trimming
+    // it, which is what the dashboard's "fill in to duration" toggle does.
+    if (options.fillIn && scriptMode === "groq") {
+      try {
+        return await writeWithGroq(options);
+      } catch (error) {
+        console.warn(
+          `[script] fill-in failed, using the pasted script as-is: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      }
+    }
+    return buildScript(options);
+  }
   if (scriptMode !== "groq") return buildScript(options);
 
   try {

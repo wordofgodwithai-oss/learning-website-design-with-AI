@@ -2,6 +2,7 @@ import { requireApiKey } from "@/lib/api-auth";
 import { fail, json } from "@/lib/http";
 import { normalizeGenerationInput } from "@/lib/generation/request";
 import { startGeneration } from "@/lib/generation/pipeline";
+import { ensureJobWorker } from "@/lib/generation/worker";
 import { generationErrorResponse, readGenerationBody } from "@/lib/generation/http";
 
 /**
@@ -16,6 +17,7 @@ export async function POST(request: Request) {
   if (identity instanceof Response) return identity;
 
   try {
+    await ensureJobWorker();
     const { fields, uploadUrls } = await readGenerationBody(request, identity.user.id);
     const input = normalizeGenerationInput(fields, { uploadUrls });
     const snapshot = await startGeneration(identity.user, input);

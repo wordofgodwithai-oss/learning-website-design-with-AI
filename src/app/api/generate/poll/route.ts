@@ -2,6 +2,7 @@ import { getUserFromRequest } from "@/lib/auth";
 import { authenticateApiKey } from "@/lib/api-auth";
 import { fail, json, readJson, str } from "@/lib/http";
 import { syncJob } from "@/lib/generation/pipeline";
+import { ensureJobWorker } from "@/lib/generation/worker";
 
 /**
  * POST /api/generate/poll
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
 
   if (!jobId) return fail(400, "job_id is required.", { code: "invalid_request" });
 
+  await ensureJobWorker();
   const snapshot = await syncJob(jobId, user.id);
   if (!snapshot) return fail(404, "Job not found.", { code: "job_not_found" });
   return json(snapshot);
@@ -38,6 +40,7 @@ export async function GET(request: Request) {
   if (!user) return fail(401, "Authentication failed. Please sign in again.");
   const jobId = new URL(request.url).searchParams.get("job_id") ?? "";
   if (!jobId) return fail(400, "job_id is required.");
+  await ensureJobWorker();
   const snapshot = await syncJob(jobId, user.id);
   if (!snapshot) return fail(404, "Job not found.");
   return json(snapshot);

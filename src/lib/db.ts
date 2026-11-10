@@ -2,7 +2,7 @@ import "server-only";
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 
 import type { Database, CreditAccount, User } from "@/lib/types";
 import { MOCK_INFINITE_CREDITS } from "@/lib/billing/constants";
@@ -20,12 +20,24 @@ export const DEMO_API_KEY =
 
 type Store = { db: Database | null; loading: Promise<Database> | null };
 
-// Next.js hot-reloads route modules in dev; keep one store per process.
-const globalStore = globalThis as unknown as { __golpoStore?: Store };
-const store: Store = (globalStore.__golpoStore ??= { db: null, loading: null });
+/**
+ * Next.js hot-reloads route modules in dev, which re-evaluates this module and
+ * used to reset both the store and the write queue. Two module instances then
+ * wrote `.data/db.json.<pid>.tmp` at the same time: one rename won, the other
+ * failed with ENOENT and the request returned 500. Keep the state on
+ * globalThis so every instance shares one queue, and give each write a unique
+ * temp file so a retry can never collide with an in-flight write.
+ */
+const globalStore = globalThis as unknown as {
+  __golpoDb?: { store: Store; queue: Promise<unknown> };
+};
+const dbState = (globalStore.__golpoDb ??= {
+  store: { db: null, loading: null },
+  queue: Promise.resolve(),
+});
+const store: Store = dbState.store;
 
-/** Serializes writes so concurrent route handlers cannot interleave. */
-let writeQueue: Promise<unknown> = Promise.resolve();
+/** Serialized writes survive hot reload via dbState.queue. */
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -182,7 +194,7 @@ function seed(): Database {
 
 async function persist(db: Database): Promise<void> {
   await fs.mkdir(DATA_DIR, { recursive: true });
-  const tmp = `${DB_PATH}.${process.pid}.tmp`;
+  const tmp = `${DB_PATH}.${process.pid}.${randomUUID().slice(0, 8)}.tmp`;
   await fs.writeFile(tmp, JSON.stringify(db, null, 2), "utf8");
   await fs.rename(tmp, DB_PATH);
 }
@@ -258,14 +270,14 @@ export async function readDb(): Promise<Database> {
  * Every mutation in src/lib/repo.ts goes through this.
  */
 export async function withDb<T>(fn: (db: Database) => T | Promise<T>): Promise<T> {
-  const run = writeQueue.then(async () => {
+  const run = dbState.queue.then(async () => {
     const db = await ensure();
     const result = await fn(db);
     db.updated_at = nowIso();
     await persist(db);
     return result;
   });
-  writeQueue = run.then(
+  dbState.queue = run.then(
     () => undefined,
     () => undefined,
   );

@@ -178,9 +178,13 @@ requested duration from the measured narration (pace nudge, then a spread across
 20-second request ships a ~20-second video even when the model's script or the voice's pacing
 drifts. Once the simulated
 progress reaches 100% the job moves to 97% / `encoding`, the FFmpeg render runs **outside** the
-database mutex, and a second transaction finalizes the job. A render error, or a render stale for
-more than 10 minutes after a restart, falls back to the animated SVG storyboard instead of hanging
-the job. Language variants are marked `processing` when created, get a Groq-translated script,
+database mutex, and a second transaction finalizes the job. A background worker
+(`src/lib/generation/worker.ts`) advances active jobs every `GOLPO_JOB_TICK_MS` even when no
+browser is polling, resumes queued work after a restart, and fails jobs older than
+`GOLPO_JOB_STALE_MS`. The first caller claims a render with a token stored on the job, so polling,
+the worker and duplicate module instances cannot start it twice. A render error, or a render stale
+for more than 10 minutes after a restart, falls back to the animated SVG storyboard instead of
+hanging the job. Language variants are marked `processing` when created, get a Groq-translated script,
 render their own narration, and only become `ready` once their MP4 exists (a failed translation is
 recorded on the row). Politeness: media is served with `Range`/`206` support and a JPEG poster.
 
@@ -191,9 +195,10 @@ recorded on the row). Politeness: media is served with `Range`/`206` support and
 - `src/lib/generation/script-provider.ts` — provider selection and fallback.
 - `src/lib/media/render.ts` — the media synthesis boundary.
 
-Environment knobs: `GOLPO_SIMULATED_RENDER_MS` (default 14 s) and
-`GOLPO_MAX_CONCURRENT_JOBS` (default 5, returns the verbatim 409 concurrency error), plus the
-integration modes in `src/lib/integrations.ts`.
+Environment knobs: `GOLPO_SIMULATED_RENDER_MS` (default 14 s),
+`GOLPO_MAX_CONCURRENT_JOBS` (default 5, returns the verbatim 409 concurrency error),
+`GOLPO_JOB_TICK_MS` (default 1500) and `GOLPO_JOB_STALE_MS` (default 6 h), plus the integration
+modes in `src/lib/integrations.ts`.
 
 ## 6. BFF route inventory
 
@@ -288,8 +293,8 @@ the facade and must not be regenerated.
    add console noise locally.
 2. Rendering uses bundled FFmpeg to produce MP4 + JPEG; the production vendor is unobservable.
    SVG storyboards remain as the failure fallback.
-3. PDF/DOCX script extraction is rejected with a clear 415. The real extractor’s libraries are
-   not observable.
+3. PDF/DOCX script extraction runs locally through `unpdf` and `mammoth`. Scanned PDFs without a
+   text layer are rejected with a 422 because OCR is not bundled.
 4. Voice names, stock avatars and some catalogue values are local stand-ins (marked in
    `src/lib/generation/config.ts`).
 5. Analytics, ads and affiliate calls are accepted and ignored; only Groq, Supabase and Stripe

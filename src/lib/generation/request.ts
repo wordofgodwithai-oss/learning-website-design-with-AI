@@ -21,6 +21,7 @@ export interface NormalizedGenerationRequest {
   imageStyle: string | null;
   penStyle: string | null;
   imageGenerationModel: string;
+  penAnimationStyle: string | null;
   useColor: boolean;
   pacing: string;
   timing: string;
@@ -96,6 +97,27 @@ function stringList(value: unknown): string[] {
 
 function boolList(value: unknown): boolean[] {
   return stringList(value).map((entry) => bool(entry));
+}
+
+/**
+ * Unlike `stringList`, this keeps object entries intact. `characters` can be a
+ * JSON array of ids or of inline `{name, description}` objects depending on
+ * the client (multipart dashboard vs JSON v2).
+ */
+function characterList(value: unknown): unknown[] {
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      return value
+        .split(",")
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+    }
+  }
+  return [];
 }
 
 function parseJson(value: unknown): Record<string, unknown> | null {
@@ -183,6 +205,7 @@ export function normalizeGenerationInput(
     imageStyle: str(merged.image_style) || (engine === "golpo_canvas" ? style : null),
     penStyle: str(merged.pen_style) || (engine === "golpo_sketch" ? style : null),
     imageGenerationModel: str(merged.image_generation_model, "default"),
+    penAnimationStyle: str(merged.pen_animation_style) || null,
     useColor: bool(merged.use_color, true),
     pacing: str(merged.pacing, "normal"),
     timing: str(merged.timing, "auto"),
@@ -194,9 +217,7 @@ export function normalizeGenerationInput(
     avatarRenderer: str(merged.avatar_renderer) || null,
     avatarPresentationMode: str(merged.avatar_presentation_mode) || null,
     characterConsistencyMode: str(merged.char_consistency_mode) || null,
-    characters: Array.isArray(merged.characters)
-      ? merged.characters
-      : stringList(merged.characters),
+    characters: characterList(merged.characters),
     customScenePreparationId: str(merged.custom_scene_preparation_id) || null,
     customSceneSelectionSentences: stringList(merged.custom_scene_selection_sentences),
     skipAnimation: bool(merged.skip_animation),

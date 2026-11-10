@@ -36,6 +36,7 @@
 - [Deployment](#deployment)
 - [Troubleshooting](#troubleshooting)
 - [Known limitations](#known-limitations)
+- [Parity audit](docs/PARITY.md)
 - [Contributing](#contributing)
 - [Security](#security)
 - [License](#license)
@@ -108,7 +109,7 @@ becomes real (plan entitlements, per-generation debits, webhook-driven credit gr
 | `/api/get-subscription-details`, `/api/active-subscriptions` | 200 locally (production returns 404) |
 | Public REST API v1 (multipart) and v2 (JSON) | Working |
 | MCP JSON-RPC endpoint with 6 tools | Working |
-| PDF/DOCX import | Not implemented (plain text or audio only) |
+| PDF/DOCX import | Working (local `unpdf` / `mammoth`; scanned PDFs need OCR) |
 
 ## Architecture
 
@@ -148,6 +149,11 @@ flowchart LR
    concatenated, overlays are applied, and the music bed is mixed at a capped duration.
 6. **Publish** — the MP4 and poster land in `.data/media`, the job reaches `ready`, and variants
    are queued as their own jobs and videos.
+
+A background worker (`src/instrumentation.ts` → `src/lib/generation/worker.ts`) advances active
+jobs every few seconds. Progress and rendering therefore continue when the browser tab is closed,
+and queued jobs resume after a restart; jobs abandoned for longer than
+`GOLPO_JOB_STALE_MS` are marked failed so they do not block the concurrency cap.
 
 ## Tech stack
 
@@ -233,6 +239,8 @@ default, and each integration has an explicit mode so behaviour is predictable.
 | `GOLPO_DEV_API_KEY` | `glp_local_dev_key_change_me` | Seeded API key (change before first run) |
 | `GOLPO_SIMULATED_RENDER_MS` | `14000` | Minimum simulated progress duration |
 | `GOLPO_MAX_CONCURRENT_JOBS` | `5` | Concurrency cap per user |
+| `GOLPO_JOB_TICK_MS` | `1500` | Background worker interval |
+| `GOLPO_JOB_STALE_MS` | `21600000` (6 h) | Age after which abandoned jobs are failed |
 | `PORT` | `3000` | Next.js port |
 | `GOLPO_APP_URL` | `http://localhost:3000` | Redirect base for Stripe |
 
@@ -422,13 +430,16 @@ If FFmpeg fails, the job falls back to an animated SVG storyboard so generation 
 | `video_orientation` | Canvas size and layout (16:9, 9:16, 1:1) |
 | `narration_voice` | Orpheus voice or Edge voice |
 | `scene_pacing` | Narration planning speed and scene timing |
-| `pen_animation_style` | Stroke reveal behaviour in sketch mode |
+| `pen_animation_style` | Stroke reveal speed (`fast`, `slow`, `none`, default) |
+| `image_generation_model` | Maps onto the free provider's catalogue (`flux` default, `turbo`) |
+| `characters` | Saved character ids or inline `{name, description}` → artwork prompts |
+| `fill_in` | Expands a pasted script to the requested runtime via Groq |
 | `watermark` / `force_watermark` | Adds the footer watermark |
 | `logo_url` + `logo_placement` | Uploaded logo in a chosen corner |
 | `avatar_image_url` / `avatar_renderer` | Presenter avatar and rendering mode |
 | `own_narration_*` | Webcam clip as PiP, split or fullscreen |
 | `background_track` / `custom_music_url` | Generated bed or uploaded music |
-| `media_files` / `user_images` / `user_videos` | Reference media and artwork source |
+| `media_files` / `user_images` / `user_videos` | Reference media and artwork source (`media_file_use_as_is: false` keeps uploads as references only) |
 | `visibility` / `is_public` | Library visibility of the resulting video |
 | `kind: "podcast"` | Audio-first layout with waveform and chapters |
 
@@ -536,7 +547,8 @@ These are deliberate and documented in [docs/IMPLEMENTATION.md](docs/IMPLEMENTAT
    console clean.
 3. **Rendering is local.** MP4 and poster generation use bundled FFmpeg and `sharp`; the production
    vendor is not observable. The SVG storyboard is only a fallback.
-4. **PDF/DOCX import is not implemented.** Plain-text formats and audio transcription only.
+4. **PDF/DOCX import handles selectable text only.** `unpdf` and `mammoth` run locally; scanned
+   PDFs that contain no text layer need OCR, which is not bundled.
 5. **Voice catalogues and stock-avatar IDs are local stand-ins.** Real values are not observable
    from the shipped client.
 6. **Analytics and ad endpoints acknowledge and do nothing**, so no data leaves the machine unless
@@ -546,6 +558,9 @@ These are deliberate and documented in [docs/IMPLEMENTATION.md](docs/IMPLEMENTAT
 8. **Single-node storage.** The JSON store is designed for local use, not concurrent multi-instance
    deployments.
 9. **No automated test suite beyond the smoke script.** CI would be a welcome contribution.
+
+The field-by-field comparison with the production product, including the remaining gaps, lives in
+[`docs/PARITY.md`](docs/PARITY.md).
 
 ## Contributing
 

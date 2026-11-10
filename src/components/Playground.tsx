@@ -12,7 +12,7 @@ import {
   VOICES,
   languageName,
 } from "@/lib/generation/config";
-import type { CustomMusic, Video } from "@/lib/types";
+import type { Character, CustomMusic, Video } from "@/lib/types";
 
 interface StockAvatar {
   id: string;
@@ -83,9 +83,11 @@ export function Playground({
   const [language, setLanguage] = useState("en");
   const [voice, setVoice] = useState(VOICES[0].id);
   const [pacing, setPacing] = useState<string>("normal");
+  const [orientation, setOrientation] = useState<"16:9" | "9:16" | "1:1">("16:9");
   const [color, setColor] = useState(true);
   const [watermark, setWatermark] = useState(false);
   const [scriptOnly, setScriptOnly] = useState(false);
+  const [fillIn, setFillIn] = useState(false);
   const [aiPresenter, setAiPresenter] = useState(false);
   const [ownNarration, setOwnNarration] = useState(false);
   const [ownNarrationAvatar, setOwnNarrationAvatar] = useState("stock_ava");
@@ -95,6 +97,8 @@ export function Playground({
 
   const [stockAvatars, setStockAvatars] = useState<StockAvatar[]>([]);
   const [music, setMusic] = useState<CustomMusic[]>([]);
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [selectedCharacters, setSelectedCharacters] = useState<string[]>([]);
   const [startup, setStartup] = useState<{ name: string; ok: boolean; detail: string }[]>([]);
   const [recent, setRecent] = useState<Video[]>([]);
 
@@ -162,9 +166,10 @@ export function Playground({
       if (!cancelled) setStartup(results);
 
       try {
-        const [avatarsResponse, musicResponse] = await Promise.all([
+        const [avatarsResponse, musicResponse, charactersResponse] = await Promise.all([
           fetch("/api/stock-avatars", { headers: headers() }),
           fetch("/api/get-user-custom-music", { headers: headers() }),
+          fetch("/api/get-user-characters", { headers: headers() }),
         ]);
         if (avatarsResponse.ok) {
           const data = (await avatarsResponse.json()) as { avatars?: StockAvatar[] };
@@ -173,6 +178,10 @@ export function Playground({
         if (musicResponse.ok) {
           const data = (await musicResponse.json()) as { custom_music?: CustomMusic[] };
           if (!cancelled) setMusic(data.custom_music ?? []);
+        }
+        if (charactersResponse.ok) {
+          const data = (await charactersResponse.json()) as { characters?: Character[] };
+          if (!cancelled) setCharacters(data.characters ?? []);
         }
       } catch {
         // Optional UI data.
@@ -308,6 +317,12 @@ export function Playground({
     });
   }
 
+  function toggleCharacter(id: string) {
+    setSelectedCharacters((current) =>
+      current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id],
+    );
+  }
+
   async function importScript(file: File) {
     const form = new FormData();
     form.append("file", file);
@@ -361,10 +376,13 @@ export function Playground({
       form.set("image_generation_model", "default");
       form.set("use_color", String(color));
       form.set("pacing", pacing);
+      form.set("video_orientation", orientation);
       form.set("durationSeconds", String(duration));
       form.set("language", language);
       form.set("display_language", languageName(language));
       form.set("voiceName", voice);
+      form.set("fill_in", String(fillIn));
+      form.set("characters", JSON.stringify(selectedCharacters));
       form.set("avatar_renderer", aiPresenter ? "studio" : "");
       form.set("avatar_presentation_mode", aiPresenter ? "half_body" : "");
       form.set("just_return_script", String(scriptOnly));
@@ -446,7 +464,7 @@ export function Playground({
         <div>
           <h1 style={{ fontSize: 30 }}>Playground</h1>
           <p>
-            {email} · everything unlocked. Renders are simulated locally, but jobs, polling and
+            {email} · everything unlocked. Renders run locally with FFmpeg, and jobs, polling and
             the library behave like the real dashboard.
           </p>
         </div>
@@ -482,7 +500,7 @@ export function Playground({
                 Import script or audio
                 <input
                   type="file"
-                  accept=".txt,.md,.srt,.vtt,.csv,.json,.html,.mp3,.wav,.m4a,.ogg,.webm,.flac,.mp4"
+                  accept=".txt,.md,.srt,.vtt,.csv,.json,.html,.pdf,.docx,.mp3,.wav,.m4a,.ogg,.webm,.flac,.mp4"
                   className="sr-only"
                   onChange={(event) => {
                     const file = event.target.files?.[0];
@@ -531,6 +549,20 @@ export function Playground({
                 value={duration}
                 onChange={(event) => setDuration(Number(event.target.value))}
               />
+            </div>
+            <div className="field">
+              <span className="label">Orientation</span>
+              <select
+                className="select"
+                value={orientation}
+                onChange={(event) =>
+                  setOrientation(event.target.value as "16:9" | "9:16" | "1:1")
+                }
+              >
+                <option value="16:9">Landscape · 16:9</option>
+                <option value="9:16">Portrait · 9:16</option>
+                <option value="1:1">Square · 1:1</option>
+              </select>
             </div>
           </div>
 
@@ -619,6 +651,28 @@ export function Playground({
             </div>
           </div>
 
+          {characters.length > 0 ? (
+            <div className="field">
+              <span className="label">Characters ({selectedCharacters.length})</span>
+              <div className="chips" style={{ maxHeight: 120, overflow: "auto" }}>
+                {characters.map((character) => (
+                  <button
+                    key={character.id}
+                    type="button"
+                    className="chip"
+                    data-active={selectedCharacters.includes(character.id)}
+                    onClick={() => toggleCharacter(character.id)}
+                  >
+                    {character.name}
+                  </button>
+                ))}
+              </div>
+              <span className="hint">
+                Selected characters are kept consistent across scene artwork.
+              </span>
+            </div>
+          ) : null}
+
           <div className="toggle-grid" style={{ marginBottom: 16 }}>
             <label className="check">
               <input
@@ -651,6 +705,17 @@ export function Playground({
               <span>
                 Script only
                 <small>Skip rendering</small>
+              </span>
+            </label>
+            <label className="check">
+              <input
+                type="checkbox"
+                checked={fillIn}
+                onChange={(event) => setFillIn(event.target.checked)}
+              />
+              <span>
+                Fill in to duration
+                <small>Expands a pasted script</small>
               </span>
             </label>
             <label className="check">

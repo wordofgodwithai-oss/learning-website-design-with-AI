@@ -3,6 +3,7 @@ import { fail, json } from "@/lib/http";
 import { authenticateApiKey } from "@/lib/api-auth";
 import { normalizeGenerationInput } from "@/lib/generation/request";
 import { startGeneration } from "@/lib/generation/pipeline";
+import { ensureJobWorker } from "@/lib/generation/worker";
 import { generationErrorResponse, readGenerationBody } from "@/lib/generation/http";
 
 /**
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    await ensureJobWorker();
     const { fields, uploadUrls } = await readGenerationBody(request, user.id);
     const input = normalizeGenerationInput(fields, { uploadUrls });
     const snapshot = await startGeneration(user, input);

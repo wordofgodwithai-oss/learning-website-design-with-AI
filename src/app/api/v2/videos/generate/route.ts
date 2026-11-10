@@ -2,6 +2,7 @@ import { requireApiKey } from "@/lib/api-auth";
 import { fail, json, readJson } from "@/lib/http";
 import { normalizeGenerationInput } from "@/lib/generation/request";
 import { startGeneration } from "@/lib/generation/pipeline";
+import { ensureJobWorker } from "@/lib/generation/worker";
 import { generationErrorResponse } from "@/lib/generation/http";
 
 /**
@@ -23,10 +24,15 @@ export async function POST(request: Request) {
   }
 
   try {
+    await ensureJobWorker();
     const fields: Record<string, unknown> = {
       ...body,
       pacing: body.scene_pacing ?? body.pacing,
-      pen_style: body.pen_animation_style ?? body.pen_style,
+      // `pen_animation_style` is the reveal animation, not the style variant.
+      // Mixing the two made values such as "smooth" fall through to a default
+      // palette.
+      pen_style: body.sketch_style_variant ?? body.pen_style,
+      pen_animation_style: body.pen_animation_style,
       voiceName: body.narration_voice ?? body.voiceName,
       language: body.narration_language ?? body.language,
       display_language: body.onscreen_text_language ?? body.display_language,
