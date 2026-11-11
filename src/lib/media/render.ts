@@ -55,20 +55,26 @@ const MIN_SCENE_SECONDS = 2;
 const REVEAL_SECONDS = 1.5;
 const REVEAL_FPS = 12;
 
-const WORDS_PER_SECOND: Record<string, number> = { slow: 2.1, normal: 2.4, fast: 3.0 };
+const WORDS_PER_SECOND: Record<string, number> = { normal: 2.8, fast: 3.2, slow: 2.4 };
 
 /**
- * v2 `pen_animation_style` controls how long the artwork wipe runs. Unknown
- * values deliberately keep the default rather than disabling the animation.
+ * `pen_animation_style` names the tool that appears in shot while the artwork
+ * is drawn — `stylus`, `marker` or `pen` (Canvas and Studio only). It is a
+ * tool, not a speed: `none` means no hand overlay, while the draw-on reveal
+ * still runs.
  */
-function penReveal(style: string | null | undefined): { enabled: boolean; factor: number } {
-  const key = (style ?? "").trim().toLowerCase().replace(/[_-]+/g, " ");
-  if (["none", "off", "instant", "disabled", "no animation"].includes(key)) {
-    return { enabled: false, factor: 0 };
-  }
-  if (key.includes("slow") || key.includes("detailed")) return { enabled: true, factor: 1.6 };
-  if (key.includes("fast") || key.includes("quick")) return { enabled: true, factor: 0.55 };
-  return { enabled: true, factor: 1 };
+type PenTool = "none" | "stylus" | "marker" | "pen";
+
+function penReveal(style: string | null | undefined): {
+  tool: PenTool;
+  showHand: boolean;
+  factor: number;
+} {
+  const key = (style ?? "").trim().toLowerCase().replace(/[^a-z]+/g, "");
+  if (key === "stylus") return { tool: "stylus", showHand: true, factor: 1 };
+  if (key === "marker") return { tool: "marker", showHand: true, factor: 0.85 };
+  if (key === "pen") return { tool: "pen", showHand: true, factor: 1.2 };
+  return { tool: "none", showHand: false, factor: 1 };
 }
 
 export interface RenderResult {
@@ -571,7 +577,7 @@ export async function renderVideo(video: Video): Promise<RenderResult> {
           const generated = await generateArtwork({
             description: `${scene.visual}. ${scene.narration}`,
             style: settings.style,
-            engine: settings.engine === "golpo_sketch" ? "golpo_sketch" : "golpo_canvas",
+            engine: settings.engine,
             useColor: settings.useColor,
             seed: (index + 1) * 7919,
             width: panelWidth,
@@ -598,8 +604,11 @@ export async function renderVideo(video: Video): Promise<RenderResult> {
       };
 
       // Frames --------------------------------------------------------------
+      // The draw-on reveal always runs (the live product accumulates elements
+      // even with Pen in hand = None); the tool only decides whether a hand is
+      // drawn at the wipe edge and how briskly it moves.
       const pen = penReveal(settings.penAnimationStyle);
-      const animate = !settings.skipAnimation && pen.enabled;
+      const animate = !settings.skipAnimation;
       const revealSeconds = animate
         ? Math.min(REVEAL_SECONDS * pen.factor, Math.max(0.7, seconds * 0.22 * pen.factor))
         : 0;

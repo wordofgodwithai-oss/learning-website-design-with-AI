@@ -1,19 +1,21 @@
-import type { Orientation, RenderSettings, Video } from "@/lib/types";
+import type { Engine, Orientation, RenderSettings, Video } from "@/lib/types";
 
 /**
- * Visual identity of the two Golpo render engines.
+ * Visual identity of the three Golpo render engines.
  *
- * - `golpo_canvas` is the illustrated engine: saturated gradients, flat shapes,
- *   bold accent washes and a modern typeface.
- * - `golpo_sketch` is the line-art engine: paper, grain, marker strokes and a
- *   visible pen cursor while the drawing is revealed.
+ * - `golpo_canvas` is the pen-and-ink illustration engine: chalkboards,
+ *   whiteboards, Sharpie and colour illustration, with optional pen-in-hand.
+ * - `golpo_studio` is the motion whiteboard engine (2 credits/min): marker and
+ *   sketch looks that animate on top of the same illustration pipeline.
+ * - `golpo_sketch` is the line-art engine: paper, grain, marker strokes.
  *
- * Every knob a request can set (style, colour, engine, orientation) resolves
- * through this module so the renderer never hard-codes a look.
+ * Every palette below is named after the real catalogue entry it renders
+ * (`docs/forensics/live/audit-notes.txt` §STYLE CATALOGUES), so a request for
+ * `sharpie` or `neon_blackboard` lands on the same look the product previews.
  */
 
 export interface SceneTheme {
-  engine: "golpo_canvas" | "golpo_sketch";
+  engine: Engine;
   bg: string;
   bg2: string;
   accent: string;
@@ -47,41 +49,245 @@ type Palette = {
 };
 
 const PALETTES: Record<string, Palette> = {
-  // Golpo Canvas
-  chalkboard_white: { bg: "#0f2b26", bg2: "#17403a", accent: "#7ff2c0", ink: "#f4fffb" },
-  chalkboard_black_on_white: { bg: "#f7f4ec", bg2: "#e6e0d4", accent: "#1c1c1c", ink: "#1c1c1c" },
-  neon: { bg: "#0b0620", bg2: "#25124d", accent: "#63f5ff", ink: "#f6f0ff" },
-  whiteboard: { bg: "#eef2f7", bg2: "#dbe4ee", accent: "#2563eb", ink: "#16233b" },
-  modern_minimal: { bg: "#111318", bg2: "#1c2029", accent: "#c7d2fe", ink: "#f5f6fa" },
-  playful: { bg: "#fff1e6", bg2: "#ffe0c7", accent: "#f97316", ink: "#3b1d09" },
-  technical: { bg: "#0b1220", bg2: "#12203a", accent: "#38bdf8", ink: "#e6f4ff" },
-  editorial: { bg: "#f5f1ea", bg2: "#e7dfd2", accent: "#b45309", ink: "#221a12", font: SERIF_FONT },
-  marker: { bg: "#fff7d6", bg2: "#ffe9a8", accent: "#d97706", ink: "#3b2a05" },
-  vox: { bg: "#101014", bg2: "#1d1d24", accent: "#f43f5e", ink: "#f7f7fb" },
+  // --- Golpo Canvas (11) ---------------------------------------------------
+  chalkboard_white_on_black: {
+    bg: "#141414",
+    bg2: "#1e1e1e",
+    accent: "#f2f0e6",
+    ink: "#f8f6ee",
+    sketchy: true,
+    grain: 0.18,
+  },
+  chalkboard_black_on_white: {
+    bg: "#ffffff",
+    bg2: "#f4f4f1",
+    accent: "#111111",
+    ink: "#111111",
+    sketchy: true,
+    grain: 0.07,
+  },
+  chalkboard_color: {
+    bg: "#173b34",
+    bg2: "#1f4c43",
+    accent: "#fbbf24",
+    ink: "#f7fbf8",
+    sketchy: true,
+    grain: 0.16,
+  },
+  whiteboard: {
+    bg: "#ffffff",
+    bg2: "#f1f5f9",
+    accent: "#1d4ed8",
+    ink: "#111827",
+    sketchy: true,
+    grain: 0.06,
+  },
+  modern_minimal: {
+    bg: "#fafafa",
+    bg2: "#efefed",
+    accent: "#111827",
+    ink: "#18181b",
+    font: CLEAN_FONT,
+  },
+  playful: {
+    bg: "#fff7ec",
+    bg2: "#ffe6cc",
+    accent: "#f97316",
+    ink: "#2a1a0b",
+    sketchy: true,
+    grain: 0.12,
+  },
+  technical: {
+    bg: "#ffffff",
+    bg2: "#eef4fb",
+    accent: "#1d4ed8",
+    ink: "#0f172a",
+    font: CLEAN_FONT,
+  },
+  editorial: {
+    bg: "#fbf7f0",
+    bg2: "#efe7da",
+    accent: "#9a3412",
+    ink: "#1f1a14",
+    font: SERIF_FONT,
+  },
+  sharpie: {
+    bg: "#ffffff",
+    bg2: "#f6f6f3",
+    accent: "#111111",
+    ink: "#111111",
+    sketchy: true,
+    grain: 0.05,
+  },
+  illustration: {
+    bg: "#fffdf7",
+    bg2: "#fdeedb",
+    accent: "#ea580c",
+    ink: "#2b1a0c",
+    sketchy: true,
+    grain: 0.08,
+  },
+  notebook: {
+    bg: "#fdfdf8",
+    bg2: "#eef3fb",
+    accent: "#2563eb",
+    ink: "#1e293b",
+    sketchy: true,
+    grain: 0.07,
+  },
 
-  // Golpo Sketch
-  classic: { bg: "#fbfaf6", bg2: "#f2efe7", accent: "#1f2937", ink: "#1f2937", sketchy: true, grain: 0.16 },
-  improved: { bg: "#fcfcfb", bg2: "#f4f4f0", accent: "#0f172a", ink: "#0f172a", sketchy: true, grain: 0.1 },
-  "dry erase": { bg: "#f8fafc", bg2: "#eef2f6", accent: "#334155", ink: "#1e293b", sketchy: true, grain: 0.12 },
-  "professional clean": { bg: "#ffffff", bg2: "#f1f5f9", accent: "#2563eb", ink: "#0f172a", sketchy: true, grain: 0.06 },
-  crayon: { bg: "#fffbe8", bg2: "#ffe9c9", accent: "#ea580c", ink: "#4a2408", sketchy: true, grain: 0.2 },
-  infographics: { bg: "#08111f", bg2: "#10233d", accent: "#22d3ee", ink: "#e6fbff", sketchy: true, grain: 0.1 },
-  creative: { bg: "#1a0b2e", bg2: "#2d1450", accent: "#f0abfc", ink: "#fdf4ff", sketchy: true, grain: 0.1 },
+  // --- Golpo Sketch (11) ---------------------------------------------------
+  classic: { bg: "#fcfcf9", bg2: "#f3f2ea", accent: "#1f2937", ink: "#1f2937", sketchy: true, grain: 0.14 },
+  classic_with_words: {
+    bg: "#fdfcf7",
+    bg2: "#f5f3ea",
+    accent: "#111827",
+    ink: "#111827",
+    sketchy: true,
+    grain: 0.12,
+  },
+  improved: { bg: "#fcfcfb", bg2: "#f4f4f0", accent: "#0f172a", ink: "#0f172a", sketchy: true, grain: 0.09 },
+  dry_erase: { bg: "#f8fafc", bg2: "#eef2f6", accent: "#334155", ink: "#1e293b", sketchy: true, grain: 0.1 },
+  professional_clean: {
+    bg: "#ffffff",
+    bg2: "#f1f5f9",
+    accent: "#2563eb",
+    ink: "#0f172a",
+    sketchy: true,
+    grain: 0.05,
+  },
+  crayon: { bg: "#fffbe8", bg2: "#ffe8c4", accent: "#ea580c", ink: "#4a2408", sketchy: true, grain: 0.2 },
+  infographics: {
+    bg: "#f7fbff",
+    bg2: "#e6f1fb",
+    accent: "#0891b2",
+    ink: "#0f2536",
+    sketchy: true,
+    grain: 0.06,
+  },
+  creative: {
+    bg: "#fffdf9",
+    bg2: "#fbeed9",
+    accent: "#7c3aed",
+    ink: "#1f1235",
+    sketchy: true,
+    grain: 0.08,
+  },
+  formal: {
+    bg: "#fbfbfa",
+    bg2: "#eef1f5",
+    accent: "#1e3a8a",
+    ink: "#111827",
+    sketchy: true,
+    grain: 0.05,
+  },
+  formal_legacy: {
+    bg: "#fbfaf6",
+    bg2: "#efece2",
+    accent: "#1f2937",
+    ink: "#1f2937",
+    sketchy: true,
+    grain: 0.1,
+  },
+
+  // --- Golpo Studio (11) ---------------------------------------------------
+  colorful_sketch: {
+    bg: "#fffdf8",
+    bg2: "#fdeed6",
+    accent: "#f97316",
+    ink: "#2a1a0b",
+    sketchy: true,
+    grain: 0.1,
+  },
+  khan_academy: {
+    bg: "#f9fbf5",
+    bg2: "#eaf4e3",
+    accent: "#15803d",
+    ink: "#14291a",
+    sketchy: true,
+    grain: 0.08,
+  },
+  chalkboard: {
+    bg: "#14231f",
+    bg2: "#1d312b",
+    accent: "#f4f1e6",
+    ink: "#f7f5ed",
+    sketchy: true,
+    grain: 0.16,
+  },
+  bold_marker: {
+    bg: "#ffffff",
+    bg2: "#f4f4f2",
+    accent: "#111111",
+    ink: "#111111",
+    sketchy: true,
+    grain: 0.05,
+  },
+  simple_sketch: {
+    bg: "#fbfbf9",
+    bg2: "#f2f2ee",
+    accent: "#374151",
+    ink: "#1f2937",
+    sketchy: true,
+    grain: 0.1,
+  },
+  marker_cartoon: {
+    bg: "#fff8ec",
+    bg2: "#ffe7c9",
+    accent: "#e11d48",
+    ink: "#2c1706",
+    sketchy: true,
+    grain: 0.12,
+  },
+  brightboard: {
+    bg: "#ffffff",
+    bg2: "#eef6ff",
+    accent: "#0ea5e9",
+    ink: "#0b2233",
+    sketchy: true,
+    grain: 0.05,
+  },
+  neon_blackboard: {
+    bg: "#0b0f1a",
+    bg2: "#141c2b",
+    accent: "#22d3ee",
+    ink: "#f2fbff",
+    sketchy: true,
+    grain: 0.14,
+  },
+  expressive_editorial_marker: {
+    bg: "#faf6ee",
+    bg2: "#f0e5d2",
+    accent: "#b91c1c",
+    ink: "#231a12",
+    sketchy: true,
+    grain: 0.1,
+  },
+  signature_whiteboard: {
+    bg: "#ffffff",
+    bg2: "#f0f4f8",
+    accent: "#0f4c81",
+    ink: "#0f172a",
+    sketchy: true,
+    grain: 0.05,
+  },
 };
 
 const FALLBACK: Palette = { bg: "#0b1120", bg2: "#16233b", accent: "#7dd3fc", ink: "#f8fafc" };
 
 /**
  * Style names arrive in several spellings (`playful`, `Playful`, `dry erase`,
- * `dry_erase`, `playful_compact`, `classic_legacy`). Folding them to one key
- * means every variant still picks its palette instead of the fallback.
+ * `dry_erase`, `Chalkboard (White on Black)`, `chalkboard_white_on_black`).
+ * Folding punctuation and separators to one key means every variant still
+ * picks its palette instead of the fallback.
  */
 function styleKey(value: string | null | undefined): string {
   return (value ?? "")
     .trim()
     .toLowerCase()
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+(compact|expanded|legacy)$/, "");
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+(compact|expanded)$/, "")
+    .trim();
 }
 
 const STYLE_LOOKUP = new Map(
@@ -102,15 +308,22 @@ function monochrome(palette: Palette): Palette {
 }
 
 export function resolveTheme(
-  settings: Pick<RenderSettings, "engine" | "style" | "useColor">,
+  settings: Pick<RenderSettings, "engine" | "style" | "useColor"> & {
+    penAnimationStyle?: string | null;
+  },
 ): SceneTheme {
   const base = STYLE_LOOKUP.get(styleKey(settings.style)) ?? FALLBACK;
   const palette = settings.useColor ? base : monochrome(base);
-  const sketch = settings.engine === "golpo_sketch" || Boolean(palette.sketchy);
+  // Studio and Sketch are hand-drawn at heart; Canvas is too whenever the
+  // chosen style is a chalkboard/whiteboard/marker look rather than a clean
+  // minimal one.
+  const sketch = settings.engine !== "golpo_canvas" || Boolean(palette.sketchy);
   const ink = palette.ink ?? (isLight(palette.bg) ? "#1f2937" : "#f8fafc");
+  const penTool = (settings.penAnimationStyle ?? "").trim().toLowerCase();
+  const showPen = penTool === "stylus" || penTool === "marker" || penTool === "pen";
 
   return {
-    engine: sketch ? "golpo_sketch" : "golpo_canvas",
+    engine: settings.engine,
     bg: palette.bg,
     bg2: palette.bg2,
     accent: palette.accent,
@@ -122,7 +335,7 @@ export function resolveTheme(
     headingFont: palette.font ?? (sketch ? HAND_FONT : CLEAN_FONT),
     bodyFont: sketch ? HAND_FONT : CLEAN_FONT,
     strokeScale: sketch ? 1.15 : 1,
-    penCursor: sketch,
+    penCursor: showPen,
     paperTooth: sketch,
     sketchiness: sketch ? 1 : 0,
   };
@@ -275,6 +488,7 @@ export function settingsFor(video: Video): RenderSettings {
     imageStyle: video.image_style,
     imageGenerationModel: "default",
     penAnimationStyle: null,
+    frameTransition: "none",
     characters: [],
     styleReference: null,
     skipAnimation: false,

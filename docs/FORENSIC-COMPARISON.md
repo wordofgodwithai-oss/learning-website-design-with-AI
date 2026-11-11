@@ -533,6 +533,21 @@ proves they are the visible gap:
 Then continue with §8 as written: component-based canvas composition, pen-in-hand
 tool overlays, watermark-free line art, palette correction, chrome removal.
 
+### 9.8 Implementation status
+
+Both promoted items are implemented in the local clone.
+
+| Item | Where | Behaviour now |
+| --- | --- | --- |
+| Script budget (1,050 chars/min) | `src/lib/generation/script.ts` | `SCRIPT_CHARS_PER_MINUTE = 1050`, `PROMPT_CHAR_LIMIT = 18500`, `scriptBudget(duration)`, `formatMinutes()`. The writer fills the budget without repeating a sentence and splits one scene per sentence (cap 60). Verified budgets: 60 s → 1,050, 240 s → 4,200, 900 s → 15,750 characters, zero duplicate sentences. |
+| Live counter + Script Mode | `src/components/Playground.tsx` | Script Mode toggle switches the field to “Script Content”, the counter to `0 / 1050 characters` with the note “Character limit based on 1 min duration (1050 chars/min)”, and disables Auto duration. Prompt mode keeps `0 / 18500 characters`. |
+| Engine-specific matrix | `src/lib/generation/config.ts`, `request.ts` | `ENGINE_CAPABILITIES` drives which controls render: frame transition Canvas-only (Sketch shows it disabled with “Available on Golpo Canvas only”, Studio hides it), pacing Canvas+Sketch, display language Canvas+Studio, pen-in-hand Canvas+Studio, Studio music adds None. Validation rejects illegal combinations. |
+| Three catalogues | `config.ts`, `media/theme.ts` | Canvas/Sketch/Studio each expose their own 11 presets with real labels; every palette is resolved per style key. |
+| Voice + music catalogue | `config.ts`, `ai/edge-tts.ts`, `media/audio.ts` | `conversational` + `female-1…7` / `male-1…7`, mapped internally onto Orpheus/Edge voices. Studio bills 2 credits/min. |
+
+Still open from §8: residual spread capping, component-based canvas composition,
+pen-in-hand overlays, watermark-free line art, and chrome removal.
+
 ---
 
 ## 10. Limits of this study

@@ -10,7 +10,7 @@
 export type VideoStatus = "queued" | "processing" | "ready" | "failed";
 export type JobStatus = "queued" | "processing" | "script_ready" | "ready" | "failed";
 export type Visibility = "private" | "public" | "unlisted";
-export type Engine = "golpo_canvas" | "golpo_sketch";
+export type Engine = "golpo_canvas" | "golpo_studio" | "golpo_sketch";
 export type GenerationKind = "video" | "podcast";
 
 export interface User {
@@ -88,8 +88,10 @@ export interface RenderSettings {
   penStyle: string | null;
   imageStyle: string | null;
   imageGenerationModel: string;
-  /** v2 `pen_animation_style`; controls how the artwork is revealed. */
+  /** v2 `pen_animation_style`; the pen tool drawn over the artwork (Canvas/Studio). */
   penAnimationStyle: string | null;
+  /** v2 `frame_transition`; Canvas only (`none`, `slide_left`, `zoom_in`, …). */
+  frameTransition?: string;
   /** Saved characters resolved to their prompt descriptions. */
   characters: Array<{ name: string; description: string; imageUrl: string | null }>;
   /** Optional style reference image URL (reported, not yet image-conditioned). */

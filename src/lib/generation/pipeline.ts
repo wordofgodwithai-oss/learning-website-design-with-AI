@@ -186,6 +186,7 @@ function buildRenderSettings(
     imageStyle: input.imageStyle,
     imageGenerationModel: input.imageGenerationModel,
     penAnimationStyle: input.penAnimationStyle,
+    frameTransition: input.frameTransition,
     characters,
     styleReference: input.styleReference,
     skipAnimation: input.skipAnimation,
@@ -305,6 +306,7 @@ export async function startGeneration(
         durationSeconds: input.durationSeconds,
         isAudioOnly: input.isAudioOnly,
         avatar,
+        engine: input.engine,
       });
 
   const scriptResult = await writeScript({

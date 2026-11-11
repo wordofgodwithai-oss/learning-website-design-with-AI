@@ -39,9 +39,11 @@ function words(text) {
 }
 
 function buildScript(prompt, durationSeconds) {
-  const budget = Math.max(24, Math.round((durationSeconds || 30) * 2.4));
+  // 1,050 characters per minute ÷ 6.25 chars/word ≈ 2.8 words/second, the same
+  // budget the live Script Mode counter enforces.
+  const budget = Math.max(24, Math.round((durationSeconds || 30) * 2.8));
   const topic = (prompt || "a useful idea").trim().replace(/\s+/g, " ").slice(0, 160);
-  const sentences = [
+  const base = [
     `Here is a short explanation of ${topic}.`,
     `The core idea is easier to remember when it is broken into small steps.`,
     `First, notice what problem the idea is trying to solve.`,
@@ -50,9 +52,29 @@ function buildScript(prompt, durationSeconds) {
     `That connection is what makes the explanation stick.`,
     `Try restating it in your own words to check your understanding.`,
     `With practice, the whole picture becomes simple.`,
-  ].filter((sentence) => words(sentence).length > 0);
+  ];
+  const pool = [
+    `A concrete example makes the abstract part easier to trust.`,
+    `Keep the goal visible so the next step stays obvious.`,
+    `Change one thing at a time, then check what actually moved.`,
+    `The common mistake is adding complexity before the basics are clear.`,
+    `A short feedback loop is worth more than a perfect plan.`,
+    `Write down the assumption you are least sure about and test it.`,
+    `Separate the signal from the noise by asking what would prove you wrong.`,
+    `Small verified steps beat one big guess almost every time.`,
+  ];
+  const connectors = ["", "In practice, ", "More importantly, ", "From experience, "];
+  const sentences = [...base];
+  let cursor = 0;
+  while (words(sentences.join(" ")).length < budget && cursor < 240) {
+    const connector = connectors[Math.floor(cursor / pool.length) % connectors.length];
+    const line = pool[cursor % pool.length];
+    const text = connector ? `${connector}${line.charAt(0).toLowerCase()}${line.slice(1)}` : line;
+    sentences.push(text);
+    cursor += 1;
+  }
 
-  const targetScenes = Math.max(3, Math.min(SCENE_TARGETS, Math.round((durationSeconds || 30) / 9)));
+  const targetScenes = Math.max(3, Math.min(SCENE_TARGETS, Math.round((durationSeconds || 30) / 6)));
   const perScene = Math.max(1, Math.ceil(sentences.length / targetScenes));
   const scenes = [];
   for (let index = 0; index < sentences.length && scenes.length < targetScenes; index += perScene) {

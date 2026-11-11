@@ -1,8 +1,14 @@
 import type { Engine, GenerationKind } from "@/lib/types";
 import { bool, clamp, num, str } from "@/lib/http";
-import { DURATION_LIMITS } from "@/lib/generation/config";
+import { DURATION_LIMITS, FRAME_TRANSITION_IDS, stylesForEngine } from "@/lib/generation/config";
 import { validationError } from "@/lib/generation/errors";
 import { languageName } from "@/lib/generation/config";
+import {
+  formatMinutes,
+  PROMPT_CHAR_LIMIT,
+  SCRIPT_CHARS_PER_MINUTE,
+  scriptBudget,
+} from "@/lib/generation/script";
 
 /**
  * Normalized form of the generate request.
@@ -22,6 +28,7 @@ export interface NormalizedGenerationRequest {
   penStyle: string | null;
   imageGenerationModel: string;
   penAnimationStyle: string | null;
+  frameTransition: string;
   useColor: boolean;
   pacing: string;
   timing: string;
@@ -133,6 +140,25 @@ function parseJson(value: unknown): Record<string, unknown> | null {
 }
 
 /**
+ * `pen_animation_style` names the tool that appears in shot while the artwork
+ * is drawn — `stylus`, `marker` or `pen` — and is available on Canvas and
+ * Studio only. It is NOT a speed. The old local values (`fast`, `slow`) are
+ * accepted for backward compatibility and collapse to `null` (no overlay).
+ */
+function normalizePenAnimation(value: string): string | null {
+  const key = value.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  if (key === "stylus" || key === "marker" || key === "pen") return key;
+  return null;
+}
+
+/** `frame_transition` is Canvas-only in the live product. */
+function normalizeFrameTransition(value: string, engine: Engine): string {
+  if (engine !== "golpo_canvas") return "none";
+  const key = value.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  return FRAME_TRANSITION_IDS.includes(key) ? key : "none";
+}
+
+/**
  * @param fields   multipart text fields (values may be File for uploads, which
  *                 the route has already persisted and replaced with URLs) or a
  *                 JSON body for the v2 API.
@@ -151,26 +177,41 @@ export function normalizeGenerationInput(
   const kind: GenerationKind =
     str(merged.kind, options.defaultKind ?? "video") === "podcast" ? "podcast" : "video";
 
+  const engineId = str(merged.golpo_video_engine) || str(merged.video_engine);
   const engine: Engine =
-    str(merged.golpo_video_engine) === "golpo_sketch" ||
-    bool(merged.use_lineart_2_style)
-      ? "golpo_sketch"
-      : "golpo_canvas";
+    engineId === "golpo_studio" || bool(merged.use_studio_style)
+      ? "golpo_studio"
+      : engineId === "golpo_sketch" || bool(merged.use_lineart_2_style)
+        ? "golpo_sketch"
+        : "golpo_canvas";
 
   const sketchStyle = str(merged.sketch_style_variant) || str(merged.pen_style);
   const canvasStyle =
     str(merged.canvas_style_variant) || str(merged.image_style) || str(merged.style);
+  const studioStyle = str(merged.studio_style_variant) || str(merged.style);
 
-  const style =
+  const catalogue = stylesForEngine(engine);
+  const fallbackStyle =
+    engine === "golpo_sketch" ? "classic" : engine === "golpo_studio" ? "neon_blackboard" : "whiteboard";
+  const candidate =
     engine === "golpo_sketch"
-      ? sketchStyle || "classic"
-      : canvasStyle || "whiteboard";
+      ? sketchStyle
+      : engine === "golpo_studio"
+        ? studioStyle || canvasStyle
+        : canvasStyle;
+  // Unknown ids are preserved (legacy rows still resolve in the theme), but an
+  // empty request always lands on a real catalogue entry.
+  const style = candidate || (catalogue.includes(fallbackStyle) ? fallbackStyle : catalogue[0]);
 
   const language = str(merged.language, "en") || "en";
+  // The narration language and the on-screen language are separate controls;
+  // Sketch has no on-screen language control in the live product.
   const displayLanguage =
-    str(merged.display_language) ||
-    str(merged.onscreen_text_language) ||
-    languageName(language);
+    engine === "golpo_sketch"
+      ? languageName(language)
+      : str(merged.display_language) ||
+        str(merged.onscreen_text_language) ||
+        languageName(language);
 
   const rawDuration = num(merged.durationSeconds ?? merged.duration_seconds, 60);
   const durationSeconds = clamp(
@@ -202,10 +243,14 @@ export function normalizeGenerationInput(
     engine,
     style,
     isAudioOnly,
-    imageStyle: str(merged.image_style) || (engine === "golpo_canvas" ? style : null),
-    penStyle: str(merged.pen_style) || (engine === "golpo_sketch" ? style : null),
+    imageStyle: engine === "golpo_sketch" ? null : style,
+    penStyle: engine === "golpo_sketch" ? style : null,
     imageGenerationModel: str(merged.image_generation_model, "default"),
-    penAnimationStyle: str(merged.pen_animation_style) || null,
+    penAnimationStyle:
+      engine === "golpo_sketch"
+        ? null
+        : normalizePenAnimation(str(merged.pen_animation_style)),
+    frameTransition: normalizeFrameTransition(str(merged.frame_transition), engine),
     useColor: bool(merged.use_color, true),
     pacing: str(merged.pacing, "normal"),
     timing: str(merged.timing, "auto"),
@@ -264,10 +309,31 @@ export function validateGenerationInput(input: NormalizedGenerationRequest): voi
       "A prompt is required. Describe the video you want, or paste a script.",
     );
   }
-  if (input.prompt.length > 8000) {
-    throw validationError("Prompt is too long (8000 characters maximum).");
+  if (input.prompt.length > PROMPT_CHAR_LIMIT) {
+    throw validationError(`Prompt is too long (${PROMPT_CHAR_LIMIT} characters maximum).`);
+  }
+  if (input.scriptOnlyText && input.scriptOnlyText.length > scriptBudget(input.durationSeconds)) {
+    throw validationError(
+      `Script is too long: Script Mode allows ${scriptBudget(input.durationSeconds)} characters ` +
+        `for ${formatMinutes(input.durationSeconds)} (${SCRIPT_CHARS_PER_MINUTE} chars/min).`,
+    );
   }
   if (input.variantLanguages.length > 10) {
     throw validationError("A maximum of 10 language variants is supported.");
+  }
+  // Engine-specific controls, matching the live panel: pen-in-hand is not a
+  // Sketch control, and a frame transition requires Canvas and Normal pacing.
+  if (input.penAnimationStyle && input.engine === "golpo_sketch") {
+    throw validationError(
+      "Pen in hand animation is only available on Golpo Canvas and Golpo Studio.",
+    );
+  }
+  if (input.frameTransition !== "none") {
+    if (input.engine !== "golpo_canvas") {
+      throw validationError("Frame transition is only available on Golpo Canvas.");
+    }
+    if (input.pacing !== "normal") {
+      throw validationError("Frame transition requires Normal pacing.");
+    }
   }
 }

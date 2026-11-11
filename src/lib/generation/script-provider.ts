@@ -4,10 +4,12 @@ import { groqChatJson } from "@/lib/ai/groq";
 import { GROQ_MODEL, scriptMode } from "@/lib/integrations";
 import { languageName } from "@/lib/generation/config";
 import {
+  AVG_CHARS_PER_WORD,
   buildScript,
   countWords,
+  MAX_SCENES,
   scriptToScenes,
-  targetWordCount,
+  targetCharCount,
   type BuiltScript,
   type Scene,
 } from "@/lib/generation/script";
@@ -50,14 +52,19 @@ Rules:
 - "visual" describes one simple whiteboard-style illustration for that scene, in one sentence.
 - Do not invent statistics, quotes, or citations. If a number is not well known, describe the idea instead.
 - Write in the requested language.
-- Hit the word budget exactly: the video's runtime is calculated from it, so fewer words means a shorter video. Do not pad with filler; add real explanation or a concrete example instead.`;
+- Hit the character budget exactly: the live product allows 1,050 characters per minute of video, so fewer characters means a shorter video. Do not pad with filler; add real explanation or a concrete example instead.`;
 
-function targetWords(durationSeconds: number): number {
-  return targetWordCount(durationSeconds);
+/**
+ * The live product budgets Script Mode at 1,050 characters per minute. The
+ * model is asked for words, so the character budget is converted with the
+ * same 6.25 chars/word average the local writer uses.
+ */
+function budgetFor(durationSeconds: number): number {
+  return Math.max(20, Math.round(targetCharCount(durationSeconds) / AVG_CHARS_PER_WORD));
 }
 
 function sceneTarget(durationSeconds: number): number {
-  return Math.min(14, Math.max(3, Math.round(durationSeconds / 9)));
+  return Math.min(MAX_SCENES, Math.max(3, Math.round(durationSeconds / 6)));
 }
 
 function asText(value: unknown): string {
@@ -86,7 +93,7 @@ function parseScenes(result: ModelScript): DraftScene[] {
       visual: asText(scene?.visual),
     }))
     .filter((scene) => scene.narration.length > 0)
-    .slice(0, 14);
+    .slice(0, MAX_SCENES);
 }
 
 function totalWords(scenes: DraftScene[]): number {
@@ -215,7 +222,7 @@ function toScenes(rawScenes: DraftScene[], durationSeconds: number): Scene[] {
 }
 
 async function writeWithGroq(options: WriteScriptOptions): Promise<BuiltScript> {
-  const budget = targetWords(options.durationSeconds);
+  const budget = budgetFor(options.durationSeconds);
   const requestedScenes = sceneTarget(options.durationSeconds);
   const language = options.displayLanguage?.trim() || languageName("en");
   const format = options.kind === "podcast" ? "audio-only podcast episode" : "explainer video";

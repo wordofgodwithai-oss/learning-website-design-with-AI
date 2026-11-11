@@ -29,11 +29,21 @@ export const MCP_TOOLS = [
       type: "object",
       properties: {
         prompt: { type: "string", description: "What the video should explain." },
+        script: {
+          type: "string",
+          description:
+            "Optional script to narrate exactly as written (Script Mode). Budget: 1,050 characters per minute of duration.",
+        },
         kind: { type: "string", enum: ["video", "podcast"], default: "video" },
-        engine: { type: "string", enum: ["golpo_canvas", "golpo_sketch"], default: "golpo_canvas" },
+        engine: {
+          type: "string",
+          enum: ["golpo_canvas", "golpo_studio", "golpo_sketch"],
+          default: "golpo_canvas",
+        },
         style: {
           type: "string",
-          description: "Canvas style (whiteboard, neon, …) or sketch style (classic, crayon, …).",
+          description:
+            "Canvas style (chalkboard_white_on_black, whiteboard, sharpie, …), Studio style (neon_blackboard, …) or Sketch style (classic, crayon, …).",
         },
         duration_seconds: { type: "number", minimum: 15, maximum: 900, default: 60 },
         language: { type: "string", default: "en" },
@@ -47,7 +57,28 @@ export const MCP_TOOLS = [
         script_only: {
           type: "boolean",
           default: false,
-          description: "Return the script without rendering a video.",
+          description: "Return the script without rendering a video (Edit script).",
+        },
+        pen_animation_style: {
+          type: "string",
+          enum: ["none", "stylus", "marker", "pen"],
+          default: "none",
+          description: "Pen-in-hand tool overlay; Canvas and Studio only.",
+        },
+        frame_transition: {
+          type: "string",
+          enum: [
+            "none",
+            "hand_slide",
+            "slide_left",
+            "slide_right",
+            "slide_up",
+            "slide_down",
+            "zoom_in",
+            "zoom_out",
+          ],
+          default: "none",
+          description: "Scene transition; Canvas only, requires Normal pacing.",
         },
       },
       required: ["prompt"],
@@ -121,6 +152,9 @@ async function callTool(user: User, name: string, args: ToolArgs) {
         golpo_video_engine: str(args.engine, "golpo_canvas"),
         style: str(args.style) || undefined,
         image_style: str(args.style) || undefined,
+        script_only_text: str(args.script) || undefined,
+        pen_animation_style: str(args.pen_animation_style) || undefined,
+        frame_transition: str(args.frame_transition) || undefined,
         durationSeconds: num(args.duration_seconds, 60),
         language: str(args.language, "en"),
         include_watermark: bool(args.watermark),

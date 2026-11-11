@@ -62,7 +62,21 @@ const ORPHEUS_VOICE: Record<string, string> = {
   luca: "troy",
   sora: "hannah",
   amara: "hannah",
+  conversational: "hannah",
 };
+
+/** Orpheus ships a handful of voices; spread the 7+7 UI ids across them. */
+const ORPHEUS_FEMALE = ["hannah", "diana", "autumn", "mary"];
+const ORPHEUS_MALE = ["troy", "austin", "daniel"];
+
+function orpheusVoice(voiceName?: string | null): string {
+  const key = (voiceName ?? "").trim().toLowerCase();
+  const female = /^female[-\s]?(\d)$/.exec(key);
+  if (female) return ORPHEUS_FEMALE[(Number(female[1]) - 1) % ORPHEUS_FEMALE.length];
+  const male = /^male[-\s]?(\d)$/.exec(key);
+  if (male) return ORPHEUS_MALE[(Number(male[1]) - 1) % ORPHEUS_MALE.length];
+  return ORPHEUS_VOICE[key] ?? GROQ_TTS_VOICE;
+}
 
 /**
  * Neural voices — Orpheus especially — insert long, dramatic pauses around
@@ -114,8 +128,7 @@ async function groqNarration(request: NarrationRequest): Promise<NarrationResult
   for (let index = 0; index < chunks.length; index += 1) {
     const bytes = await groqSpeech(chunks[index], {
       model: GROQ_TTS_MODEL,
-      voice:
-        ORPHEUS_VOICE[(request.voice ?? "").toLowerCase()] ?? GROQ_TTS_VOICE,
+      voice: orpheusVoice(request.voice),
     });
     const part = path.join(request.workDir, `voice-${request.sceneIndex}-${index}.wav`);
     await fs.writeFile(part, bytes);

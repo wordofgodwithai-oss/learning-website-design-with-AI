@@ -76,17 +76,32 @@ const VOICE_BY_LANGUAGE: Record<string, VoicePair> = {
   fil: { female: "fil-PH-BlessicaNeural", male: "fil-PH-AngeloNeural" },
 };
 
-/** Dashboard voice ids (config.ts) mapped onto a gender, then a locale voice. */
-const VOICE_GENDER: Record<string, "female" | "male" | "neutral"> = {
-  ava: "female",
-  noah: "male",
-  isla: "female",
-  oliver: "male",
-  maya: "female",
-  luca: "male",
-  sora: "neutral",
-  amara: "female",
-};
+/**
+ * Dashboard voice ids mapped onto a gender, then a locale voice.
+ * The live catalogue is `conversational` plus `female-1…7` and `male-1…7`
+ * (`docs/forensics/live/audit-notes.txt` §VOICE); the older named ids are kept
+ * so renders created before that catalogue still resolve.
+ */
+function voiceGenderOf(voiceName?: string | null): "female" | "male" | "neutral" | undefined {
+  const key = (voiceName ?? "").trim().toLowerCase();
+  if (!key) return undefined;
+  if (key === "conversational") return "neutral";
+  if (/^female[-\s]?\d$/.test(key)) return "female";
+  if (/^male[-\s]?\d$/.test(key)) return "male";
+  if (key.startsWith("female") || key.includes("woman")) return "female";
+  if (key.startsWith("male") || key.includes("man")) return "male";
+  const legacy: Record<string, "female" | "male" | "neutral"> = {
+    ava: "female",
+    noah: "male",
+    isla: "female",
+    oliver: "male",
+    maya: "female",
+    luca: "male",
+    sora: "neutral",
+    amara: "female",
+  };
+  return legacy[key];
+}
 
 function localeFor(language: string): string {
   const normalized = language.replace("_", "-");
@@ -99,7 +114,7 @@ function localeFor(language: string): string {
 export function edgeVoice(language: string, voiceName?: string | null): string {
   const locale = localeFor(language);
   const pair = VOICE_BY_LANGUAGE[locale] ?? VOICE_BY_LANGUAGE.en;
-  const gender = voiceName ? VOICE_GENDER[voiceName.toLowerCase()] : undefined;
+  const gender = voiceGenderOf(voiceName);
   return gender === "male" ? pair.male : pair.female;
 }
 

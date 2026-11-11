@@ -4,15 +4,26 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
-  CANVAS_STYLES,
-  DURATION_LIMITS,
+  DEFAULT_DURATION_SECONDS,
+  DURATION_CHOICES,
+  ENGINE_CAPABILITIES,
+  FRAME_TRANSITIONS,
   LANGUAGES,
+  MUSIC_PRESETS,
   PACING,
-  SKETCH_STYLES,
+  PEN_ANIMATION_STYLES,
   VOICES,
   languageName,
+  styleLabel,
+  stylesForEngine,
 } from "@/lib/generation/config";
-import type { Character, CustomMusic, Video } from "@/lib/types";
+import {
+  SCRIPT_CHARS_PER_MINUTE,
+  PROMPT_CHAR_LIMIT,
+  formatMinutes,
+  scriptBudget,
+} from "@/lib/generation/script";
+import type { Character, CustomMusic, Engine, Video } from "@/lib/types";
 
 interface StockAvatar {
   id: string;
@@ -76,23 +87,29 @@ export function Playground({
 }) {
   const [prompt, setPrompt] = useState("");
   const [kind, setKind] = useState<"video" | "podcast">("video");
-  const [engine, setEngine] = useState<"golpo_canvas" | "golpo_sketch">("golpo_canvas");
-  const [canvasStyle, setCanvasStyle] = useState<string>("whiteboard");
-  const [sketchStyle, setSketchStyle] = useState<string>("classic");
-  const [duration, setDuration] = useState(60);
+  const [engine, setEngine] = useState<Engine>("golpo_sketch");
+  const [canvasStyle, setCanvasStyle] = useState<string>("sharpie");
+  const [studioStyle, setStudioStyle] = useState<string>("neon_blackboard");
+  const [sketchStyle, setSketchStyle] = useState<string>("creative");
+  const [duration, setDuration] = useState(DEFAULT_DURATION_SECONDS);
   const [language, setLanguage] = useState("en");
-  const [voice, setVoice] = useState(VOICES[0].id);
-  const [pacing, setPacing] = useState<string>("normal");
-  const [orientation, setOrientation] = useState<"16:9" | "9:16" | "1:1">("16:9");
+  const [displayLanguage, setDisplayLanguage] = useState("English");
+  const [voice, setVoice] = useState("female-1");
+  const [pacing, setPacing] = useState<string>("fast");
+  const [orientation, setOrientation] = useState<"16:9" | "9:16">("16:9");
+  const [penAnimation, setPenAnimation] = useState("none");
+  const [frameTransition, setFrameTransition] = useState("none");
   const [color, setColor] = useState(true);
   const [watermark, setWatermark] = useState(false);
-  const [scriptOnly, setScriptOnly] = useState(false);
+  const [scriptMode, setScriptMode] = useState(false);
+  const [editScript, setEditScript] = useState(false);
   const [fillIn, setFillIn] = useState(false);
   const [aiPresenter, setAiPresenter] = useState(false);
   const [ownNarration, setOwnNarration] = useState(false);
   const [ownNarrationAvatar, setOwnNarrationAvatar] = useState("stock_ava");
   const [variants, setVariants] = useState<string[]>([]);
   const [musicId, setMusicId] = useState("");
+  const [musicName, setMusicName] = useState("");
   const [files, setFiles] = useState<File[]>([]);
 
   const [stockAvatars, setStockAvatars] = useState<StockAvatar[]>([]);
@@ -344,7 +361,7 @@ export function Playground({
         setNotice({ kind: "error", text: data.error ?? "Could not read that file." });
         return;
       }
-      setPrompt(data.text.slice(0, 8000));
+      setPrompt(data.text.slice(0, scriptBudget(duration)));
       const detail =
         data.source_type === "audio"
           ? `Transcribed ${data.word_count ?? 0} words${data.language ? ` (${data.language})` : ""} with ${data.words?.length ?? 0} word timestamps`
@@ -357,7 +374,20 @@ export function Playground({
 
   async function generate() {
     if (!prompt.trim()) {
-      setNotice({ kind: "error", text: "Describe the video you want to create." });
+      setNotice({
+        kind: "error",
+        text: scriptMode
+          ? "Paste the script you want narrated."
+          : "Describe the video you want to create.",
+      });
+      return;
+    }
+    const charLimit = scriptMode ? scriptBudget(duration) : PROMPT_CHAR_LIMIT;
+    if (prompt.length > charLimit) {
+      setNotice({
+        kind: "error",
+        text: `Too long: ${prompt.length} / ${charLimit} characters. Shorten the text or pick a longer duration.`,
+      });
       return;
     }
     setBusy(true);
@@ -366,31 +396,53 @@ export function Playground({
     setJob(null);
 
     try {
+      const caps = ENGINE_CAPABILITIES[engine];
+      const activeStyle =
+        engine === "golpo_canvas"
+          ? canvasStyle
+          : engine === "golpo_studio"
+            ? studioStyle
+            : sketchStyle;
+
       const form = new FormData();
-      form.set("prompt", prompt.trim());
+      form.set("prompt", scriptMode ? "" : prompt.trim());
+      if (scriptMode) form.set("script_only_text", prompt.trim());
       form.set("kind", kind);
-      form.set("use_2_0_style", String(engine === "golpo_canvas"));
-      form.set("use_lineart_2_style", String(engine === "golpo_sketch"));
-      form.set("image_style", canvasStyle);
-      form.set("pen_style", sketchStyle);
+      form.set("golpo_video_engine", engine);
+      form.set("style", activeStyle);
+      if (engine === "golpo_canvas") {
+        form.set("canvas_style_variant", canvasStyle);
+        form.set("image_style", canvasStyle);
+      } else if (engine === "golpo_studio") {
+        form.set("studio_style_variant", studioStyle);
+      } else {
+        form.set("sketch_style_variant", sketchStyle);
+        form.set("pen_style", sketchStyle);
+      }
       form.set("image_generation_model", "default");
       form.set("use_color", String(color));
-      form.set("pacing", pacing);
+      form.set("pacing", caps.pacing ? pacing : "normal");
+      form.set("frame_transition", caps.frameTransition ? frameTransition : "none");
+      form.set("pen_animation_style", caps.penInHand ? penAnimation : "");
       form.set("video_orientation", orientation);
       form.set("durationSeconds", String(duration));
       form.set("language", language);
-      form.set("display_language", languageName(language));
+      form.set(
+        "display_language",
+        caps.displayLanguage ? displayLanguage : languageName(language),
+      );
       form.set("voiceName", voice);
       form.set("fill_in", String(fillIn));
       form.set("characters", JSON.stringify(selectedCharacters));
       form.set("avatar_renderer", aiPresenter ? "studio" : "");
       form.set("avatar_presentation_mode", aiPresenter ? "half_body" : "");
-      form.set("just_return_script", String(scriptOnly));
+      form.set("just_return_script", String(editScript));
       form.set("include_watermark", String(watermark));
       form.set("force_watermark", String(watermark));
       form.set("is_audio_only", String(kind === "podcast"));
       form.set("variant_languages", JSON.stringify(variants));
       form.set("variant_display_languages", JSON.stringify(variants.map(languageName)));
+      if (musicName) form.set("musicName", musicName);
       if (ownNarration) {
         form.set("own_narration_avatar_id", ownNarrationAvatar || stockAvatars[0]?.id || "stock_ava");
         form.set("own_narration_pip_position", "bottom_right");
@@ -437,7 +489,7 @@ export function Playground({
           pending: true,
           jobId: data.job_id,
           videoId: data.video_id ?? null,
-          isScriptGeneration: scriptOnly,
+          isScriptGeneration: editScript,
           isAudioOnly: kind === "podcast",
           variantVideoIds: [],
         }),
@@ -445,7 +497,7 @@ export function Playground({
 
       setNotice({
         kind: "ok",
-        text: scriptOnly ? "Script generation started." : "Render queued. Polling for progress…",
+        text: editScript ? "Script generation started." : "Render queued. Polling for progress…",
       });
       await pollJob(data.job_id, data.video_id ?? null);
     } catch {
@@ -455,8 +507,25 @@ export function Playground({
     }
   }
 
-  const styles = engine === "golpo_canvas" ? CANVAS_STYLES : SKETCH_STYLES;
-  const activeStyle = engine === "golpo_canvas" ? canvasStyle : sketchStyle;
+  const caps = ENGINE_CAPABILITIES[engine];
+  const styles = stylesForEngine(engine);
+  const activeStyle =
+    engine === "golpo_canvas"
+      ? canvasStyle
+      : engine === "golpo_studio"
+        ? studioStyle
+        : sketchStyle;
+  const charLimit = scriptMode ? scriptBudget(duration) : PROMPT_CHAR_LIMIT;
+  const overBudget = prompt.length > charLimit;
+  const musicOptions = caps.musicHasAuto
+    ? [...MUSIC_PRESETS, { id: "none", label: "None", seconds: 0 }]
+    : MUSIC_PRESETS;
+
+  function setActiveStyle(value: string) {
+    if (engine === "golpo_canvas") setCanvasStyle(value);
+    else if (engine === "golpo_studio") setStudioStyle(value);
+    else setSketchStyle(value);
+  }
 
   return (
     <>
@@ -485,19 +554,48 @@ export function Playground({
           </div>
 
           <div className="field">
-            <label className="label" htmlFor="prompt">
-              Prompt or script
-            </label>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+                flexWrap: "wrap",
+                marginBottom: 8,
+              }}
+            >
+              <label className="label" htmlFor="prompt" style={{ margin: 0 }}>
+                {scriptMode ? "Script Content" : "Prompt Content"}
+              </label>
+              <label className="check" style={{ margin: 0 }}>
+                <input
+                  type="checkbox"
+                  checked={scriptMode}
+                  onChange={(event) => {
+                    setScriptMode(event.target.checked);
+                    if (event.target.checked) setEditScript(false);
+                  }}
+                />
+                <span>
+                  Script Mode
+                  <small>Narrated exactly as written</small>
+                </span>
+              </label>
+            </div>
             <textarea
               id="prompt"
               className="textarea"
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
-              placeholder="Explain how photosynthesis works for a 12-year-old, in a friendly whiteboard style…"
+              placeholder={
+                scriptMode
+                  ? "Enter your script (it will be narrated exactly as written)."
+                  : "Describe what the video should cover, who it's for, and what viewers should learn or do."
+              }
             />
             <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
               <label className="btn btn-sm" style={{ cursor: "pointer" }}>
-                Import script or audio
+                Attach
                 <input
                   type="file"
                   accept=".txt,.md,.srt,.vtt,.csv,.json,.html,.pdf,.docx,.mp3,.wav,.m4a,.ogg,.webm,.flac,.mp4"
@@ -509,8 +607,19 @@ export function Playground({
                   }}
                 />
               </label>
-              <span className="hint">{prompt.length}/8000 characters</span>
+              <span className="hint" style={overBudget ? { color: "var(--danger, #b91c1c)" } : undefined}>
+                {prompt.length} / {charLimit} characters
+              </span>
+              {scriptMode ? (
+                <span className="hint">
+                  Character limit based on {formatMinutes(duration)} duration (
+                  {SCRIPT_CHARS_PER_MINUTE} chars/min)
+                </span>
+              ) : null}
             </div>
+            <span className="hint">
+              PDF, Word (.docx), PNG, JPEG or WebP · One file · Up to 10 MB
+            </span>
           </div>
 
           <div className="field-row">
@@ -530,63 +639,73 @@ export function Playground({
               <select
                 className="select"
                 value={engine}
-                onChange={(event) =>
-                  setEngine(event.target.value as "golpo_canvas" | "golpo_sketch")
-                }
+                onChange={(event) => {
+                  const next = event.target.value as Engine;
+                  setEngine(next);
+                  setFrameTransition("none");
+                  setPenAnimation("none");
+                  if (next === "golpo_canvas") setPacing("normal");
+                  if (next === "golpo_sketch") setPacing("fast");
+                }}
               >
                 <option value="golpo_canvas">Golpo Canvas</option>
+                <option value="golpo_studio">Golpo Studio · 2 credits/min</option>
                 <option value="golpo_sketch">Golpo Sketch</option>
               </select>
             </div>
             <div className="field">
-              <span className="label">Duration · {duration}s</span>
-              <input
-                className="input"
-                type="range"
-                min={DURATION_LIMITS.minSeconds}
-                max={300}
-                step={15}
+              <span className="label">Duration</span>
+              <select
+                className="select"
                 value={duration}
                 onChange={(event) => setDuration(Number(event.target.value))}
-              />
+              >
+                {scriptMode ? (
+                  <option value="auto" disabled>
+                    Auto (Not available with Script editing/Script mode)
+                  </option>
+                ) : null}
+                {DURATION_CHOICES.map((entry) => (
+                  <option key={entry.id} value={entry.seconds}>
+                    {entry.label}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="field">
               <span className="label">Orientation</span>
               <select
                 className="select"
                 value={orientation}
-                onChange={(event) =>
-                  setOrientation(event.target.value as "16:9" | "9:16" | "1:1")
-                }
+                onChange={(event) => setOrientation(event.target.value as "16:9" | "9:16")}
               >
-                <option value="16:9">Landscape · 16:9</option>
-                <option value="9:16">Portrait · 9:16</option>
-                <option value="1:1">Square · 1:1</option>
+                <option value="16:9">Horizontal · 16:9</option>
+                <option value="9:16">Vertical · 9:16</option>
               </select>
             </div>
           </div>
 
           <div className="field">
-            <span className="label">Style · {activeStyle.replace(/_/g, " ")}</span>
+            <span className="label">
+              {caps.styleLabel} · {styleLabel(activeStyle)}
+            </span>
             <div className="chips">
               {styles.map((style) => (
                 <button
                   key={style}
                   type="button"
                   className="chip"
-                  data-active={
-                    activeStyle === style
-                  }
-                  onClick={() =>
-                    engine === "golpo_canvas"
-                      ? setCanvasStyle(style)
-                      : setSketchStyle(style)
-                  }
+                  data-active={activeStyle === style}
+                  onClick={() => setActiveStyle(style)}
                 >
-                  {style.replace(/_/g, " ")}
+                  {styleLabel(style)}
                 </button>
               ))}
             </div>
+            <span className="hint">
+              {styles.length} presets
+              {engine === "golpo_canvas" ? " · each with Compact or Expanded framing" : ""}
+            </span>
           </div>
 
           <div className="field-row">
@@ -611,27 +730,116 @@ export function Playground({
                 value={voice}
                 onChange={(event) => setVoice(event.target.value)}
               >
-                {VOICES.map((entry) => (
-                  <option key={entry.id} value={entry.id}>
-                    {entry.name} · {entry.accent}
-                  </option>
-                ))}
+                <optgroup label="Conversational">
+                  {VOICES.filter((entry) => entry.gender === "neutral").map((entry) => (
+                    <option key={entry.id} value={entry.id}>
+                      {entry.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Female voices">
+                  {VOICES.filter((entry) => entry.gender === "female").map((entry) => (
+                    <option key={entry.id} value={entry.id}>
+                      {entry.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Male voices">
+                  {VOICES.filter((entry) => entry.gender === "male").map((entry) => (
+                    <option key={entry.id} value={entry.id}>
+                      {entry.name}
+                    </option>
+                  ))}
+                </optgroup>
               </select>
             </div>
+            {caps.displayLanguage ? (
+              <div className="field">
+                <span className="label">Display language</span>
+                <select
+                  className="select"
+                  value={displayLanguage}
+                  onChange={(event) => setDisplayLanguage(event.target.value)}
+                >
+                  {LANGUAGES.map((entry) => (
+                    <option key={entry.code} value={entry.name}>
+                      {entry.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+            {caps.pacing ? (
+              <div className="field">
+                <span className="label">Pacing</span>
+                <select
+                  className="select"
+                  value={pacing}
+                  onChange={(event) => setPacing(event.target.value)}
+                >
+                  {PACING.map((entry) => (
+                    <option key={entry} value={entry}>
+                      {entry === "normal" ? "Normal" : "Fast"}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="field-row">
             <div className="field">
-              <span className="label">Pacing</span>
+              <span className="label">Background music</span>
               <select
                 className="select"
-                value={pacing}
-                onChange={(event) => setPacing(event.target.value)}
+                value={musicName}
+                onChange={(event) => setMusicName(event.target.value)}
               >
-                {PACING.map((entry) => (
-                  <option key={entry} value={entry}>
-                    {entry}
+                <option value="">Select an option</option>
+                {musicOptions.map((entry) => (
+                  <option key={entry.id} value={entry.id}>
+                    {entry.label}
                   </option>
                 ))}
               </select>
             </div>
+            {engine !== "golpo_studio" ? (
+              <div className="field">
+                <span className="label">Frame transition</span>
+                <select
+                  className="select"
+                  value={frameTransition}
+                  disabled={!caps.frameTransition}
+                  onChange={(event) => setFrameTransition(event.target.value)}
+                >
+                  {FRAME_TRANSITIONS.map((entry) => (
+                    <option key={entry.id} value={entry.id}>
+                      {entry.label}
+                    </option>
+                  ))}
+                </select>
+                {!caps.frameTransition ? (
+                  <span className="hint">Available on Golpo Canvas only</span>
+                ) : null}
+              </div>
+            ) : null}
+            {caps.penInHand ? (
+              <div className="field">
+                <span className="label">Pen in hand animation</span>
+                <select
+                  className="select"
+                  value={penAnimation}
+                  onChange={(event) => setPenAnimation(event.target.value)}
+                >
+                  {PEN_ANIMATION_STYLES.map((entry) => (
+                    <option key={entry.id} value={entry.id}>
+                      {entry.label}
+                      {entry.plan ? " (Business+)" : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
           </div>
 
           <div className="field">
@@ -699,12 +907,12 @@ export function Playground({
             <label className="check">
               <input
                 type="checkbox"
-                checked={scriptOnly}
-                onChange={(event) => setScriptOnly(event.target.checked)}
+                checked={editScript}
+                onChange={(event) => setEditScript(event.target.checked)}
               />
               <span>
-                Script only
-                <small>Skip rendering</small>
+                Edit script
+                <small>Generate and review the script first</small>
               </span>
             </label>
             <label className="check">
@@ -801,9 +1009,9 @@ export function Playground({
           >
             {busy ? (
               <>
-                <span className="spin" /> {scriptOnly ? "Writing script…" : "Generating…"}
+                <span className="spin" /> {editScript ? "Writing script…" : "Generating…"}
               </>
-            ) : scriptOnly ? (
+            ) : editScript ? (
               "Write the script"
             ) : (
               "Generate video"

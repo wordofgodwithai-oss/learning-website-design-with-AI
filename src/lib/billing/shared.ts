@@ -141,9 +141,12 @@ export function estimateCredits(input: {
   durationSeconds: number;
   isAudioOnly?: boolean;
   avatar?: "none" | "stock" | "custom";
+  /** Golpo Studio bills at 2 credits/min on top of the base platform rate. */
+  engine?: string;
 }): number {
   const minutes = Math.max(input.durationSeconds, 1) / 60;
   let perMinute = 10;
+  if (input.engine === "golpo_studio") perMinute *= 2;
   if (input.isAudioOnly) perMinute *= 0.1;
   if (input.avatar === "stock") perMinute += 3;
   if (input.avatar === "custom") perMinute += 5;

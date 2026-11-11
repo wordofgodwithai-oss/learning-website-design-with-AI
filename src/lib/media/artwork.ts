@@ -16,6 +16,7 @@ import {
   imageMode,
 } from "@/lib/integrations";
 import { MEDIA_DIR } from "@/lib/media/store";
+import type { Engine } from "@/lib/types";
 
 /**
  * Scene artwork.
@@ -36,7 +37,7 @@ export interface ArtworkRequest {
   /** Scene visual description + narration, used to build the prompt. */
   description: string;
   style: string;
-  engine: "golpo_canvas" | "golpo_sketch";
+  engine: Engine;
   useColor: boolean;
   seed: number;
   width: number;
@@ -120,6 +121,18 @@ export function buildArtworkPrompt(request: ArtworkRequest): string {
       `simple marker line art on a clean white background, ${color}, ` +
       `thick confident strokes, minimal composition, generous empty space, ` +
       `friendly explainer-video doodle, no text, no letters, no numbers, centered.` +
+      castLine
+    );
+  }
+  if (request.engine === "golpo_studio") {
+    // Studio styles are motion-graphics whiteboard looks: bolder shapes and a
+    // tighter palette than Canvas, but still drawn rather than photographic.
+    return (
+      `Bold motion-graphics whiteboard illustration of ${subject}. ` +
+      `${hint ? `${hint[0].toUpperCase()}${hint.slice(1)}, ` : ""}` +
+      `thick marker outlines with flat colour fills, strong contrast, ` +
+      `minimal background, dynamic explainer-video composition, centered, ` +
+      `no text, no letters, no numbers, no watermark.` +
       castLine
     );
   }
@@ -272,6 +285,9 @@ async function postProcess(
     // doodles instead of looking like a pasted photo.
     pipeline = pipeline.normalise().linear(1.12, -14);
     if (!request.useColor) pipeline = pipeline.grayscale().threshold(170);
+  } else if (request.engine === "golpo_studio") {
+    // Studio keeps colour but wants punchier contrast than a source render.
+    pipeline = pipeline.normalise().linear(1.06, -6);
   }
   void meta;
 
