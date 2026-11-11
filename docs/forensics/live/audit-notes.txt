@@ -1,0 +1,277 @@
+LIVE SIGNED-IN AUDIT — video.golpoai.com
+Captured 10–11 November 2026. Read-only: account has 0.000 credits on the Free plan,
+so no generation was possible. Everything below is copied from the live UI.
+
+Account
+-------
+Name:     Word of God AI
+Email:    wordofgodwithai@gmail.com
+Plan:     Free
+Credits:  0.000  (banner: "⚠️ No Credits")
+Estimate: "Estimated generation time: 10min - 15min"
+          "— Actual timing may vary with your prompt and selected options."
+Sign-in:  Google / Microsoft only (no email magic link)
+
+
+ENGINE CARDS
+------------
+Three engines, each with a "Preview" button:
+  Golpo Canvas        (no badge)
+  Golpo Studio  [NEW] (clicking selects it and shows a Growth+ upsell modal)
+  Golpo Sketch        (no badge)
+
+Studio modal copy:
+  "What is Golpo Studio? — Golpo Studio generates motion whiteboard videos. It is
+   included on Growth, Business, Scale, Enterprise, and Pay As You Go. Paid Studio
+   videos use 2 credits per minute."
+  "Golpo Studio is available on Growth and above plans. [Upgrade to Growth or above]"
+
+CONTROL SET IS ENGINE-SPECIFIC
+------------------------------
+Default (Golpo Sketch):
+  Background music: Select an option
+  Duration: 1 min
+  Voice: Female 1
+  Orientation: Horizontal
+  Frame transition: None        <-- button is DISABLED ("disabled" attr, cursor-not-allowed, opacity-60)
+  Video style: Creative
+  Pacing: Fast
+
+Golpo Canvas:
+  Background music: Select an option
+  Duration: 1 min
+  Display language: English      <-- only on Canvas
+  Voice: Female 1
+  Orientation: Horizontal
+  Frame transition: None         <-- enabled only on Canvas
+  Pacing: Normal
+  Golpo Canvas style: Sharpie
+  Pen in hand animation: None
+
+Golpo Studio:
+  Background music: None
+  Duration: 1 min
+  Display language: English
+  Voice: Female 1
+  Orientation: Horizontal
+  Style: Neon Blackboard
+  Pen in hand animation: None
+  (no Pacing, no Frame transition)
+
+
+STYLE CATALOGUES (11 presets per engine)
+----------------------------------------
+Golpo Sketch — "PRESETS · 11":
+  Classic · Classic (with words) · Chalkboard (Black on White) · Improved ·
+  Dry Erase · Professional Clean · Crayon · Infographics · Creative ·
+  Formal · Formal (Legacy)
+  + "CUSTOM STYLES (UPGRADE TO BUSINESS OR ABOVE) — + Add Style"
+  Preview modal naming: Classic Style - B&W, Chalkboard (Black on White),
+  Formal Style - Color, Creative - Color, Crayon - Color, Infographics - Color,
+  Professional Clean - Color, Dry Erase - Color, Improved Style - Color,
+  Classic Style - Color, Classic Style (with words) - Color.
+  Preview notes: "All Plans" on Classic Style - B&W; "Free + Business & Above" on
+  Chalkboard; "Free + Growth & Above" on Formal Style - Color.
+
+Golpo Canvas — "PRESETS · 11" (each has Compact | Expanded except Notebook):
+  Chalkboard (White on Black) · Chalkboard (Black on White) · Chalkboard Color ·
+  Whiteboard · Modern Minimal · Playful · Technical · Editorial · Sharpie ·
+  Illustration · Notebook (COMPACT ONLY)
+  Preview: "Expanded isn't available for Notebook."
+  Canvas preview topic examples: Galileo and Falling Objects; Life in the Indus
+  Valley; How Cities Build Public Budgets; The Monty Hall Probability Puzzle;
+  How Compound Growth Works; The Octopus That Vanished; How GPS Calculates Your
+  Location; How Vaccines Train the Immune System; The Shared Meadow Problem;
+  A Raindrop's Water Cycle Journey; Mean, Median, and Mode.
+
+Golpo Studio — "Studio styles" 11:
+  Colorful Sketch · Khan Academy · Chalkboard · Bold Marker · Simple Sketch ·
+  Marker Cartoon · Brightboard · Neon Blackboard · Notebook ·
+  Expressive Editorial Marker · Signature Whiteboard
+
+PEN IN HAND ANIMATION (Canvas + Studio)
+  None · Stylus (Business+) · Marker (Business+) · Pen (Business+)
+  (Pen in hand is a TOOL, not a speed. Confirms the API enum.)
+
+FRAME TRANSITION
+  Hand slide animation · None · Slide left · Slide right · Slide up · Slide down ·
+  Zoom in · Zoom out
+  Preview modal lists 8 example videos and adds "Random Frame Transition".
+
+DISPLAY LANGUAGE (Canvas/Studio) — 46 values
+  English, Spanish, French, German, German (Switzerland), Italian, Portuguese,
+  Russian, Chinese, Chinese (Cantonese), Japanese, Korean, Arabic, Hindi, Dutch,
+  Polish, Swedish, Norwegian, Danish, Finnish, Turkish, Greek, Hebrew, Thai,
+  Vietnamese, Indonesian, Malay, Filipino, Czech, Hungarian, Romanian, Bulgarian,
+  Croatian, Serbian, Slovak, Slovenian, Ukrainian, Bengali, Tamil, Telugu, Marathi,
+  Gujarati, Urdu, Persian, Swahili, Afrikaans
+
+DURATION (Free view; every option but "1 min" is gated)
+  Auto (Not available with Script editing/Script mode) · 60 min (in beta) (Upgrade) ·
+  30 min (in beta) (Upgrade) · 15 min (in beta) (Upgrade) · 10 min (Upgrade) ·
+  8 min (Upgrade) · 4 min (Upgrade) · 2 min (Upgrade) · 1 min · 30 sec (Upgrade) ·
+  15 sec (Upgrade)
+  Items are role="menuitemradio" buttons; gated ones carry disabled="".
+
+VOICE
+  Conversational [NEW] "Two voices read the same script. Visuals stay the same."
+  FEMALE VOICES: Female 1..7 (4–7 marked "new")
+  MALE VOICES:   Male 1..7   (3–7 marked "new")
+  VOICE CLONES (BUSINESS+): + Add Voice Clone — "Available on Business+"
+
+ORIENTATION / PACING / MUSIC
+  Orientation: Horizontal · Vertical (Creator+)
+  Pacing:      Normal · Fast
+  Music (Canvas/Sketch) — "PRESETS · 7":
+     Engaging 3:55 · Hyper 4:40 · Inspirational 2:51 · Documentary 5:33 ·
+     Jazz 2:59 · Lo-fi 2:34 · Dramatic 3:40
+     + CUSTOM MUSIC (BUSINESS+) "+ Upload Music"
+     Preview footer: "Select a music option from the dropdown to use it in your video generation"
+  Music (Studio) — "PRESETS · 9": Auto · Engaging · Hyper · Inspirational ·
+     Documentary · Jazz · Lo-fi · Dramatic · None
+
+SCRIPT MODE (switch)
+  OFF: heading "Prompt Content",  counter "0 / 18500 characters"
+  ON : heading "Script Content",  counter "0 / 1050 characters"
+       note "Character limit based on 1 min duration (1050 chars/min)"
+       textarea placeholder "Enter your script (it will be narrated exactly as written)"
+       Duration "Auto" becomes disabled: "Auto (Not available with Script editing/Script mode)"
+  So: prompt mode has a fixed 18,500-char ceiling; script mode is budgeted at
+  1050 chars per minute of the selected duration.
+
+EDIT SCRIPT (checkbox, not a dialog)
+  Tooltip: "Edit script before creating video. Generate and review the script first,
+            then create the video."
+  ON adds a "Script-only text" block reading "Script will appear here after generation..."
+
+CUSTOM SCENES (checkbox)
+  Tooltip: "Custom scene selection is available on Growth and above plans."
+  Clicking opens the Upgrade-Your-Plan modal.
+
+FILL COLOR GAPS (checkbox)
+  Tooltip: "Finish sketch animations with a smooth fade-in of the full scene."
+
+CHARACTERS
+  Badge "Scale+" · "+ Add Character" · "Add characters for consistent appearances
+  across the video." · Preview link.
+  Clicking + Add Character opens the Upgrade-Your-Plan modal.
+
+AI PRESENTER
+  "PREVIEW" · "Available on Creator and higher"
+  Gallery modal: "AI Presenter 9 / Golpo avatars 20"
+  Layouts: All layouts / Side by side / Auto / Top and bottom / Round overlay
+  Orientations: All orientations / Horizontal / Vertical
+  Layout notes: side-by-side = landscape 16:9; top-and-bottom = portrait 9:16;
+  round overlay = corner presenter with content prominent.
+  Avatar Library modal: "20 Golpo avatars are ready for video generation."
+  Tabs: Golpo Avatars / My Avatars / Create Avatar.
+  Names & personas: Maya (warm educator), Arjun (confident business presenter),
+  Sofia (friendly product guide), Daniel (calm technical host), Amina (composed
+  analyst), Mei (science guide), Sari (upbeat trainer), Layla (trusted advisor),
+  Elena (experienced executive), Camila (creative product host), Leilani (warm
+  community leader), Naya (thoughtful knowledge guide), Kofi (growth strategist),
+  Hiro (senior technical expert), Minh (startup explainer), Omar (confident
+  business host), Lukas (clear consultant), Mateo (approachable educator),
+  Tane (grounded team lead), Noah (calm senior mentor).
+
+INSTRUCTIONS (top-left pill -> left drawer)
+  Not saved prompt presets. It is a plan-tier feature explorer:
+  "EXPLORE — Feature spotlights by plan. Expand a plan tier to view its signature
+   capabilities and deep-dive into any feature."
+  Starter: Download Videos · No Watermark · Frame-by-Frame Editing
+  Creator: Multi-language Support (45+) · Multi-Language Video Creation (up to 10
+           languages from one prompt) · Voice Customization · Vertical Videos ·
+           AI Presenter (Avatar)
+  Growth:  Golpo Studio · Custom Scene Selection · Color Videos · Formal (Sketch)
+           and Pen in Hand styles (Canvas)
+  Business: Custom Logo · Custom Background Music · Video Instructions · Team
+           Members · Audio Only · Voice Cloning · Own Narration · User Videos and
+           Images Insertion (Beta) · Custom Video Styles
+  Scale:   API Access
+
+INPUT AREA
+  "Prompt Content" heading + "Golpo Prompt Cheatsheet ↗"
+  Toggles row: Own Narration (locked, "Upgrade to unlock") · Script Mode
+  Attach card: "Drag & drop a file here or browse"
+  "PDF, Word (.docx), PNG, JPEG, or WebP · One file · Up to 10 MB"
+  "Math quality tip: Leave extracted LaTeX equations unchanged for the most natural
+   narration. Feel free to update plain text content."
+  Media row: "User videos and images are only available on Business and Enterprise
+   plans" OR "Screen recording is only available on Business and Enterprise plans"
+  Suggested prompts: Product Video · Testimonial Video · Social Media Ad ·
+   Training Video · Internal Update · Event Recap
+  Disclaimer: "Golpo may produce inaccurate content. Always verify important
+   information. Sexual and harmful prompts are prohibited."
+  Contact: support@golpoai.com
+
+ACCOUNT MENU
+  Voice Clone · Edit Video · Playlist · Sign Out
+  Playlist  -> /library?tab=playlists
+  Edit Video-> /library?tab=videos
+  Voice Clone -> no visible effect on Free (silently gated)
+
+LIBRARY (/library)
+  Header: Videos | Playlists   (Playlist nav goes to ?tab=playlists)
+  Videos tab: "Select" · "Select videos to create a playlist"
+  Filter chips: All · Color · B&W · Podcast
+  Filter dropdowns: All Golpo types · All Golpo Styles · All duration ·
+    All languages · All voices · All music · All orientations
+  "All videos" + "Reset"
+  Card: prompt text ("Most people think you need a..."), date (Nov 3, 2026),
+    language (English), duration (1 min), voice (Female), "Play",
+    "Remove Watermark + Download", "Create More Videos", 16:9 badge
+  End of list: "You've reached the end of your video library"
+  Playlists tab: "No playlists yet — Organize your videos into playlists for easy
+    access and sharing. [Create Your First Playlist]"
+
+REAL ACCOUNT RENDER (downloaded through the signed-in player)
+  File: docs/forensics/samples/real-account-1min.mp4  (2,835,482 bytes)
+  Container/streams: H.264 1536x864 @ 30 fps, 250 kbps;
+                     AAC 24 kHz mono, 69.3 kbps
+  Duration: 69.60 s  (a "1 min" request produced ~70 s)
+  Contact sheet: docs/forensics/samples/sheet-real-account.jpg
+  Visual: full-colour hand-drawn illustration (boy in pink sweater, money trees,
+  graphs, jars of coins), elements accumulate, arrows and handwritten labels,
+  on-screen words are short hand-lettered phrases ("You don't.",
+  "What exactly is investing?", "$1,000", "growth isn't guaranteed",
+  "Let's start with stocks."). No header, footer, scene counter, progress bar or
+  watermark anywhere in the frame.
+
+API DASHBOARD
+  https://api.golpoai.com/dashboard -> 403 {"message":"Forbidden"}
+  https://api.golpoai.com/          -> {"message":"Missing Authentication Token"}
+  https://video.golpoai.com/api-dashboard -> does not resolve (request hangs)
+  So the API dashboard is not reachable from a Free web session.
+
+UPGRADE-YOUR-PLAN MODAL (verbatim pricing, shown for Character / Custom scenes)
+  Monthly | Annual (up to 50% off)
+  Starter   USD $39.99/mo — 20 credits/mo — video 30 sec–2 min — no watermark +
+            commercial use — "Black & White videos only (no color)" — frame-by-frame
+            edit (one free, then chargeable). Add-ons: 20 credits $40, Multilingual $40
+  Creator   USD $99.99/mo — 60 credits/mo — 15 sec–2 min — multilingual 45+ and
+            up to 10 language variants — voice instructions — AI Presenter
+            (custom 5 credits/min, Golpo avatar 3 credits/min) — vertical video.
+            Add-ons: 30 credits $50
+  Growth*   USD $199.99/mo — 150 credits/mo — 15 sec–4 min — Golpo Studio —
+            custom scene selection — colour — new sketch styles (Improved (Beta),
+            Dry Erase, Professional Clean, Crayon, Infographics, Creative).
+            Add-ons: 75 credits $100, Upload Logo $100, Video Instruction $100,
+            8 & 10 Min Videos $200
+  Business  USD $499.99/mo — 390 credits/mo — 15 sec–10 min — own logo — video
+            instructions — user videos/images + screen recording — voice cloning —
+            own narration — Formal (Sketch) + Pen in Hand (Canvas) — custom Canvas
+            styles — audio-only podcast (10% credits) — custom background music —
+            up to 10 team members. Add-ons: 195 credits $250, API $200
+  Scale     USD $999.99/mo — 800 credits/mo — 15 sec–10 min — character
+            consistency (beta) — API access — priority support — up to 50 members.
+            Add-ons: 400 credits $500, 15 Min Videos $200
+  Enterprise Custom — longer videos (15/30/60 min beta) — white-glove onboarding —
+            unlimited team members — live support.
+
+COMMON ISSUES & FAQ (live drawer, key mechanics)
+  "Our system creates one frame per sentence." — frames change too quickly because
+  each sentence becomes one scene; fix by writing longer, punctuation-free sentences.
+  "Use the Edit Frame by Frame tool to quickly fix spellings."
+  "If you see some alignment issues, try saying 'Absolutely no writings.' in the
+   video instruction."
+  "Videos feel too long — regenerate with shorter script and longer sentences."

@@ -1,9 +1,10 @@
 # Forensic comparison — golpoai.com vs golpo-local
 
-Date: 10 November 2026
+Date: 10–11 November 2026
 Scope: the live production product (`https://video.golpoai.com`) versus this repository.
-Method: live site crawl + authenticated-UI capture from the vendor's own walkthrough
-recordings + real render sampling + source comparison.
+Method: live site crawl + read-only signed-in audit of the real create page, library
+and modals + real render sampling (including one render from the audited account) +
+source comparison.
 
 Evidence is stored under `docs/forensics/`:
 
@@ -14,8 +15,12 @@ Evidence is stored under `docs/forensics/`:
 | `docs/forensics/guides/*.txt` | 30 product guides (complete tutorial, styles, editing, avatars, narration, credits) |
 | `docs/forensics/pricing.html` | Live plan matrix |
 | `docs/forensics/gallery.html` | The 31 public gallery style categories |
-| `docs/forensics/samples/*.mp4` | Seven real Golpo renders |
+| `docs/forensics/samples/*.mp4` | Eight real Golpo renders |
 | `docs/forensics/samples/sheet-*.jpg` | Frame contact sheets used below |
+| `docs/forensics/live/audit-notes.txt` | Verbatim signed-in UI capture: every control, option list, gate and copy string |
+| `docs/forensics/live/playground-form.html` | Live create-form DOM snapshot (gitignored) |
+| `docs/forensics/samples/real-account-1min.mp4` | This account's own render, downloaded through the signed-in player |
+| `docs/forensics/samples/sheet-real-account.jpg` | Contact sheet for the above |
 
 > Domain note: `golpo.ai` is now a parked Namecheap domain. The product lives at
 > **`video.golpoai.com`** (app) and **`api.golpoai.com`** (API). Any older note that
@@ -240,6 +245,11 @@ Real dashboard/gallery vocabulary:
 `crayon`, `dry_erase`, `professional_clean`, `creative`, `infographics`,
 `chalkboard_black_on_white`, `custom`.
 
+**Golpo Studio** (11, added after the first pass — see §9.2):
+Colorful Sketch, Khan Academy, Chalkboard, Bold Marker, Simple Sketch, Marker
+Cartoon, Brightboard, Neon Blackboard, Notebook, Expressive Editorial Marker,
+Signature Whiteboard. Billed at 2 credits/min, Growth+.
+
 Local `theme.ts` has: `chalkboard_white`, `chalkboard_black_on_white`,
 `whiteboard`, `playful`, `technical`, `editorial`, `classic`,
 `professional clean`, `crayon`, `infographics`, `creative` + legacy aliases
@@ -252,8 +262,9 @@ Local `theme.ts` has: `chalkboard_white`, `chalkboard_black_on_white`,
 | Item | Real | Local |
 | --- | --- | --- |
 | Voices | `female-1…7`, `male-1…7`; default Female 1; previewable | 8 invented names |
-| Music | 7 genres: jazz, lofi, dramatic, engaging, hyper, inspirational, documentary | no genre list; custom upload only |
-| Durations | 0.25, 0.5, 1, 2, 4, 8, 10, 15 min, `auto` | 15–300 s slider, step 15 |
+| Music | 7 genres: jazz, lofi, dramatic, engaging, hyper, inspirational, documentary (Canvas/Sketch); Studio adds `auto` and `none` | no genre list; custom upload only |
+| Durations | 0.25, 0.5, 1, 2, 4, 8, 10, 15 min (+30/60 beta), `auto`; `auto` unavailable with Script Mode | 15–300 s slider, step 15 |
+| Script budget | 1,050 chars/min of the selected duration (Script Mode); 18,500-char ceiling in prompt mode | none — writer ignores duration |
 | Orientation | horizontal, vertical | 16:9, 9:16, 1:1 |
 | Languages | 46 listed | 48 (close; missing Cantonese, Afrikaans, Swiss German) |
 
@@ -273,17 +284,17 @@ Real create-video page (from the vendor's own walkthrough capture):
 
 | Area | Real | Local |
 | --- | --- | --- |
-| Top bar | Instructions presets dropdown, Credits, Plan, Voice Clone, Library, Upgrade, Profile menu (Add-ons, Edit Video, Team, Manage Billing, Sign Out) | credits pill + account only |
-| Input | Prompt Content textarea (11 000 char counter), Attach (PDF/DOCX) | prompt + attach |
-| Toggles | **Own Narration**, **Script Mode**, plus separate *Edit script before creating video* | script-only + fill-in |
-| Engines | Two cards, Canvas and Sketch, each with **Preview** and 2.0 badge | plain select |
+| Top bar | Instructions **plan-feature explorer**, Credits, Plan, Voice Clone, Library, Upgrade, Profile menu (Voice Clone, Edit Video, Playlist, Sign Out) | credits pill + account only |
+| Input | Prompt Content textarea (18,500-char ceiling) + Script Mode (1,050 chars/min of duration), Attach (PDF/DOCX/PNG/JPEG/WebP, one file, ≤10 MB) | prompt + attach |
+| Toggles | **Own Narration** (locked), **Script Mode**, **Edit script** (checkbox), **Custom scenes** (Growth+), **Fill Color Gaps** | script-only + fill-in |
+| Engines | Three cards — Canvas, Studio (NEW), Sketch — each with **Preview**; the control set changes per engine | plain select |
 | Media | User videos/images (beta), Record screen (with audio) | uploads, no screen recording |
 | Audio only | Checkbox, 10 % credits | kind=podcast |
-| Narration | Voice dropdown with **Listen preview**, Voice Instructions, Language, Display Language | voice select, no preview, no display language |
-| Visual | Video Instructions, Color, Style with Preview, Pacing with Preview, Pen-in-hand | style select, colour toggle |
-| Settings row | Music (with Listen), Duration, Voice, Orientation, Language, Style | inline selects |
+| Narration | Voice dropdown with **Listen preview** (Conversational + Female/Male 1–7), Voice Instructions, Language, Display Language (Canvas/Studio only) | voice select, no preview, no display language |
+| Visual | Video Instructions, Color, style control named per engine, Pacing with Preview, Pen-in-hand | style select, colour toggle |
+| Settings row | Music (with Listen), Duration, Voice, Orientation, Language, Style, Frame transition | inline selects |
 | Branding | Logo upload + TL/BL/TR/BR | watermark toggle only |
-| Generate | Estimate ("2–3 min"), gallery-visibility opt-in modal, email on completion | no estimate, no opt-in, no email |
+| Generate | Estimate ("10 min – 15 min"), gallery-visibility opt-in modal, email on completion | no estimate, no opt-in, no email |
 | Advanced | per-row Expand for extended settings | none |
 
 ### Library
@@ -395,11 +406,141 @@ Local: `/api/v2/custom-styles` stores records but does not condition rendering.
 
 ---
 
-## 9. Limits of this study
+## 9. Live signed-in audit (11 November 2026)
 
-- The signed-in dashboard could not be driven: anonymous `/playground` redirects to
-  `/` (confirmed twice), so the create-video page was studied from the vendor's own
-  walkthrough recordings plus the complete written tutorial and live API reference.
+The account used was **Word of God AI / wordofgodwithai@gmail.com**, Free plan,
+**0.000 credits**, with a "⚠️ No Credits" banner. Nothing could be generated, so
+this section is a read-only capture of the real create page, library, menus and
+modals. Verbatim transcript: `docs/forensics/live/audit-notes.txt`.
+
+### 9.1 The control surface is not fixed — it changes with the engine
+
+This is the most important structural finding, and the earlier reconstruction
+missed it. Three engine cards (Canvas, Studio, Sketch) each swap the settings
+panel for a different set of controls:
+
+| Control | Sketch (default) | Canvas | Studio |
+| --- | --- | --- | --- |
+| Background music | `Select an option` | `Select an option` | `None` |
+| Duration | 1 min | 1 min | 1 min |
+| Display language | — | English | English |
+| Voice | Female 1 | Female 1 | Female 1 |
+| Orientation | Horizontal | Horizontal | Horizontal |
+| Frame transition | **disabled** | **enabled** | — |
+| Pacing | Fast | Normal | — |
+| Video style | `Creative` | — | — |
+| Canvas style | — | `Sharpie` | — |
+| Studio style | — | — | `Neon Blackboard` |
+| Pen in hand | — | None | None |
+
+So `frame_transition`, `scene_pacing` and the style field are **engine-dependent
+controls**, not global settings. A clone that renders one settings panel for all
+engines is visibly wrong before a single frame is drawn.
+
+### 9.2 Three separate 11-style catalogues
+
+The earlier study recorded Canvas and Sketch only; the live app ships a third,
+Studio catalogue. Exact lists are in §4 of the notes; the merged consequence is:
+
+| Engine | Presets | Notes |
+| --- | --- | --- |
+| Sketch | Classic, Classic (with words), Chalkboard (Black on White), Improved, Dry Erase, Professional Clean, Crayon, Infographics, Creative, Formal, Formal (Legacy) | each has a `- B&W` / `- Color` presentation name in the preview modal |
+| Canvas | Chalkboard (White on Black), Chalkboard (Black on White), Chalkboard Color, Whiteboard, Modern Minimal, Playful, Technical, Editorial, Sharpie, Illustration, Notebook | all but Notebook have **Compact / Expanded** |
+| Studio | Colorful Sketch, Khan Academy, Chalkboard, Bold Marker, Simple Sketch, Marker Cartoon, Brightboard, Neon Blackboard, Notebook, Expressive Editorial Marker, Signature Whiteboard | 2 credits/min |
+
+Pen in hand is confirmed as a **tool**, not a speed: `None · Stylus · Marker · Pen`
+(all but None are Business+). This settles the `pen_animation_style` revert.
+
+### 9.3 Script length is a first-class, duration-derived budget
+
+Independent of the API, the UI enforces the budget that the local writer ignores:
+
+- **Prompt mode** — a fixed ceiling of **18,500 characters**.
+- **Script mode** — the counter becomes `1050 × duration minutes`, with the note
+  *"Character limit based on 1 min duration (1050 chars/min)"*.
+- Turning Script Mode on also **disables `Auto` duration**, because there is no
+  runtime to budget against.
+
+This is the number the local pipeline should have been generating to all along:
+1,050 chars/min ≈ 170 words/min. A 5-minute request is therefore ~5,250
+characters, not the 118 words the local writer currently emits.
+
+### 9.4 The real account's own render
+
+Downloaded through the signed-in player (2,835,482 bytes):
+
+| Property | Value |
+| --- | --- |
+| Video | H.264, **1536×864**, 30 fps, 250 kbps |
+| Audio | AAC, 24 kHz, mono, 69.3 kbps |
+| Duration | **69.60 s** for a `1 min` request |
+| Visual | full-colour hand-drawn illustration, elements accumulate, arrows and hand-lettered labels |
+| On-screen text | short phrases only ("You don't.", "What exactly is investing?", "$1,000", "growth isn't guaranteed", "Let's start with stocks.") |
+| Chrome | **none** — no header, counter, footer, chapter badge, progress bar or watermark |
+
+Two calibration points follow. First, "1 min" is a target, not a clamp: the real
+product overshoots to ~70 s rather than padding or truncating, so the local goal
+should be a motion-filled runtime within roughly ±20 %, never a frozen one.
+Second, the frame is *illustration plus accumulating elements plus short
+hand-lettered text* — which is exactly what `sheet-real-account.jpg` shows and
+what `sheet-local-mid.jpg` does not.
+
+### 9.5 Library and account surfaces (as shipped)
+
+- `/library?tab=videos` — `Videos | Playlists`, `Select`, filter chips
+  `All · Color · B&W · Podcast`, then seven dropdowns (type, style, duration,
+  language, voice, music, orientation) and `Reset`.
+- Video card: prompt excerpt, date, language, duration, voice, `Play`,
+  `Remove Watermark + Download`, `Create More Videos`, aspect badge `16:9`.
+- `/library?tab=playlists` — empty state with `Create Your First Playlist`.
+- Profile menu is exactly `Voice Clone · Edit Video · Playlist · Sign Out`.
+  `Edit Video` and `Playlist` are just library tab links; `Voice Clone` is a
+  silent no-op on Free.
+- The "Instructions" pill is **not** a saved-prompt preset menu — it opens a
+  plan-tier feature explorer (Starter → Scale). §6.4's "Instructions presets"
+  entry was wrong.
+- `api.golpoai.com/dashboard` returns `403 {"message":"Forbidden"}` and
+  `/api-dashboard` does not resolve, so there is no API console to mirror for a
+  Free account.
+
+The Upgrade-Your-Plan modal (triggered by *Add Character* and *Custom scenes*)
+yielded the full price/credit matrix verbatim, including per-tier limits and
+add-ons — recorded in the notes file and usable to make the local mock billing
+match the real ratios rather than inventing them.
+
+### 9.6 Corrections to earlier sections
+
+- §5: the prompt counter is **18,500** in prompt mode, not 11,000; Script Mode
+  adds the 1,050/min budget. The top bar has no saved "Instructions presets".
+- §6.4: "Instructions presets" is a plan explorer, not reusable instruction sets.
+- §4.2: there are **three** music lists, not one — Sketch/Canvas share the 7
+  presets, Studio adds `Auto` and `None` for 9.
+- §4.1: add the Studio catalogue; Canvas's `Notebook` is Compact-only; "Formal
+  (Legacy)" is a visible preset name.
+
+### 9.7 What this adds to the remediation order
+
+The P0 list in §8 stands. Two items should be promoted because the live audit
+proves they are the visible gap:
+
+1. **Script budget first.** Adopt the real rule — 1,050 chars/min of the selected
+   duration — in `buildScript()`, and show the same live counter in the UI. This
+   alone removes the frozen-frame failure mode.
+2. **Engine-specific control matrix.** `frame_transition` and `scene_pacing` must
+   be enabled/disabled per engine exactly as in §9.1, and the style menu must be
+   the correct one of the three catalogues.
+
+Then continue with §8 as written: component-based canvas composition, pen-in-hand
+tool overlays, watermark-free line art, palette correction, chrome removal.
+
+---
+
+## 10. Limits of this study
+
+- The signed-in dashboard was audited read-only on 11 Nov 2026; the account had
+  **0.000 credits**, so no generation could be triggered and the create page could
+  not be exercised end to end. Every control, option list, gate and copy string was
+  captured, and one pre-existing render was downloaded and probed.
 - The render vendor, voice provider and scene planner are private; their output is
   observable, their contracts are not.
 - Marketing videos may be edited for the landing page; the frame-level composition
