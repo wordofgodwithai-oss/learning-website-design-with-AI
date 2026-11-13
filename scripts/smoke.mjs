@@ -12,7 +12,6 @@
 
 const BASE = (process.env.GOLPO_BASE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
 const API_KEY = process.env.GOLPO_API_KEY ?? "glp_local_dev_key_change_me";
-const EMAIL = process.env.GOLPO_SMOKE_EMAIL ?? "demo@golpo.local";
 const POLL_TIMEOUT_MS = Number(process.env.GOLPO_SMOKE_POLL_MS ?? 180_000);
 
 let failures = 0;
@@ -87,15 +86,21 @@ async function main() {
   const homeHtml = await home.text();
   check(home.status === 200, "GET /", `HTTP ${home.status}`);
   check(
-    homeHtml.includes("Continue with Google") || homeHtml.includes("Open playground"),
+    homeHtml.includes("Continue with the demo account") || homeHtml.includes("Open playground"),
     "landing page renders sign-in or dashboard",
   );
 
-  // 2. Sign in
+  // 1b. Health
+  const health = await call("/api/health");
+  const healthData = await readJsonSafe(health);
+  check(health.status === 200, "GET /api/health", `HTTP ${health.status}`);
+  check(healthData?.integrations?.auth === "mysql", "health reports MySQL", healthData?.integrations?.auth);
+
+  // 2. Sign in (demo account)
   const signIn = await call("/api/auth/sign-in", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ provider: "google", email: EMAIL, redirect: "/playground" }),
+    body: JSON.stringify({ provider: "dev", redirect: "/playground" }),
   });
   const signInData = await readJsonSafe(signIn);
   check(signIn.status === 200, "POST /api/auth/sign-in", `HTTP ${signIn.status}`);
@@ -297,6 +302,53 @@ async function main() {
 
   const badKey = await fetch(`${BASE}/api/v1/videos`, { headers: { "x-api-key": "nope" } });
   check(badKey.status === 401, "invalid API key rejected", `HTTP ${badKey.status}`);
+
+  // 12. Email + password accounts (MySQL)
+  const smokeEmail = `smoke+${Date.now()}@golpo.local`;
+  const smokePassword = "smoke-test-password";
+
+  const signUp = await call("/api/auth/sign-up", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ email: smokeEmail, password: smokePassword, name: "Smoke Test" }),
+  });
+  const signUpData = await readJsonSafe(signUp);
+  check(signUp.status === 201, "POST /api/auth/sign-up", `HTTP ${signUp.status}`);
+  check(Boolean(signUpData?.access_token), "sign-up issues a session");
+
+  const duplicate = await call("/api/auth/sign-up", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ email: smokeEmail, password: smokePassword }),
+  });
+  check(duplicate.status === 409, "duplicate sign-up rejected", `HTTP ${duplicate.status}`);
+
+  const signOut = await call("/api/auth/sign-out", { method: "POST" });
+  check(signOut.status === 200, "POST /api/auth/sign-out", `HTTP ${signOut.status}`);
+
+  const signedOutSession = await call("/api/auth/session");
+  const signedOutData = await readJsonSafe(signedOutSession);
+  check(signedOutData?.authenticated === false, "sign-out revokes the session");
+
+  const passwordSignIn = await call("/api/auth/sign-in", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ email: smokeEmail, password: smokePassword }),
+  });
+  const passwordSignInData = await readJsonSafe(passwordSignIn);
+  check(passwordSignIn.status === 200, "password sign-in", `HTTP ${passwordSignIn.status}`);
+  check(Boolean(passwordSignInData?.access_token), "password sign-in issues a session");
+
+  const passwordSession = await call("/api/auth/session");
+  const passwordSessionData = await readJsonSafe(passwordSession);
+  check(passwordSessionData?.authenticated === true, "password session is authenticated");
+
+  const wrongPassword = await call("/api/auth/sign-in", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ email: smokeEmail, password: "not-the-password" }),
+  });
+  check(wrongPassword.status === 401, "wrong password rejected", `HTTP ${wrongPassword.status}`);
 
   console.log(`\n${failures === 0 ? "All checks passed." : `${failures} check(s) failed.`}\n`);
   process.exit(failures === 0 ? 0 : 1);

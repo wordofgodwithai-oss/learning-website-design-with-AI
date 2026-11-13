@@ -4,7 +4,6 @@ import { SignInPanel } from "@/components/SignInPanel";
 import { getSessionUser } from "@/lib/auth";
 import { getBalance } from "@/lib/billing";
 import { planName } from "@/lib/billing/shared";
-import { publicConfig } from "@/lib/integrations";
 
 export default async function LandingPage({
   searchParams,
@@ -14,7 +13,6 @@ export default async function LandingPage({
   const { redirect, auth_error: authError } = await searchParams;
   const user = await getSessionUser();
   const balance = user ? await getBalance(user.id) : null;
-  const config = publicConfig();
   const redirectTo = redirect?.startsWith("/") ? redirect : "/playground";
 
   return (
@@ -62,7 +60,7 @@ export default async function LandingPage({
             <p className="hero-lead">
               The Golpo dashboard rebuilt to run on your machine: prompt-to-video playground,
               library, BFF, public API v1/v2 and an MCP endpoint. Real MP4 rendering, optional
-              Groq scripts, Supabase auth and Stripe billing.
+              Groq scripts, MySQL accounts and Stripe billing.
             </p>
             <ul className="hero-points">
               <li>Canvas and Sketch engines with the full style catalogue</li>
@@ -113,12 +111,7 @@ export default async function LandingPage({
                 </div>
               </div>
             ) : (
-              <SignInPanel
-                redirectTo={redirectTo}
-                authMode={config.authMode}
-                supabase={config.supabase}
-                initialError={authError ?? null}
-              />
+              <SignInPanel redirectTo={redirectTo} initialError={authError ?? null} />
             )}
           </div>
         </section>

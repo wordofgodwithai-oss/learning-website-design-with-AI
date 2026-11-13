@@ -1,19 +1,18 @@
 import { AppShell } from "@/components/AppShell";
 import { LibraryClient } from "@/components/LibraryClient";
-import { createAccessToken, requireSessionUser } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 import { getBalance } from "@/lib/billing";
 import { listPlaylists, listVideos } from "@/lib/repo";
 
 export const dynamic = "force-dynamic";
 
 export default async function LibraryPage() {
-  const user = await requireSessionUser();
+  const { user, token } = await requireSession("/library");
   const [balance, videos, playlists] = await Promise.all([
     getBalance(user.id),
     listVideos(user.id, { limit: 100 }),
     listPlaylists(user.id),
   ]);
-  const { token } = createAccessToken(user);
 
   return (
     <AppShell user={user} credits={balance.credits}>

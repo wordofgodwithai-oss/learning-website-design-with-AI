@@ -6,17 +6,18 @@ production services. Read `README.md` first for usage.
 ## 1. Stack and layout
 
 - **Next.js 15 (App Router) + React 19 + TypeScript**, no CSS framework (one hand-written
-  stylesheet), no database driver. External SaaS is optional: Groq, Supabase and Stripe are only
+  stylesheet), and MySQL 8 through `mysql2`. External SaaS is optional: Groq and Stripe are only
   used when their credentials are present (`src/lib/integrations.ts`).
-- All persistence is a single JSON document at `.data/db.json` with atomic writes and an
-  in-process mutex. This keeps the clone dependency-free and makes state easy to inspect/reset.
+- State lives in real MySQL tables (`db/schema.sql`), with JSON columns for nested scene, render
+  and membership data. The app keeps one in-memory snapshot and writes changed rows in a single
+  transaction per request (`src/lib/db.ts`). The first boot imports the legacy `.data/db.json`.
 - Server-only modules begin with `import "server-only"` so secrets and fs access cannot leak
   into a client bundle.
 
 ```
 src/
   app/
-    page.tsx                     landing + mock sign-in (report §4)
+    page.tsx                     landing + email/password and demo sign-in (report §4)
     playground/page.tsx          server guard + account balances
     library/page.tsx             library feed
     v/[id]/page.tsx              shareable video detail page
@@ -27,21 +28,25 @@ src/
   components/                    client UI (Playground, Library, SignIn, shell)
   lib/
     types.ts                     data model
-    db.ts                        JSON store, mutex, seed
-    repo.ts                      all data access
-    auth.ts                      HMAC sessions, cookie + bearer, Supabase fallbacks
+    db.ts                        MySQL snapshot store, diff writer, legacy import, seed
+    mysql.ts                     connection pool, query and transaction helpers
+    password.ts                  scrypt password hashing
+    repo.ts                      all data access, users, sessions, API keys
+    auth.ts                      opaque DB sessions, cookie + bearer
+    auth-response.ts             shared sign-in/sign-up response envelope
     api-auth.ts                  x-api-key auth for public API
     features.ts                  plan + add-on entitlement checks
-    integrations.ts              mode resolution (groq/ffmpeg/supabase/stripe)
+    integrations.ts              mode resolution (groq/ffmpeg/stripe)
     http.ts                      envelopes, parsing, SSRF-guarded fetch
     storage.ts                   local upload storage
     generation/                  request normalization, script provider, pipeline
     media/render.ts              real MP4 renderer (FFmpeg) + JPEG poster
     media/svg.ts                 storyboard fallback renderer
-    supabase/                    server/browser clients + token verification
     billing/                     constants, shared helpers, mock + Stripe + facade
     mcp/server.ts                MCP tools and JSON-RPC handler
+db/schema.sql                    MySQL tables (users, sessions, videos, jobs, …)
 scripts/
+  db-setup.mjs                   creates the database and applies the schema
   smoke.mjs                      end-to-end API test
   make-billing-routes.mjs        legacy mock-route generator (not used by the app)
 ```
@@ -51,7 +56,7 @@ scripts/
 | Report | Requirement | Implementation |
 | --- | --- | --- |
 | §3 | Hosted surfaces (`video.golpoai.com`, API docs, MCP, S3 media) | Local equivalents: `/`, `/api-docs`, `/mcp`, `/api/media/*`; uploads in `.data/uploads` |
-| §4 | Google + Microsoft sign-in, token in `localStorage`, provider list | `src/components/SignInPanel.tsx` (local + Supabase branches), `src/lib/auth.ts`, `src/app/auth/callback/route.ts` |
+| §4 | Sign-in, token in `localStorage`, provider list | `src/components/SignInPanel.tsx` (email/password + demo), `src/lib/auth.ts`, `src/app/api/auth/*` |
 | §4 | Session recovery / redirect after login | `requireSessionUser()` in `src/lib/auth.ts`, `?redirect=` support in `src/app/page.tsx` |
 | §5 | Playground startup BFF calls (11 routes) | Client calls in `src/components/Playground.tsx`; routes under `src/app/api/*`; live status panel |
 | §5 | Credits/plan read from `user_credits` | `getBalance()` in `src/lib/billing/index.ts` (mock or Stripe) over `CreditAccount` |
@@ -67,8 +72,8 @@ scripts/
 | §7 | 15 MB upload cap | `MAX_UPLOAD_BYTES` in `src/lib/generation/config.ts` |
 | §8 | Plans, credits, add-ons, annual discount, PAYG tiers | `src/lib/billing/constants.ts`, `/pricing` |
 | §8 | 11 billing BFF routes + webhook | Intent handlers in `src/lib/billing/{index,stripe-billing}.ts`; routes under `src/app/api/*`; `/api/stripe/webhook` |
-| §9 | Tables: `user_credits`, `api_key`, `organizations`, `system_status`, … | `src/lib/types.ts` + `db.ts` seed |
-| §10 | Supabase, S3, OpenAI ads, analytics | Supabase auth and Groq scripts/transcription/TTS are optional integrations; ads/analytics remain no-ops (`track-openai-ads-event`) |
+| §9 | Tables: `user_credits`, `api_key`, `organizations`, `system_status`, … | `db/schema.sql` and `src/lib/types.ts`; rows map 1:1 to the TypeScript fields |
+| §10 | Supabase, S3, OpenAI ads, analytics | Auth is local MySQL; Groq scripts/transcription/TTS are optional integrations; ads/analytics remain no-ops (`track-openai-ads-event`) |
 | §11 | Library filters, playlists, characters, styles, voices, music, avatars | `/api/videos`, `/api/playlists`, `/api/characters*`, `/api/saved-styles`, `/api/clone-voice`, `/api/upload-custom-music`, `/api/*avatars*` |
 | §11 | Feature gating per plan | `src/lib/features.ts` checks the ledger plan/add-ons; local unlimited bypasses it |
 | §12 | Production defects (404 billing routes, etc.) | Deliberate deviations listed below |
@@ -76,28 +81,25 @@ scripts/
 
 ## 3. Authentication
 
-Production uses Supabase GoTrue and stores `sb-…-auth-token` in `localStorage`. Locally:
+Accounts and sessions are stored in MySQL, not Supabase:
 
-- `POST /api/auth/sign-in` accepts `{ provider, email, name, redirect }`, upserts the user,
-  mints an HMAC-SHA256 token (`sub`, `email`, `provider`, `iat`, `exp`), and sets it as the
-  httpOnly `golpo_session` cookie. The token is also returned in the body, and the client writes
-  it to `localStorage["sb-local-auth-token"]` to mirror the dashboard.
+- `POST /api/auth/sign-up` validates the email/password, hashes the password with scrypt
+  (`src/lib/password.ts`) and creates the account plus its mock credit ledger row.
+- `POST /api/auth/sign-in` accepts either `{ provider: "dev" }` for the pre-seeded demo account or
+  `{ email, password }` for a password account. Invalid credentials return a generic `401`.
+- A successful sign-in inserts a row into `sessions` with a random 32-byte token; only its SHA-256
+  is stored. The token is returned in the body and set as the httpOnly `golpo_session` cookie.
 - BFF routes resolve identity from `Authorization: Bearer …` first, then the cookie
-  (`getUserFromRequest`). This mirrors the real client forwarding its Supabase token.
+  (`getUserFromRequest`). The bearer token is the same session token the browser holds.
 - Public API routes (`/api/v1`, `/api/v2`, `/api/mcp`) use `x-api-key` instead. Keys are stored as
   SHA-256 hashes; `last_used_at` is updated on use; revocation is a soft delete.
-- Sign-out clears the cookie; the client removes its storage entry on the next sign-in.
+- `POST /api/auth/sign-out` deletes the session row and clears the cookie, so the bearer token is
+  revoked immediately.
+- `users.password_hash` and the `sessions` table are deliberately excluded from the in-memory
+  `Database` model, so a hash can never be serialised into an API response.
 
-**Supabase mode** (`GOLPO_AUTH_MODE=supabase`, or `auto` with Supabase keys):
-
-- `SignInPanel` calls `supabase.auth.signInWithOAuth` (Google, or `azure` for Microsoft) and
-  redirects to `/auth/callback`.
-- The callback exchanges the code with `@supabase/ssr`, mirrors the Supabase identity into the
-  local store (`User.external_id`), and mints the same HMAC `golpo_session` token. This "bridge"
-  keeps every downstream BFF route unchanged.
-- `getSessionUser()` / `getUserFromRequest()` also accept raw Supabase access tokens and Supabase
-  SSR cookies as fallbacks.
-- The local mock sign-in endpoint returns `409` in this mode to avoid shadow accounts.
+Accounts imported from the old `.data/db.json` have no password hash; they can use the demo account
+or register a new address.
 
 ## 4. Data model
 
@@ -108,13 +110,18 @@ Production uses Supabase GoTrue and stores `sb-…-auth-token` in `localStorage`
 
 `src/lib/db.ts`:
 
-- Seeds one demo user (`demo@golpo.local`), a welcome video, an organization, a changelog, the
-  system-status row and the development API key.
-- `withDb(fn)` serializes all mutations through a promise chain, then writes
-  `db.json.<pid>.tmp` and renames it atomically.
-- `readDb()` returns the in-memory snapshot; callers never mutate it outside `withDb`.
+- Ensures `db/schema.sql` has been applied, then imports `.data/db.json` if the tables are empty;
+  otherwise it seeds one demo user (`demo@golpo.local`), a welcome video, an organization, a
+  changelog, the system-status row and the development API key.
+- `withDb(fn)` serializes mutations through a promise chain, then diffs the snapshot and writes
+  only changed rows (UPSERT/DELETE) in one MySQL transaction. A failed write discards the cached
+  snapshot so the next read reloads committed state.
+- `readDb()` returns the shared in-memory snapshot; callers never mutate it outside `withDb`.
+- JSON columns (`scenes`, `render`, `request`, `variant_video_ids`, `member_ids`, …) round-trip
+  through `JSON.parse`/`JSON.stringify`; timestamps are DATETIME(3) in UTC.
 
-Reset by deleting `.data/` while the server is stopped.
+Reset by dropping the database (`npm run db:setup` recreates it) and deleting `.data/` while the
+server is stopped.
 
 ## 5. Generation pipeline
 
@@ -297,7 +304,7 @@ the facade and must not be regenerated.
    text layer are rejected with a 422 because OCR is not bundled.
 4. Voice names, stock avatars and some catalogue values are local stand-ins (marked in
    `src/lib/generation/config.ts`).
-5. Analytics, ads and affiliate calls are accepted and ignored; only Groq, Supabase and Stripe
+5. Analytics, ads and affiliate calls are accepted and ignored; only Groq, MySQL and Stripe
    make outbound calls, and only when configured.
 6. Email-sending routes (`organizations/invitation`, `tell-your-manager`) record the request and
    return `mocked_email: true`.

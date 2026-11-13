@@ -64,7 +64,7 @@ function check(level, area, message) {
 const groqKey = get("GROQ_API_KEY");
 const groqBase = get("GROQ_BASE_URL") || "https://api.groq.com/openai/v1";
 const scriptMode = mode("GOLPO_SCRIPT_MODE", groqKey ? "groq" : "local", ["local", "groq"]);
-const ttsMode = mode("GOLPO_TTS_MODE", groqKey ? "groq" : "none", ["none", "groq"]);
+const ttsMode = mode("GOLPO_TTS_MODE", groqKey ? "groq" : "edge", ["none", "groq", "edge"]);
 const transcriptionMode = mode("GOLPO_TRANSCRIBE_MODE", groqKey ? "groq" : "none", [
   "none",
   "groq",
@@ -74,7 +74,7 @@ if (!groqKey) {
   check(
     "missing",
     "Groq",
-    "GROQ_API_KEY is not set — scripts stay local, transcription is disabled and narration stays silent.",
+    "GROQ_API_KEY is not set — scripts stay local, transcription is disabled and narration uses Edge voices.",
   );
 } else if (groqKey === "stub-key" || groqKey.startsWith("stub")) {
   check(
@@ -103,60 +103,47 @@ if (groqKey && groqBase !== "https://api.groq.com/openai/v1") {
 }
 
 // ---------------------------------------------------------------------------
-// Supabase
+// MySQL
 // ---------------------------------------------------------------------------
-const rawSupabaseUrl = get("SUPABASE_URL") || get("NEXT_PUBLIC_SUPABASE_URL");
-// The app normalizes the project origin itself; mirror that here so the report
-// matches runtime behavior when a `/rest/v1/` dashboard URL is pasted in.
-const supabaseUrl = rawSupabaseUrl
-  .replace(/\/+$/, "")
-  .replace(/\/rest\/v1$/, "")
-  .replace(/\/+$/, "");
-const supabaseAnon = get("SUPABASE_ANON_KEY") || get("NEXT_PUBLIC_SUPABASE_ANON_KEY");
-const authMode = mode("GOLPO_AUTH_MODE", supabaseUrl && supabaseAnon ? "supabase" : "local", [
-  "local",
-  "supabase",
-]);
+const dbHost = get("GOLPO_DB_HOST") || "127.0.0.1";
+const dbPort = get("GOLPO_DB_PORT") || "3306";
+const dbUser = get("GOLPO_DB_USER") || "root";
+const dbName = get("GOLPO_DB_NAME") || "golpo";
 
-if (!supabaseUrl || !supabaseAnon) {
+check(
+  "info",
+  "MySQL",
+  `Target: ${dbUser}@${dbHost}:${dbPort}/${dbName}. Run \`npm run db:setup\` to create it.`,
+);
+
+try {
+  const mysql = await import("mysql2/promise");
+  const connection = await mysql.createConnection({
+    host: dbHost,
+    port: Number(dbPort) || 3306,
+    user: dbUser,
+    password: get("GOLPO_DB_PASSWORD"),
+    database: dbName,
+    connectTimeout: 4_000,
+  });
+  try {
+    const [result] = await connection.query(
+      "SELECT (SELECT COUNT(*) FROM `users`) AS users, (SELECT COUNT(*) FROM `videos`) AS videos",
+    );
+    check(
+      "ok",
+      "MySQL",
+      `Connected — ${result[0].users} users, ${result[0].videos} videos in \`${dbName}\`.`,
+    );
+  } finally {
+    await connection.end();
+  }
+} catch (error) {
   check(
     "missing",
-    "Supabase",
-    "SUPABASE_URL and/or SUPABASE_ANON_KEY are missing — sign-in stays local.",
+    "MySQL",
+    `Could not connect: ${error.message}. Is WAMP running and has \`npm run db:setup\` been run?`,
   );
-} else {
-  let urlProblem = null;
-  try {
-    const parsed = new URL(supabaseUrl);
-    if (parsed.protocol !== "https:") urlProblem = "SUPABASE_URL should use https.";
-  } catch {
-    urlProblem = "SUPABASE_URL is not a valid URL.";
-  }
-  if (urlProblem) check("warn", "Supabase", `${urlProblem} Auth mode resolved to ${authMode}.`);
-  else check("ok", "Supabase", `Auth mode: ${authMode} using ${supabaseUrl}.`);
-  if (rawSupabaseUrl !== supabaseUrl) {
-    check("warn", "Supabase", `SUPABASE_URL was normalized from ${rawSupabaseUrl} to ${supabaseUrl}.`);
-  }
-  if (!supabaseAnon.startsWith("sb_publishable_") && !supabaseAnon.startsWith("eyJ")) {
-    check(
-      "warn",
-      "Supabase",
-      "SUPABASE_ANON_KEY is neither a sb_publishable_... key nor a legacy eyJ... anon JWT.",
-    );
-  }
-  check(
-    "info",
-    "Supabase",
-    "Add http://localhost:3000/auth/callback* to Authentication → URL Configuration → Redirect URLs.",
-  );
-  check("info", "Supabase", "Email magic links use the built-in Email provider; Google/Azure are only needed for OAuth.");
-  if (has("SUPABASE_SERVICE_ROLE_KEY")) {
-    check(
-      "warn",
-      "Supabase",
-      "SUPABASE_SERVICE_ROLE_KEY is set but is not used by this app. Remove it unless you add server-side admin calls.",
-    );
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -265,7 +252,7 @@ for (const level of order) {
 const missing = checks.filter((entry) => entry.level === "missing");
 console.log("");
 console.log(
-  `Resolved modes → auth: ${authMode}, billing: ${billingMode}, scripts: ${scriptMode}, transcription: ${transcriptionMode}, narration: ${ttsMode}, render: ${renderOk ? "ffmpeg" : "storyboard"}`,
+  `Resolved modes → auth: mysql:${dbName}, billing: ${billingMode}, scripts: ${scriptMode}, transcription: ${transcriptionMode}, narration: ${ttsMode}, render: ${renderOk ? "ffmpeg" : "storyboard"}`,
 );
 console.log(
   missing.length === 0

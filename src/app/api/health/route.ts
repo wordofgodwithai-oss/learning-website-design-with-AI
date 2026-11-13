@@ -1,6 +1,5 @@
 import {
   APP_URL,
-  authMode,
   billingMode,
   integrationSummary,
   GROQ_BASE_URL,
@@ -9,13 +8,12 @@ import {
   scriptMode,
   STRIPE_SECRET_KEY,
   STRIPE_WEBHOOK_SECRET,
-  SUPABASE_ANON_KEY,
-  SUPABASE_URL,
   transcriptionMode,
   ttsMode,
   unlimitedDevOverride,
 } from "@/lib/integrations";
 import { json } from "@/lib/http";
+import { DB_HOST, DB_LABEL, DB_NAME, DB_PORT } from "@/lib/mysql";
 import { getSystemStatus } from "@/lib/repo";
 import { ensureJobWorker } from "@/lib/generation/worker";
 
@@ -41,8 +39,11 @@ export async function GET() {
       integrations: integrationSummary(),
       config: {
         auth: {
-          mode: authMode,
-          oauth_configured: Boolean(SUPABASE_URL && SUPABASE_ANON_KEY),
+          mode: "mysql",
+          database: DB_LABEL,
+          host: DB_HOST,
+          port: DB_PORT,
+          name: DB_NAME,
         },
         billing: {
           mode: billingMode,

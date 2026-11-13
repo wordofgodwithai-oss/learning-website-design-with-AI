@@ -66,7 +66,7 @@ Everything is optional:
 | Transcription | Disabled | Groq Whisper `whisper-large-v3` |
 | Scene artwork | Pollinations (keyless, rate limited) | Cloudflare Workers AI `flux-1-schnell` |
 | Rendering | Bundled FFmpeg + `sharp` | Same |
-| Authentication | Local HMAC sessions | Supabase email magic link or OAuth |
+| Authentication | MySQL email + password accounts, demo button | Same (MySQL is the only backend) |
 | Billing | Mock, 999,999 credits | Stripe Checkout + webhooks |
 
 Without `STRIPE_SECRET_KEY` billing stays mocked: every account has **999,999 credits**, every
@@ -96,7 +96,7 @@ becomes real (plan entitlements, per-generation debits, webhook-driven credit gr
 
 | Area | Status |
 | --- | --- |
-| Google/Microsoft sign-in, sessions, sign-out | Working (local mock, Supabase magic link or OAuth) |
+| Email/password sign-up and sign-in, sessions, sign-out | Working (MySQL, scrypt hashes, revocable sessions) |
 | Playground: prompt, script import, engine/style/language/voice/variants | Working |
 | Generation jobs, stage progress, polling, language variants | Working |
 | Scripts | Local writer or Groq |
@@ -129,7 +129,8 @@ flowchart LR
   ART -->|"default"| POL["Pollinations"]
   ART -->|"off · failure"| DOODLE["Local vector doodles"]
   PIPE --> RENDER["FFmpeg renderer<br/>timeline · tempo fit · overlays"]
-  RENDER --> STORE[(".data<br/>db.json + media")]
+  RENDER --> STORE[("MySQL<br/>golpo database")]
+  RENDER --> MEDIA[(".data<br/>rendered media")]
   STORE --> BFF
   STORE --> API["Public API v1/v2<br/>MCP"]
 ```
@@ -163,11 +164,11 @@ and queued jobs resume after a restart; jobs abandoned for longer than
 | Framework | Next.js 15 (App Router) + React 19 | File-based routes for pages and BFF alike |
 | Language | TypeScript 5.8 (`strict`) | Contract safety across the request surface |
 | Styling | Hand-written CSS | No framework or build step for the UI |
-| Storage | Single JSON document with atomic writes | Dependency-free, easy to inspect and reset |
+| Storage | MySQL 8 (WAMP) + JSON columns | Real tables while nested render data stays simple |
 | Video | `ffmpeg-static` + `ffprobe-static` | Reproducible binaries without system installs |
 | Images | `sharp` | Fast SVG → PNG and image compositing |
 | TTS | Groq Orpheus + `msedge-tts` | Quality English voices plus free multilingual fallback |
-| Auth | `@supabase/ssr` (optional) | Magic link and OAuth parity with the original |
+| Auth | MySQL sessions + scrypt | No external identity provider; revocable opaque tokens |
 | Payments | `stripe` (optional) | Checkout, portal and webhook-driven credits |
 
 ## Quick start
@@ -175,8 +176,9 @@ and queued jobs resume after a restart; jobs abandoned for longer than
 ### Prerequisites
 
 - **Node.js 20.9+** (developed on Node 26)
+- **MySQL 8** — WAMP, XAMPP or a standalone server; defaults to `root` with an empty password on `127.0.0.1:3306`
 - Windows, macOS or Linux — FFmpeg and FFprobe ship as npm binaries
-- No database, Docker or external account required
+- No Docker or external account required
 
 ### Install and run
 
@@ -185,25 +187,32 @@ git clone https://github.com/wordofgodwithai-oss/learning-website-design-with-AI
 cd learning-website-design-with-AI
 npm install
 cp .env.example .env.local   # optional; Windows: copy .env.example .env.local
+npm run db:setup             # creates the `golpo` database and tables
 npm run dev
 ```
 
 Open **http://localhost:3000**.
 
+The first boot against an empty database imports `.data/db.json` (if present), so upgrading from
+the earlier JSON build keeps every account, video, job and API key. Afterwards MySQL is the source
+of truth; `.data` only holds uploaded and rendered media.
+
 > [!TIP]
-> The app is fully functional with an empty `.env.local`. Adding keys only upgrades individual
-> capabilities; nothing is required to generate a video.
+> The app is fully functional with an empty `.env.local` (plus a running MySQL). Adding keys only
+> upgrades individual capabilities; nothing is required to generate a video.
 
 ### Sign in
 
-1. Click **Continue with Google** or **Continue with Microsoft** on the landing page.
-2. The email is pre-filled with `demo@golpo.local`. Either button signs you in immediately — no
-   OAuth round-trip and no password.
-3. That account is pre-seeded with a welcome video, an organization and a development API key.
-4. Any other email creates a fresh local account with infinite credits on the same click.
+1. Enter an email and password and click **Create account** the first time.
+2. Afterwards use **Sign in** with the same credentials. Passwords are hashed with scrypt and never
+   stored in plaintext.
+3. Or click **Continue with the demo account** for a one-click, pre-seeded account with a welcome
+   video, an organization and the development API key.
 
-The session is an HMAC-signed bearer token in an httpOnly `golpo_session` cookie (also accepted as
-`Authorization: Bearer …`), so the BFF and the public API behave like the real Supabase-token setup.
+The session is an opaque random token stored hashed in the `sessions` table. It travels in an
+httpOnly `golpo_session` cookie and is also accepted as `Authorization: Bearer …`, so the BFF and
+the public API behave like the real dashboard's bearer-token contract. Sign-out deletes the row and
+revokes the token immediately.
 
 ### Generate your first video
 
@@ -228,15 +237,24 @@ default, and each integration has an explicit mode so behaviour is predictable.
 | `GOLPO_TRANSCRIBE_MODE` | `auto` · `groq` · `none` | `groq` when `GROQ_API_KEY` exists |
 | `GOLPO_IMAGE_MODE` | `auto` · `cloudflare` · `pollinations` · `off` | `cloudflare` when configured, else `pollinations` |
 | `GOLPO_RENDER_MODE` | `auto` · `ffmpeg` | `ffmpeg` when the bundled binaries exist |
-| `GOLPO_AUTH_MODE` | `auto` · `local` · `supabase` | `supabase` when URL + anon key exist |
 | `GOLPO_BILLING_MODE` | `auto` · `mock` · `stripe` | `stripe` when `STRIPE_SECRET_KEY` exists |
+
+### MySQL
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `GOLPO_DB_HOST` | `127.0.0.1` | MySQL host |
+| `GOLPO_DB_PORT` | `3306` | MySQL port |
+| `GOLPO_DB_USER` | `root` | MySQL user |
+| `GOLPO_DB_PASSWORD` | empty | MySQL password (WAMP's default is empty) |
+| `GOLPO_DB_NAME` | `golpo` | Database created by `npm run db:setup` |
+| `GOLPO_DB_POOL_SIZE` | `10` | Connection pool size |
 
 ### Core
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `GOLPO_DATA_DIR` | `./.data` | JSON store and uploaded media |
-| `GOLPO_SESSION_SECRET` | dev constant | HMAC secret for session tokens |
+| `GOLPO_DATA_DIR` | `./.data` | Media directory, and the legacy `db.json` import source |
 | `GOLPO_DEV_API_KEY` | `glp_local_dev_key_change_me` | Seeded API key (change before first run) |
 | `GOLPO_SIMULATED_RENDER_MS` | `14000` | Minimum simulated progress duration |
 | `GOLPO_MAX_CONCURRENT_JOBS` | `5` | Concurrency cap per user |
@@ -278,16 +296,21 @@ Cloudflare Workers AI grants 10,000 free neurons/day (roughly 100 images) with n
 Pollinations needs no account but is rate limited to one image per 45 seconds per IP and adds a
 small logo; URLs are cached locally so repeated renders do not re-request them.
 
-### Supabase — authentication
+### MySQL — accounts and sessions
 
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `SUPABASE_URL` | — | Project URL |
-| `SUPABASE_ANON_KEY` | — | Public anon key |
-| `SUPABASE_SERVICE_ROLE_KEY` | — | Optional server-side admin access |
+The database is created by `npm run db:setup`, which applies `db/schema.sql`. Accounts live in
+`users` with a scrypt `password_hash`; opaque session tokens live in `sessions`, stored as SHA-256
+hashes. Every other collection (videos, jobs, credits, playlists, API keys, …) has its own table,
+with JSON columns for nested scene, render and membership data.
 
-Add `http://localhost:3000/auth/callback*` to the project's redirect allow-list. Email magic links
-work with no provider console; Google/Microsoft OAuth can be enabled optionally.
+The first boot against an empty database imports `.data/db.json`; after that, edits are written
+through one transaction per request. To start over:
+
+```bash
+# WAMP shell or mysql.exe
+DROP DATABASE golpo;
+npm run db:setup
+```
 
 ### Stripe — billing
 
@@ -311,8 +334,8 @@ npm run integrations:check            # list what is configured and what is miss
 npm run integrations:check -- --strict  # exit non-zero when incomplete
 ```
 
-`GET /api/health` reports which implementation each capability resolved to (`local`, `groq`,
-`supabase`, `stripe`, `ffmpeg`, image provider) without exposing any secret.
+`GET /api/health` reports which implementation each capability resolved to (`mysql`, `local`,
+`groq`, `stripe`, `ffmpeg`, image provider) without exposing any secret.
 
 ## Usage
 
@@ -320,7 +343,7 @@ npm run integrations:check -- --strict  # exit non-zero when incomplete
 
 | Route | Description |
 | --- | --- |
-| `/` | Landing page and mock / Supabase sign-in |
+| `/` | Landing page with email/password and demo sign-in |
 | `/playground` | Prompt, script import, render options and live job progress |
 | `/library` | Search, filters, visibility, playlists and deletion |
 | `/v/{id}` | Shareable detail page with script, variants and poster |
@@ -431,7 +454,7 @@ If FFmpeg fails, the job falls back to an animated SVG storyboard so generation 
 | `video_orientation` | Canvas size and layout (16:9, 9:16, 1:1) |
 | `narration_voice` | Orpheus voice or Edge voice |
 | `scene_pacing` | Narration planning speed and scene timing |
-| `pen_animation_style` | Stroke reveal speed (`fast`, `slow`, `none`, default) |
+| `pen_animation_style` | Drawing tool: `pen`, `marker` or `stylus` (Canvas/Studio) |
 | `image_generation_model` | Maps onto the free provider's catalogue (`flux` default, `turbo`) |
 | `characters` | Saved character ids or inline `{name, description}` → artwork prompts |
 | `fill_in` | Expands a pasted script to the requested runtime via Groq |
@@ -449,7 +472,7 @@ If FFmpeg fails, the job falls back to an animated SVG storyboard so generation 
 ```
 src/
   app/
-    page.tsx                 landing page and mock sign-in
+    page.tsx                 landing page with email/password + demo sign-in
     playground/              prompt and render options
     library/                 library feed
     v/[id]/                  shareable video detail
@@ -464,8 +487,9 @@ src/
     generation/              request normalisation, scripting, pipeline, variants
     media/                   render, audio, artwork, theme, SVG frames, storage
     mcp/                     JSON-RPC server and tools
-    supabase/                SSR client, server client, credential checks
-    auth.ts, repo.ts, db.ts, storage.ts, integrations.ts, types.ts
+    mysql.ts, password.ts    connection pool and scrypt hashing
+    auth.ts, auth-response.ts, repo.ts, db.ts, storage.ts, integrations.ts, types.ts
+db/schema.sql                MySQL schema applied by `npm run db:setup`
 docs/IMPLEMENTATION.md       real-vs-simulated map and extension points
 REPORT.md                    reverse-engineering notes
 scripts/                     smoke test, integration checker, Groq stub
@@ -479,25 +503,35 @@ scripts/                     smoke test, integration checker, Groq stub
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npm run typecheck` | `tsc --noEmit` |
+| `npm run db:setup` | Create the MySQL database and apply `db/schema.sql` |
 | `npm run smoke` | End-to-end API test (requires the dev server) |
 | `npm run integrations:check` | Validate provider configuration without calling providers |
 | `npm run mock:groq` | Groq-compatible stub on `:4010` for offline plumbing tests |
 
 `npm run smoke` signs in, calls all startup BFF routes, generates through the browser path, polls
 to `ready`, checks variants, MP4 playback (including byte ranges) and the poster, then exercises
-API v1, API v2, MCP and the 401 paths. It exits non-zero on failure.
+API v1, API v2, MCP, the 401 paths, and the password sign-up/sign-out/sign-in cycle. It exits
+non-zero on failure.
 
 ## Data and reset
 
-State lives in `./.data` (gitignored):
+State lives in MySQL (`golpo` by default), and rendered media lives under `./.data` (gitignored):
 
-- `db.json` — users, credits, videos, jobs, keys, playlists, characters and styles. Written
-  atomically behind an in-process mutex.
+- `users`, `sessions`, `credits`, `videos`, `jobs`, `api_keys`, `playlists`, `characters`, `styles`,
+  and the other tables in `db/schema.sql`.
 - `uploads/` — script imports, avatars, logos, music and reference media.
 - `media/` — rendered MP4s, posters and cached artwork.
 
-To reset everything, stop the server and delete `.data/`; the next request re-seeds the demo
-account.
+To reset everything, drop the database and delete `.data/`; the next request re-seeds the demo
+account:
+
+```sql
+DROP DATABASE golpo;
+```
+
+```bash
+npm run db:setup
+```
 
 ## Deployment
 
@@ -515,8 +549,8 @@ npm run start
   functions with read-only or ephemeral storage need an external object store for `.data/media`.
 - Long renders can exceed serverless request limits — keep generation on a long-running server or
   move the pipeline to a queue worker.
-- Set `GOLPO_SESSION_SECRET` and `GOLPO_DEV_API_KEY` to strong values, and put the app behind
-  HTTPS before exposing it.
+- Set `GOLPO_DB_*` to a dedicated MySQL user rather than `root`, set `GOLPO_DEV_API_KEY` to a
+  strong value, and put the app behind HTTPS before exposing it.
 - `GET /api/health` is a suitable readiness probe.
 
 > [!WARNING]
@@ -531,11 +565,13 @@ npm run start
 | Narration logs `429` and the video is silent | Orpheus daily quota is exhausted and Edge failed. Check network access to Edge TTS, or wait for the quota reset |
 | Orpheus returns a terms error | Accept the model terms once in the Groq playground |
 | Artwork is missing or slow | Pollinations throttles to one image per 45 s per IP and may return 402; configure Cloudflare or set `GOLPO_IMAGE_MODE=off` |
-| Supabase magic link redirects to an error page | Add `http://localhost:3000/auth/callback*` to the redirect allow-list |
+| MySQL connection refused | Start WAMP (tray icon green) and confirm `GOLPO_DB_PORT`; run `npm run db:setup` |
+| `Unknown database 'golpo'` | Run `npm run db:setup` once, or set `GOLPO_DB_NAME` to an existing database |
+| Sign-in says "Incorrect email or password" for an imported account | Accounts from the old JSON store had no password; sign up with a new address or use the demo account |
 | Stripe webhook returns 400 | `STRIPE_WEBHOOK_SECRET` must match the `stripe listen` session |
 | Port 3000 is already in use | Set `PORT=3001` (and update `GOLPO_APP_URL`) |
 | Videos are shorter or longer than requested | Check the `[render]` logs: they report words/second, pace adjustment and any spread |
-| State looks stale or duplicated | Stop the server, delete `.data/`, and restart to re-seed |
+| State looks stale or duplicated | Stop the server, drop the database, delete `.data/`, and restart |
 
 ## Known limitations
 
@@ -556,8 +592,8 @@ These are deliberate and documented in [docs/IMPLEMENTATION.md](docs/IMPLEMENTAT
    a provider is enabled.
 7. **Per-minute credit pricing is inferred.** The real rate is unobservable; the estimate lives in
    `src/lib/billing/shared.ts`.
-8. **Single-node storage.** The JSON store is designed for local use, not concurrent multi-instance
-   deployments.
+8. **Single-node storage.** MySQL makes the data layer durable, but the generation worker and media
+   directory assume one app instance; horizontal scaling needs a shared object store and a queue.
 9. **No automated test suite beyond the smoke script.** CI would be a welcome contribution.
 
 The field-by-field comparison with the production product, including the remaining gaps, lives in
@@ -571,14 +607,14 @@ The field-by-field comparison with the production product, including the remaini
 4. Describe the behaviour change and any new environment variables in the pull request.
 
 Bug reports should include the failing route or prompt, the relevant terminal output, and whether
-Groq, Supabase or Stripe were enabled.
+Groq, MySQL or Stripe were enabled.
 
 ## Security
 
 - **Never commit `.env.local`.** It is gitignored by default; `.env.example` documents every key.
 - Rotate any key that has been pasted into a chat, issue or log.
-- The default API key and session secret are development values. Replace both before any shared or
-  public deployment.
+- The default API key and the MySQL `root`/empty-password login are development values. Replace both
+  before any shared or public deployment.
 - All provider access happens in server-only modules (`import "server-only"`), so secrets cannot
   reach the client bundle.
 - Analytics, ads and broadcast endpoints are local no-ops; the app does not phone home.
@@ -595,7 +631,7 @@ Built on the shoulders of [Next.js](https://nextjs.org), [React](https://react.d
 [sharp](https://sharp.pixelplumbing.com), [Groq](https://groq.com),
 [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/),
 [Pollinations](https://pollinations.ai), [Microsoft Edge TTS](https://github.com/rany2/edge-tts),
-[Supabase](https://supabase.com) and [Stripe](https://stripe.com).
+[MySQL](https://www.mysql.com) and [Stripe](https://stripe.com).
 
 Golpo AI is a product of its respective owners; this project is an independent reconstruction for
 study and local experimentation.

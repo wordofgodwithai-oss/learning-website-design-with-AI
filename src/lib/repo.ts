@@ -1,9 +1,11 @@
 import "server-only";
 
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
+import type { RowDataPacket } from "mysql2/promise";
 
-import { readDb, withDb, creditsFor, nowIso, DEMO_USER_ID } from "@/lib/db";
+import { readDb, withDb, creditsFor, nowIso, DEMO_EMAIL, DEMO_USER_ID } from "@/lib/db";
 import { uuid, jobId as newJobId, videoId as newVideoId } from "@/lib/ids";
+import { rows, run } from "@/lib/mysql";
 import type {
   ApiKey,
   Character,
@@ -85,13 +87,137 @@ export async function upsertUser(input: {
 }
 
 export async function ensureDemoUser(): Promise<User> {
-  const existing = await getUserById(DEMO_USER_ID);
-  if (existing) return existing;
+  const existing = (await getUserById(DEMO_USER_ID)) ?? (await getUserByEmail(DEMO_EMAIL));
+  if (existing) {
+    if (existing.provider === "dev") return existing;
+    return upsertUser({
+      email: existing.email,
+      name: existing.name,
+      provider: "dev",
+      avatarUrl: existing.avatar_url,
+      externalId: existing.external_id ?? null,
+    });
+  }
   return upsertUser({
-    email: "demo@golpo.local",
+    email: DEMO_EMAIL,
     name: "Local Dev",
     provider: "dev",
   });
+}
+
+// ---------------------------------------------------------------------------
+// Passwords and sessions (auth columns are intentionally outside `Database`)
+//
+// `users.password_hash` and the `sessions` table never enter the in-memory
+// snapshot, so they cannot be serialised into an API response by accident.
+// ---------------------------------------------------------------------------
+
+/** Creates an account that can sign in with email + password. */
+export async function createPasswordUser(input: {
+  email: string;
+  name?: string;
+  passwordHash: string;
+}): Promise<User | null> {
+  const email = input.email.trim().toLowerCase();
+  const user = await withDb((db) => {
+    if (db.users.some((entry) => entry.email.toLowerCase() === email)) return null;
+    const timestamp = nowIso();
+    const name = input.name?.trim() || slugName(email);
+    const created: User = {
+      id: uuid(),
+      email,
+      name,
+      display_name: name,
+      provider: "password",
+      external_id: null,
+      avatar_url: null,
+      created_at: timestamp,
+      last_login_at: timestamp,
+    };
+    db.users.push(created);
+    db.credits.push(creditsFor(created));
+    return created;
+  });
+  if (!user) return null;
+  await setPasswordHash(user.id, input.passwordHash);
+  return user;
+}
+
+/** Writes the scrypt hash for an existing account. */
+export async function setPasswordHash(userId: string, passwordHash: string): Promise<void> {
+  await run("UPDATE `users` SET `password_hash` = ? WHERE `id` = ?", [passwordHash, userId]);
+}
+
+/** Returns the stored hash, or null for OAuth/demo accounts. */
+export async function getPasswordHash(email: string): Promise<string | null> {
+  const result = await rows<RowDataPacket>(
+    "SELECT `password_hash` FROM `users` WHERE LOWER(`email`) = ? LIMIT 1",
+    [email.trim().toLowerCase()],
+  );
+  const value = result[0]?.password_hash;
+  return typeof value === "string" && value.length > 0 ? value : null;
+}
+
+export interface SessionRecord {
+  user_id: string;
+  expires_at: string;
+}
+
+function hashSessionToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
+
+/**
+ * Issues an opaque bearer/session token. Only its SHA-256 is stored, so a
+ * database dump cannot be replayed against the app.
+ */
+export async function insertSession(
+  userId: string,
+  ttlSeconds: number,
+): Promise<{ token: string; expiresAt: number }> {
+  const token = randomBytes(32).toString("base64url");
+  const now = new Date();
+  const expires = new Date(now.getTime() + ttlSeconds * 1_000);
+  await run(
+    `INSERT INTO \`sessions\` (\`token_hash\`, \`user_id\`, \`created_at\`, \`expires_at\`, \`last_used_at\`)
+     VALUES (?, ?, ?, ?, ?)`,
+    [hashSessionToken(token), userId, now, expires, now],
+  );
+  return { token, expiresAt: Math.floor(expires.getTime() / 1_000) };
+}
+
+/** Looks a token up and drops it when expired. */
+export async function lookupSession(token: string): Promise<SessionRecord | null> {
+  const hash = hashSessionToken(token);
+  const result = await rows<RowDataPacket>(
+    "SELECT `user_id`, `expires_at` FROM `sessions` WHERE `token_hash` = ? LIMIT 1",
+    [hash],
+  );
+  const row = result[0];
+  if (!row) return null;
+
+  const expires =
+    row.expires_at instanceof Date ? row.expires_at : new Date(String(row.expires_at));
+  if (Number.isNaN(expires.getTime()) || expires.getTime() <= Date.now()) {
+    await run("DELETE FROM `sessions` WHERE `token_hash` = ?", [hash]);
+    return null;
+  }
+
+  return {
+    user_id: String(row.user_id),
+    expires_at: expires.toISOString(),
+  };
+}
+
+/** Removes one session (sign-out). Safe to call with an unknown token. */
+export async function removeSession(token: string): Promise<void> {
+  await run("DELETE FROM `sessions` WHERE `token_hash` = ?", [hashSessionToken(token)]);
+}
+
+/** Housekeeping: deletes every expired session. */
+export async function purgeExpiredSessions(): Promise<number> {
+  const result = await run("DELETE FROM `sessions` WHERE `expires_at` < ?", [new Date()]);
+  return result.affectedRows ?? 0;
 }
 
 // ---------------------------------------------------------------------------

@@ -18,8 +18,8 @@ export interface User {
   email: string;
   name: string;
   display_name: string;
-  provider: "google" | "microsoft" | "dev";
-  /** Supabase `auth.users.id` when auth runs in live mode. */
+  provider: "google" | "microsoft" | "dev" | "password";
+  /** External identity id when the account came from an OAuth provider. */
   external_id?: string | null;
   avatar_url: string | null;
   created_at: string;

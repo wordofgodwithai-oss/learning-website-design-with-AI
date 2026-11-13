@@ -1,14 +1,13 @@
 import { AppShell } from "@/components/AppShell";
 import { Playground } from "@/components/Playground";
-import { createAccessToken, requireSessionUser } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 import { getBalance } from "@/lib/billing";
 
 export const dynamic = "force-dynamic";
 
 export default async function PlaygroundPage() {
-  const user = await requireSessionUser();
+  const { user, token } = await requireSession("/playground");
   const balance = await getBalance(user.id);
-  const { token } = createAccessToken(user);
 
   return (
     <AppShell user={user} credits={balance.credits}>

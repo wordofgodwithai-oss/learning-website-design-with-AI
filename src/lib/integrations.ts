@@ -18,8 +18,9 @@ import ffprobeStatic from "ffprobe-static";
  *
  * The point of `auto` is that `.env.local` is the only switch. Put a
  * GROQ_API_KEY in it and scripts, transcription and narration become real;
- * put Supabase keys in and auth becomes real; put a Stripe key in and billing
- * becomes real. Remove them and the app falls back without a code change.
+ * set the GOLPO_DB_* variables to point at MySQL, and put a Stripe key in and
+ * billing becomes real. Remove them and the app falls back without a code
+ * change.
  *
  * Modes are read once per server process. Restart `npm run dev` after editing
  * `.env.local` (Next.js already does this).
@@ -28,7 +29,6 @@ import ffprobeStatic from "ffprobe-static";
 
 export type ScriptMode = "local" | "groq";
 export type RenderMode = "storyboard" | "ffmpeg";
-export type AuthMode = "local" | "supabase";
 export type BillingMode = "mock" | "stripe";
 export type TtsMode = "none" | "groq" | "edge";
 export type TranscriptionMode = "none" | "groq";
@@ -146,35 +146,6 @@ export const renderMode: RenderMode = resolveMode<RenderMode>(
 );
 
 // ---------------------------------------------------------------------------
-// Supabase (auth)
-// ---------------------------------------------------------------------------
-
-/**
- * Supabase clients want the project origin, not a REST endpoint. People often
- * copy the dashboard's `.../rest/v1/` URL into `.env.local`; strip any such
- * suffix so `/auth/v1/...` still resolves correctly.
- */
-function supabaseOrigin(value: string): string {
-  return value
-    .replace(/\/+$/, "")
-    .replace(/\/rest\/v1$/, "")
-    .replace(/\/+$/, "");
-}
-
-export const SUPABASE_URL = supabaseOrigin(
-  text(process.env.SUPABASE_URL) || text(process.env.NEXT_PUBLIC_SUPABASE_URL),
-);
-export const SUPABASE_ANON_KEY =
-  text(process.env.SUPABASE_ANON_KEY) || text(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-export const SUPABASE_SERVICE_ROLE_KEY = text(process.env.SUPABASE_SERVICE_ROLE_KEY);
-
-export const authMode: AuthMode = resolveMode<AuthMode>(
-  process.env.GOLPO_AUTH_MODE,
-  SUPABASE_URL && SUPABASE_ANON_KEY ? "supabase" : "local",
-  ["local", "supabase"],
-);
-
-// ---------------------------------------------------------------------------
 // Stripe (billing)
 // ---------------------------------------------------------------------------
 
@@ -204,26 +175,19 @@ export const unlimitedDevOverride = flag(process.env.GOLPO_UNLIMITED_DEV)
 // ---------------------------------------------------------------------------
 
 export interface PublicIntegrationConfig {
-  authMode: AuthMode;
   billingMode: BillingMode;
   scriptMode: ScriptMode;
   renderMode: RenderMode;
   unlimited: boolean;
-  supabase: { url: string; anonKey: string } | null;
   model: string | null;
 }
 
 export function publicConfig(): PublicIntegrationConfig {
   return {
-    authMode,
     billingMode,
     scriptMode,
     renderMode: renderMode,
     unlimited: unlimitedDevOverride,
-    supabase:
-      authMode === "supabase" && SUPABASE_URL && SUPABASE_ANON_KEY
-        ? { url: SUPABASE_URL, anonKey: SUPABASE_ANON_KEY }
-        : null,
     model: scriptMode === "groq" ? GROQ_MODEL : null,
   };
 }
@@ -231,7 +195,7 @@ export function publicConfig(): PublicIntegrationConfig {
 /** Compact one-line summary for /api/health and the startup logs. */
 export function integrationSummary(): Record<string, string> {
   return {
-    auth: authMode,
+    auth: "mysql",
     billing: billingMode,
     scripts: scriptMode === "groq" ? `groq:${GROQ_MODEL}` : "local",
     transcription:

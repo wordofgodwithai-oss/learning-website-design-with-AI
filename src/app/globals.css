@@ -673,6 +673,28 @@ p {
   margin-bottom: 20px;
 }
 
+.auth-switch {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.text-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.text-btn:hover {
+  text-decoration: underline;
+}
+
+
 .divider {
   display: flex;
   align-items: center;

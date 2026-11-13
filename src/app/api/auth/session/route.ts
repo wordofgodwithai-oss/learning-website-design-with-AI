@@ -1,4 +1,4 @@
-import { createAccessToken, getSessionUser, toPublicUser } from "@/lib/auth";
+import { getSessionToken, getSessionUser, toPublicUser, verifyAccessToken } from "@/lib/auth";
 import { getBalance } from "@/lib/billing";
 import { featureMatrix } from "@/lib/features";
 import { json } from "@/lib/http";
@@ -13,8 +13,13 @@ export async function GET() {
       features: featureMatrix({ plan: "local-unlimited", unlimited: true }),
     });
   }
-  const [balance, systemStatus] = await Promise.all([getBalance(user.id), getSystemStatus()]);
-  const { token, expiresAt } = createAccessToken(user);
+  const [balance, systemStatus, token] = await Promise.all([
+    getBalance(user.id),
+    getSystemStatus(),
+    getSessionToken(),
+  ]);
+  const session = token ? await verifyAccessToken(token) : null;
+  const expiresAt = session?.exp ?? Math.floor(Date.now() / 1_000) + 60 * 60 * 24 * 30;
   return json({
     authenticated: true,
     user: toPublicUser(user),
