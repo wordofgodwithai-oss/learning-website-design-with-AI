@@ -1,6 +1,6 @@
 # Forensic comparison — golpoai.com vs golpo-local
 
-Date: 10–11 November 2026
+Date: 10–13 November 2026
 Scope: the live production product (`https://video.golpoai.com`) versus this repository.
 Method: live site crawl + read-only signed-in audit of the real create page, library
 and modals + real render sampling (including one render from the audited account) +
@@ -21,6 +21,7 @@ Evidence is stored under `docs/forensics/`:
 | `docs/forensics/live/playground-form.html` | Live create-form DOM snapshot (gitignored) |
 | `docs/forensics/samples/real-account-1min.mp4` | This account's own render, downloaded through the signed-in player |
 | `docs/forensics/samples/sheet-real-account.jpg` | Contact sheet for the above |
+| `docs/forensics/samples/sheet-local-2026-11-13.jpg` | Contact sheet of the clone's own 60 s render, measured in §9.9 |
 
 > Domain note: `golpo.ai` is now a parked Namecheap domain. The product lives at
 > **`video.golpoai.com`** (app) and **`api.golpoai.com`** (API). Any older note that
@@ -547,6 +548,95 @@ Both promoted items are implemented in the local clone.
 
 Still open from §8: residual spread capping, component-based canvas composition,
 pen-in-hand overlays, watermark-free line art, and chrome removal.
+
+### 9.9 Measured run: the clone's own 60 s render (13 November 2026)
+
+The clone was run end to end and its output measured against the real reference so
+the remaining gap is quantified rather than inferred.
+
+**Setup.** Signed-in session on the local app, one request through
+`POST /api/generate`:
+
+| Input | Value |
+| --- | --- |
+| Prompt | "How compound interest makes money grow, explained with a simple example for a beginner." |
+| Engine / style | `golpo_sketch` / `classic` |
+| Duration / orientation | 60 s / 16:9 |
+| Job / video | `job_e95a75de683222f2c63a4972` / `vid_65e52f2aa1fbfaf57894f92e` |
+| Modes | `GOLPO_SCRIPT_MODE=local`, `GOLPO_TTS_MODE=edge`, `GOLPO_IMAGE_MODE=off`, `GOLPO_RENDER_MODE=ffmpeg` |
+| Result | ready in 96 s wall time, 1,025-char script, 172 words, 12 scenes |
+
+The output was probed with `ffprobe`, sampled into
+`docs/forensics/samples/sheet-local-2026-11-13.jpg`, and measured
+with three objective filters: scene cuts (`select='gt(scene,0.25)'`), frame-to-frame
+difference (`tblend=all_mode=difference` + `signalstats` mean luma), and frozen
+segments (`freezedetect`). The real reference
+(`docs/forensics/samples/real-account-1min.mp4`) was measured identically.
+
+**Output-level parity**
+
+| Metric | Real reference | Clone | Gap |
+| --- | --- | --- | --- |
+| Frame size | 1536 × 864 | 1280 × 720 | 1.44× fewer pixels |
+| Frame rate | 30 fps | 30 fps | none |
+| Video codec / bitrate | H.264 / 250 kbps | H.264 / 121 kbps | half the visual information |
+| Duration for a "1 min" request | 69.60 s | 60.06 s | clone clamps, real overshoots |
+| Audio | AAC, 24 kHz, mono, 69 kbps | AAC, 44.1 kHz, stereo, 152 kbps | wrong format, 2× bitrate |
+| Loudness (mean / peak) | −30.0 dB / −11.0 dB | −23.8 dB / −4.4 dB | clone is ~6 dB hot and over-compressed |
+| Total file size | 2.84 MB | 2.11 MB | 26% smaller |
+
+**Motion and composition**
+
+| Metric | Real reference | Clone | Gap |
+| --- | --- | --- | --- |
+| Hard cuts detected (threshold 0.25) | 3 (4 continuous shots) | 0 | every clone scene shares the same layout, so scene changes are invisible at the frame level |
+| Mean frame-to-frame difference | 0.458 | 0.128 | 3.6× less on-screen motion |
+| Frozen time (≥ 0.5 s static) | 29.9 s = 43% | 48.9 s = 81% | clone shows a still image for most of every scene |
+| Frames per scene | continuous 30 fps motion | 18 PNGs (1.5 s at 12 fps) then a cloned still | `tpad=stop_mode=clone` + `-tune stillimage` |
+| Composition | full-bleed white canvas, illustration fills the frame | header, `n / 12` counter, framed art panel, caption paragraph, footer, progress bar | chrome is still shipped in every frame |
+| On-screen text | short hand-lettered phrases ("You don't.", "$1,000") | full narration paragraph, wrapped to 7 lines | reads as slide, not whiteboard |
+
+**Artwork**
+
+`GOLPO_IMAGE_MODE=off` means `generateArtwork()` returns nothing and the renderer
+falls back to `renderDoodles()` vector icons: one small monochrome glyph per scene
+(rocket, graph, clipboard, grid, stick figure), centred in a bordered panel with
+large empty margins. That is why the clone's sheet reads as an icon deck while the
+real sheet reads as hand-drawn illustration. `useColor: true` does not help:
+`golpo_sketch/classic` resolves to `accent: #1f2937`, so even the accent is
+near-black.
+
+The keyless colour option was tested: Pollinations still serves FLUX without a key,
+but the request with `nologo=true&private=true` came back with a baked-in
+`pollinations.ai` watermark in the corner. Cloudflare (the other provider) needs an
+account ID and token. So with zero keys the clone can only reach watermark-free line
+art, not the reference's full-colour, watermark-free illustration.
+
+**Script and scene plan**
+
+The 1,050-char budget is now respected (1,025 chars), but the writer's sentence and
+visual pools repeat: the 12 scene visuals are six descriptions cycled twice, so
+scene 1 and scene 7 are both "A character pointing at the first step". Narration is
+coherent but generic ("If you have ever felt lost in how compound interest…"), with
+no concrete example, number, or named entity — where the real script builds a
+specific story around one example.
+
+**What the clone must change, in impact order**
+
+| # | Change | Where | Why it matters | Acceptance test |
+| --- | --- | --- | --- | --- |
+| 1 | Animate the whole scene, not just the first 1.5 s. Build each scene as a sequence of draw steps (art wipe, then element-by-element add, label writes, small drift) and encode at 30 fps for the full narration length. | `src/lib/media/render.ts` (`encodeArgs`, frame loop), `src/lib/media/svg.ts` (`renderSceneFrame` progress semantics) | Removes 81% frozen time; this is the single largest perceptual gap. | `freezedetect` static time ≤ 50% of runtime; mean frame difference ≥ 0.35 |
+| 2 | Remove all chrome from the canvas: header, brand mark, scene counter, footer metadata, progress bar, framed panel, page wash and grain. Leave only the illustration and a short caption. | `svg.ts` (`headerRow`, `footer`, `progressBar`, `panel`, `background`) | Real frames are edge-to-edge illustration on white. | Contact sheet contains no text other than the caption; visual diff shows art occupying ≥ 85% of frame area |
+| 3 | Replace the printed narration with a derived 2–6 word caption, rendered in a hand-lettered face in cyan at a slight angle with a marker underline; keep narration audio only. | `svg.ts` (`narrationLayer`, `underline`), `scene.caption` derivation in `src/lib/generation/script.ts` | Real on-screen text is sparse and integrated, never a paragraph. | ≤ 7 words per scene, no sentence punctuation, accent colour `#22d3ee` |
+| 4 | Compose the canvas per scene instead of per slide: one full-bleed art area, accumulating elements (previous beats stay on screen), figures and arrows rather than a single centred icon. | `svg.ts` (`composeFrame`, `artworkLayer`), `src/lib/media/illustration.ts` (`renderDoodles` → multi-element scene builder) | Real shots are one canvas that fills in over 12–20 s. | ≤ 1 hard cut per 15 s; ≥ 4 distinct elements accumulate per shot |
+| 5 | Get real colour illustration. Either enable a keyed image provider, or accept watermark-free procedural colour and build a richer vector scene library (fills, characters, arrows, labels). | `src/lib/media/artwork.ts`, `src/lib/integrations.ts` (`imageMode`) | Icons + empty panel cannot match hand-drawn colour scenes. | Artwork source = `ai` or `colour-vector`; palette limited to ink + 2 accents |
+| 6 | Match the reference's output parameters: 1536 × 864 for 16:9, 24 kHz mono AAC at ~70 kbps, loudness normalised to about −30 dB mean / −11 dB peak, and a runtime within ±20% (allow overshoot rather than clamping). | `src/lib/media/theme.ts` (`ORIENTATION_SIZES`), `render.ts` (`encodeArgs`, `mixFinal`, duration fitting) | Container-level parity; the real player expects 1536 × 864. | `ffprobe` matches the reference table above within 5% |
+| 7 | Stop repeating visuals and sentences: make the visual pool at least as large as the scene count, derive each scene's visual from its own sentence, and require one concrete example per script. | `src/lib/generation/script.ts` | Removes the "same six cards twice" rhythm. | Zero duplicate scene visuals for scripts ≤ 60 scenes |
+
+Items 1–4 are fully local and cost no keys; item 5 is the only one blocked by a
+provider decision. Item 1 also raises render time (currently 96 s for 60 s because
+each scene is 18 frames); 30 fps × 60 s is 1,800 frames, so plan on a few minutes
+per render and keep the frame cache.
 
 ---
 
